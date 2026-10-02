@@ -1,0 +1,268 @@
+{
+  "id": "GEN_00002",
+  "label": "genuine",
+  "fraud_types": [],
+  "mode": "clean",
+  "is_scanned": false,
+  "spec": {
+    "invoice_number": "ZT/26-27/002",
+    "invoice_date": "2026-08-04",
+    "due_date": "2026-08-19",
+    "vendor_id": "VND-002",
+    "vendor_name": "Zenith Technologies LLP",
+    "vendor_gstin": "18PGUCR2544T1ZH",
+    "vendor_pan": "PGUCR2544T",
+    "vendor_address": "Plot 106, Sector 23, Industrial Area, Assam",
+    "vendor_email": "billing@zenith.co.in",
+    "vendor_phone": "+91 7384422461",
+    "vendor_state_code": "18",
+    "buyer_name": "Trident Retail & Consumer Goods LLP",
+    "buyer_gstin": "33AABCT3456J1ZC",
+    "buyer_address": "Mount Road, Anna Salai, Chennai, TN",
+    "buyer_state_code": "33",
+    "currency": "INR",
+    "items": [
+      {
+        "description": "Armed Security Personnel Deployment (8hr Shift)",
+        "hsn_sac": "998525",
+        "quantity": 10.0,
+        "unit": "Month",
+        "unit_price": 24216.16,
+        "line_total": 242161.6
+      },
+      {
+        "description": "Network Security Audit & Penetration Testing",
+        "hsn_sac": "998311",
+        "quantity": 3.0,
+        "unit": "Service",
+        "unit_price": 89454.65,
+        "line_total": 268363.95
+      },
+      {
+        "description": "Legal Compliance & Regulatory Advisory Retainer",
+        "hsn_sac": "998211",
+        "quantity": 10.0,
+        "unit": "Month",
+        "unit_price": 51573.6,
+        "line_total": 515736.0
+      },
+      {
+        "description": "LaserJet High-Yield Toner Cartridges (Black)",
+        "hsn_sac": "844399",
+        "quantity": 10.0,
+        "unit": "Pack",
+        "unit_price": 6426.93,
+        "line_total": 64269.3
+      }
+    ],
+    "subtotal": 1090530.85,
+    "tax_rate": 0.18,
+    "discount": 0.0,
+    "shipping": 0.0,
+    "grand_total": 1286826.4,
+    "amount_in_words": "Twelve Lakh Eighty-Six Thousand Eight Hundred And Twenty-Six Rupees and Forty Paise Only",
+    "bank_name": "Axis Bank",
+    "account_number": "84396162718",
+    "ifsc": "UTIB0002853",
+    "template_id": "modern_minimal"
+  },
+  "ground_truth": {
+    "fields": {
+      "vendor.name": {
+        "value": "Zenith Technologies LLP",
+        "raw": "Zenith Technologies LLP",
+        "bbox": [
+          0.0672,
+          0.0261,
+          0.4268,
+          0.0523
+        ],
+        "page": 0
+      },
+      "vendor.gstin": {
+        "value": "18PGUCR2544T1ZH",
+        "raw": "GSTIN: 18PGUCR2544T1ZH",
+        "bbox": [
+          0.0672,
+          0.0998,
+          0.2655,
+          0.1152
+        ],
+        "page": 0
+      },
+      "vendor.address": {
+        "value": "Plot 106, Sector 23, Industrial Area, Assam",
+        "raw": "Plot 106, Sector 23, Industrial Area, Assam",
+        "bbox": [
+          0.0672,
+          0.1176,
+          0.3242,
+          0.1318
+        ],
+        "page": 0
+      },
+      "invoice_number": {
+        "value": "ZT/26-27/002",
+        "raw": "Invoice #: ZT/26-27/002",
+        "bbox": [
+          0.7498,
+          0.0986,
+          0.9328,
+          0.1152
+        ],
+        "page": 0
+      },
+      "invoice_date": {
+        "value": "2026-08-04",
+        "raw": "Date: 2026-08-04",
+        "bbox": [
+          0.8151,
+          0.1164,
+          0.9328,
+          0.1318
+        ],
+        "page": 0
+      },
+      "due_date": {
+        "value": "2026-08-19",
+        "raw": "Due: 2026-08-19",
+        "bbox": [
+          0.8194,
+          0.133,
+          0.9328,
+          0.1485
+        ],
+        "page": 0
+      },
+      "buyer.name": {
+        "value": "Trident Retail & Consumer Goods LLP",
+        "raw": "Trident Retail & Consumer Goods LLP",
+        "bbox": [
+          0.0672,
+          0.1722,
+          0.3734,
+          0.1889
+        ],
+        "page": 0
+      },
+      "buyer.gstin": {
+        "value": "33AABCT3456J1ZC",
+        "raw": "GSTIN: 33AABCT3456J1ZC",
+        "bbox": [
+          0.0672,
+          0.1889,
+          0.2375,
+          0.2031
+        ],
+        "page": 0
+      },
+      "subtotal": {
+        "value": 1090530.85,
+        "raw": "Rs. 10,90,530.85",
+        "bbox": [
+          0.8,
+          0.3575,
+          0.916,
+          0.373
+        ],
+        "page": 0
+      },
+      "tax.total": {
+        "value": 196295.55,
+        "raw": "Rs. 1,96,295.55",
+        "bbox": [
+          0.8093,
+          0.3742,
+          0.916,
+          0.3896
+        ],
+        "page": 0
+      },
+      "grand_total": {
+        "value": 1286826.4,
+        "raw": "Rs. 12,86,826.40",
+        "bbox": [
+          0.7613,
+          0.3967,
+          0.916,
+          0.4157
+        ],
+        "page": 0
+      },
+      "amount_in_words": {
+        "value": "Twelve Lakh Eighty-Six Thousand Eight Hundred And Twenty-Six Rupees and Forty Paise Only",
+        "raw": "Twelve Lakh Eighty-Six Thousand Eight Hundred And Twenty-Six Rupees and Forty Paise Only",
+        "bbox": [
+          0.0672,
+          0.4252,
+          0.6371,
+          0.4395
+        ],
+        "page": 0
+      },
+      "payment.account_number": {
+        "value": "84396162718",
+        "raw": "Pay to: Axis Bank A/C 84396162718 (UTIB0002853)",
+        "bbox": [
+          0.0672,
+          0.449,
+          0.3802,
+          0.4632
+        ],
+        "page": 0
+      }
+    },
+    "items": [
+      {
+        "description": "Armed Security Personnel Deployment (8hr Shift)",
+        "quantity": 10.0,
+        "unit_price": 24216.16,
+        "line_total": 242161.6,
+        "bbox": [
+          0.0672,
+          0.2471,
+          0.9328,
+          0.2661
+        ]
+      },
+      {
+        "description": "Network Security Audit & Penetration Testing",
+        "quantity": 3.0,
+        "unit_price": 89454.65,
+        "line_total": 268363.95,
+        "bbox": [
+          0.0672,
+          0.2684,
+          0.9328,
+          0.2874
+        ]
+      },
+      {
+        "description": "Legal Compliance & Regulatory Advisory Retainer",
+        "quantity": 10.0,
+        "unit_price": 51573.6,
+        "line_total": 515736.0,
+        "bbox": [
+          0.0672,
+          0.2898,
+          0.9328,
+          0.3088
+        ]
+      },
+      {
+        "description": "LaserJet High-Yield Toner Cartridges (Black)",
+        "quantity": 10.0,
+        "unit_price": 6426.93,
+        "line_total": 64269.3,
+        "bbox": [
+          0.0672,
+          0.3112,
+          0.9328,
+          0.3302
+        ]
+      }
+    ],
+    "page_width": 595.2755905511812,
+    "page_height": 841.8897637795277
+  }
+}

@@ -1,0 +1,348 @@
+{
+  "id": "GEN_00001",
+  "label": "genuine",
+  "fraud_types": [],
+  "mode": "clean",
+  "is_scanned": true,
+  "spec": {
+    "invoice_number": "TAX/26-27/00001",
+    "invoice_date": "2026-06-02",
+    "due_date": "2026-07-02",
+    "vendor_id": "VND-001",
+    "vendor_name": "Apex Solutions Pvt Ltd",
+    "vendor_gstin": "15LJGCL9809B1ZR",
+    "vendor_pan": "LJGCL9809B",
+    "vendor_address": "Plot 366, Sector 19, Industrial Area, Mizoram",
+    "vendor_email": "billing@apex.co.in",
+    "vendor_phone": "+91 8880583531",
+    "vendor_state_code": "15",
+    "buyer_name": "Pragati Commercial Real Estate Ltd",
+    "buyer_gstin": "09AABCP0123N1ZH",
+    "buyer_address": "Noida Expressway, Sector 125, Noida, UP",
+    "buyer_state_code": "09",
+    "currency": "INR",
+    "items": [
+      {
+        "description": "High-Speed Dedicated Fiber Internet (1 Gbps)",
+        "hsn_sac": "998422",
+        "quantity": 1.0,
+        "unit": "Month",
+        "unit_price": 20352.13,
+        "line_total": 20352.13
+      },
+      {
+        "description": "Corporate Event Executive Buffet Catering",
+        "hsn_sac": "996331",
+        "quantity": 12.0,
+        "unit": "Pax",
+        "unit_price": 686.11,
+        "line_total": 8233.32
+      },
+      {
+        "description": "Executive Solid Oak Conference Desk",
+        "hsn_sac": "940330",
+        "quantity": 5.0,
+        "unit": "Unit",
+        "unit_price": 33611.94,
+        "line_total": 168059.7
+      },
+      {
+        "description": "Industrial Diesel Generator Maintenance & AMC",
+        "hsn_sac": "998719",
+        "quantity": 1.0,
+        "unit": "Quarter",
+        "unit_price": 18116.88,
+        "line_total": 18116.88
+      },
+      {
+        "description": "Armed Security Personnel Deployment (8hr Shift)",
+        "hsn_sac": "998525",
+        "quantity": 12.0,
+        "unit": "Month",
+        "unit_price": 20228.9,
+        "line_total": 242746.8
+      }
+    ],
+    "subtotal": 457508.83,
+    "tax_rate": 0.18,
+    "discount": 0.0,
+    "shipping": 0.0,
+    "grand_total": 539860.42,
+    "amount_in_words": "Five Lakh Thirty-Nine Thousand Eight Hundred And Sixty Rupees and Forty-Two Paise Only",
+    "bank_name": "Axis Bank",
+    "account_number": "5111510954941348",
+    "ifsc": "UTIB0009066",
+    "template_id": "classic_table"
+  },
+  "ground_truth": {
+    "fields": {
+      "vendor.name": {
+        "value": "Apex Solutions Pvt Ltd",
+        "raw": "Apex Solutions Pvt Ltd",
+        "bbox": [
+          0.0672,
+          0.0725,
+          0.2879,
+          0.0915
+        ],
+        "page": 0
+      },
+      "vendor.address": {
+        "value": "Plot 366, Sector 19, Industrial Area, Mizoram",
+        "raw": "Plot 366, Sector 19, Industrial Area, Mizoram",
+        "bbox": [
+          0.0672,
+          0.0938,
+          0.368,
+          0.1093
+        ],
+        "page": 0
+      },
+      "vendor.gstin": {
+        "value": "15LJGCL9809B1ZR",
+        "raw": "GSTIN: 15LJGCL9809B1ZR",
+        "bbox": [
+          0.0672,
+          0.1117,
+          0.2621,
+          0.1271
+        ],
+        "page": 0
+      },
+      "vendor.pan": {
+        "value": "LJGCL9809B",
+        "raw": "PAN: LJGCL9809B",
+        "bbox": [
+          0.0672,
+          0.1271,
+          0.1974,
+          0.1425
+        ],
+        "page": 0
+      },
+      "vendor.email": {
+        "value": "billing@apex.co.in",
+        "raw": "Email: billing@apex.co.in",
+        "bbox": [
+          0.0672,
+          0.1425,
+          0.2363,
+          0.158
+        ],
+        "page": 0
+      },
+      "invoice_number": {
+        "value": "TAX/26-27/00001",
+        "raw": "TAX/26-27/00001",
+        "bbox": [
+          0.7648,
+          0.076,
+          0.8833,
+          0.0915
+        ],
+        "page": 0
+      },
+      "invoice_date": {
+        "value": "2026-06-02",
+        "raw": "2026-06-02",
+        "bbox": [
+          0.7648,
+          0.0938,
+          0.8421,
+          0.1093
+        ],
+        "page": 0
+      },
+      "due_date": {
+        "value": "2026-07-02",
+        "raw": "2026-07-02",
+        "bbox": [
+          0.7648,
+          0.1117,
+          0.8421,
+          0.1271
+        ],
+        "page": 0
+      },
+      "buyer.name": {
+        "value": "Pragati Commercial Real Estate Ltd",
+        "raw": "Pragati Commercial Real Estate Ltd",
+        "bbox": [
+          0.084,
+          0.1912,
+          0.3678,
+          0.2079
+        ],
+        "page": 0
+      },
+      "buyer.address": {
+        "value": "Noida Expressway, Sector 125, Noida, UP",
+        "raw": "Noida Expressway, Sector 125, Noida, UP",
+        "bbox": [
+          0.084,
+          0.2091,
+          0.3364,
+          0.2233
+        ],
+        "page": 0
+      },
+      "buyer.gstin": {
+        "value": "09AABCP0123N1ZH",
+        "raw": "GSTIN: 09AABCP0123N1ZH",
+        "bbox": [
+          0.084,
+          0.2209,
+          0.261,
+          0.2352
+        ],
+        "page": 0
+      },
+      "subtotal": {
+        "value": 457508.83,
+        "raw": "Rs. 4,57,508.83",
+        "bbox": [
+          0.8168,
+          0.4169,
+          0.9244,
+          0.4324
+        ],
+        "page": 0
+      },
+      "tax.igst": {
+        "value": 82351.59,
+        "raw": "Rs. 82,351.59",
+        "bbox": [
+          0.8303,
+          0.4335,
+          0.9244,
+          0.449
+        ],
+        "page": 0
+      },
+      "grand_total": {
+        "value": 539860.42,
+        "raw": "Rs. 5,39,860.42",
+        "bbox": [
+          0.7998,
+          0.4537,
+          0.9194,
+          0.4704
+        ],
+        "page": 0
+      },
+      "amount_in_words": {
+        "value": "Five Lakh Thirty-Nine Thousand Eight Hundred And Sixty Rupees and Forty-Two Paise Only",
+        "raw": "Amount in Words: Five Lakh Thirty-Nine Thousand Eight Hundred And Sixty Rupees and Forty-Two Paise Only",
+        "bbox": [
+          0.0672,
+          0.4858,
+          0.7282,
+          0.5001
+        ],
+        "page": 0
+      },
+      "payment.bank_name": {
+        "value": "Axis Bank",
+        "raw": "Bank: Axis Bank",
+        "bbox": [
+          0.0806,
+          0.5238,
+          0.1785,
+          0.5381
+        ],
+        "page": 0
+      },
+      "payment.account_number": {
+        "value": "5111510954941348",
+        "raw": "A/C: 5111510954941348",
+        "bbox": [
+          0.0806,
+          0.5381,
+          0.2315,
+          0.5523
+        ],
+        "page": 0
+      },
+      "payment.ifsc": {
+        "value": "UTIB0009066",
+        "raw": "IFSC: UTIB0009066",
+        "bbox": [
+          0.0806,
+          0.5511,
+          0.2016,
+          0.5654
+        ],
+        "page": 0
+      }
+    },
+    "items": [
+      {
+        "description": "High-Speed Dedicated Fiber Internet (1 Gbps)",
+        "quantity": 1.0,
+        "unit_price": 20352.13,
+        "line_total": 20352.13,
+        "hsn_sac": "998422",
+        "bbox": [
+          0.0672,
+          0.291,
+          0.9328,
+          0.31
+        ]
+      },
+      {
+        "description": "Corporate Event Executive Buffet Catering",
+        "quantity": 12.0,
+        "unit_price": 686.11,
+        "line_total": 8233.32,
+        "hsn_sac": "996331",
+        "bbox": [
+          0.0672,
+          0.3124,
+          0.9328,
+          0.3314
+        ]
+      },
+      {
+        "description": "Executive Solid Oak Conference Desk",
+        "quantity": 5.0,
+        "unit_price": 33611.94,
+        "line_total": 168059.7,
+        "hsn_sac": "940330",
+        "bbox": [
+          0.0672,
+          0.3338,
+          0.9328,
+          0.3528
+        ]
+      },
+      {
+        "description": "Industrial Diesel Generator Maintenance & AMC",
+        "quantity": 1.0,
+        "unit_price": 18116.88,
+        "line_total": 18116.88,
+        "hsn_sac": "998719",
+        "bbox": [
+          0.0672,
+          0.3552,
+          0.9328,
+          0.3742
+        ]
+      },
+      {
+        "description": "Armed Security Personnel Deployment (8hr Shift)",
+        "quantity": 12.0,
+        "unit_price": 20228.9,
+        "line_total": 242746.8,
+        "hsn_sac": "998525",
+        "bbox": [
+          0.0672,
+          0.3765,
+          0.9328,
+          0.3955
+        ]
+      }
+    ],
+    "page_width": 595.2755905511812,
+    "page_height": 841.8897637795277
+  }
+}

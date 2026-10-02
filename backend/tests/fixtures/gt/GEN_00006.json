@@ -1,0 +1,348 @@
+{
+  "id": "GEN_00006",
+  "label": "genuine",
+  "fraud_types": [],
+  "mode": "clean",
+  "is_scanned": false,
+  "spec": {
+    "invoice_number": "INV-2026-0006",
+    "invoice_date": "2026-03-04",
+    "due_date": "2026-03-11",
+    "vendor_id": "VND-006",
+    "vendor_name": "Trident Logistics & Transport",
+    "vendor_gstin": "22PYHCK9153B1Z1",
+    "vendor_pan": "PYHCK9153B",
+    "vendor_address": "Plot 175, Sector 62, Industrial Area, Chhattisgarh",
+    "vendor_email": "billing@trident.co.in",
+    "vendor_phone": "+91 8277332790",
+    "vendor_state_code": "22",
+    "buyer_name": "Sterling Health & Pharma Labs",
+    "buyer_gstin": "19AABCS6789M1ZF",
+    "buyer_address": "Sector V, Salt Lake, Kolkata, WB",
+    "buyer_state_code": "19",
+    "currency": "INR",
+    "items": [
+      {
+        "description": "Commercial Facility Deep Cleaning & Sanitization",
+        "hsn_sac": "998533",
+        "quantity": 12.0,
+        "unit": "Visit",
+        "unit_price": 15042.31,
+        "line_total": 180507.72
+      },
+      {
+        "description": "High-Speed Dedicated Fiber Internet (1 Gbps)",
+        "hsn_sac": "998422",
+        "quantity": 12.0,
+        "unit": "Month",
+        "unit_price": 18636.76,
+        "line_total": 223641.12
+      },
+      {
+        "description": "Corporate Event Executive Buffet Catering",
+        "hsn_sac": "996331",
+        "quantity": 10.0,
+        "unit": "Pax",
+        "unit_price": 593.55,
+        "line_total": 5935.5
+      },
+      {
+        "description": "Express Inter-City Air Freight Logistics",
+        "hsn_sac": "996511",
+        "quantity": 1.0,
+        "unit": "Shipment",
+        "unit_price": 5382.45,
+        "line_total": 5382.45
+      },
+      {
+        "description": "Server Rack Enclosure 42U with PDU",
+        "hsn_sac": "853710",
+        "quantity": 3.0,
+        "unit": "Unit",
+        "unit_price": 40808.59,
+        "line_total": 122425.77
+      }
+    ],
+    "subtotal": 537892.56,
+    "tax_rate": 0.05,
+    "discount": 0.0,
+    "shipping": 0.0,
+    "grand_total": 564787.19,
+    "amount_in_words": "Five Lakh Sixty-Four Thousand Seven Hundred And Eighty-Seven Rupees and Nineteen Paise Only",
+    "bank_name": "Punjab National Bank",
+    "account_number": "47396304647646",
+    "ifsc": "PUNB0009065",
+    "template_id": "classic_table"
+  },
+  "ground_truth": {
+    "fields": {
+      "vendor.name": {
+        "value": "Trident Logistics & Transport",
+        "raw": "Trident Logistics & Transport",
+        "bbox": [
+          0.0672,
+          0.0725,
+          0.3495,
+          0.0915
+        ],
+        "page": 0
+      },
+      "vendor.address": {
+        "value": "Plot 175, Sector 62, Industrial Area, Chhattisgarh",
+        "raw": "Plot 175, Sector 62, Industrial Area, Chhattisgarh",
+        "bbox": [
+          0.0672,
+          0.0938,
+          0.3958,
+          0.1093
+        ],
+        "page": 0
+      },
+      "vendor.gstin": {
+        "value": "22PYHCK9153B1Z1",
+        "raw": "GSTIN: 22PYHCK9153B1Z1",
+        "bbox": [
+          0.0672,
+          0.1117,
+          0.263,
+          0.1271
+        ],
+        "page": 0
+      },
+      "vendor.pan": {
+        "value": "PYHCK9153B",
+        "raw": "PAN: PYHCK9153B",
+        "bbox": [
+          0.0672,
+          0.1271,
+          0.2025,
+          0.1425
+        ],
+        "page": 0
+      },
+      "vendor.email": {
+        "value": "billing@trident.co.in",
+        "raw": "Email: billing@trident.co.in",
+        "bbox": [
+          0.0672,
+          0.1425,
+          0.2455,
+          0.158
+        ],
+        "page": 0
+      },
+      "invoice_number": {
+        "value": "INV-2026-0006",
+        "raw": "INV-2026-0006",
+        "bbox": [
+          0.7648,
+          0.076,
+          0.8673,
+          0.0915
+        ],
+        "page": 0
+      },
+      "invoice_date": {
+        "value": "2026-03-04",
+        "raw": "2026-03-04",
+        "bbox": [
+          0.7648,
+          0.0938,
+          0.8421,
+          0.1093
+        ],
+        "page": 0
+      },
+      "due_date": {
+        "value": "2026-03-11",
+        "raw": "2026-03-11",
+        "bbox": [
+          0.7648,
+          0.1117,
+          0.8421,
+          0.1271
+        ],
+        "page": 0
+      },
+      "buyer.name": {
+        "value": "Sterling Health & Pharma Labs",
+        "raw": "Sterling Health & Pharma Labs",
+        "bbox": [
+          0.084,
+          0.1912,
+          0.3295,
+          0.2079
+        ],
+        "page": 0
+      },
+      "buyer.address": {
+        "value": "Sector V, Salt Lake, Kolkata, WB",
+        "raw": "Sector V, Salt Lake, Kolkata, WB",
+        "bbox": [
+          0.084,
+          0.2091,
+          0.2804,
+          0.2233
+        ],
+        "page": 0
+      },
+      "buyer.gstin": {
+        "value": "19AABCS6789M1ZF",
+        "raw": "GSTIN: 19AABCS6789M1ZF",
+        "bbox": [
+          0.084,
+          0.2209,
+          0.261,
+          0.2352
+        ],
+        "page": 0
+      },
+      "subtotal": {
+        "value": 537892.56,
+        "raw": "Rs. 5,37,892.56",
+        "bbox": [
+          0.8168,
+          0.4169,
+          0.9244,
+          0.4324
+        ],
+        "page": 0
+      },
+      "tax.igst": {
+        "value": 26894.63,
+        "raw": "Rs. 26,894.63",
+        "bbox": [
+          0.8303,
+          0.4335,
+          0.9244,
+          0.449
+        ],
+        "page": 0
+      },
+      "grand_total": {
+        "value": 564787.19,
+        "raw": "Rs. 5,64,787.19",
+        "bbox": [
+          0.7998,
+          0.4537,
+          0.9194,
+          0.4704
+        ],
+        "page": 0
+      },
+      "amount_in_words": {
+        "value": "Five Lakh Sixty-Four Thousand Seven Hundred And Eighty-Seven Rupees and Nineteen Paise Only",
+        "raw": "Amount in Words: Five Lakh Sixty-Four Thousand Seven Hundred And Eighty-Seven Rupees and Nineteen Paise Only",
+        "bbox": [
+          0.0672,
+          0.4858,
+          0.7753,
+          0.5001
+        ],
+        "page": 0
+      },
+      "payment.bank_name": {
+        "value": "Punjab National Bank",
+        "raw": "Bank: Punjab National Bank",
+        "bbox": [
+          0.0806,
+          0.5238,
+          0.248,
+          0.5381
+        ],
+        "page": 0
+      },
+      "payment.account_number": {
+        "value": "47396304647646",
+        "raw": "A/C: 47396304647646",
+        "bbox": [
+          0.0806,
+          0.5381,
+          0.2166,
+          0.5523
+        ],
+        "page": 0
+      },
+      "payment.ifsc": {
+        "value": "PUNB0009065",
+        "raw": "IFSC: PUNB0009065",
+        "bbox": [
+          0.0806,
+          0.5511,
+          0.2084,
+          0.5654
+        ],
+        "page": 0
+      }
+    },
+    "items": [
+      {
+        "description": "Commercial Facility Deep Cleaning & Sanitization",
+        "quantity": 12.0,
+        "unit_price": 15042.31,
+        "line_total": 180507.72,
+        "hsn_sac": "998533",
+        "bbox": [
+          0.0672,
+          0.291,
+          0.9328,
+          0.31
+        ]
+      },
+      {
+        "description": "High-Speed Dedicated Fiber Internet (1 Gbps)",
+        "quantity": 12.0,
+        "unit_price": 18636.76,
+        "line_total": 223641.12,
+        "hsn_sac": "998422",
+        "bbox": [
+          0.0672,
+          0.3124,
+          0.9328,
+          0.3314
+        ]
+      },
+      {
+        "description": "Corporate Event Executive Buffet Catering",
+        "quantity": 10.0,
+        "unit_price": 593.55,
+        "line_total": 5935.5,
+        "hsn_sac": "996331",
+        "bbox": [
+          0.0672,
+          0.3338,
+          0.9328,
+          0.3528
+        ]
+      },
+      {
+        "description": "Express Inter-City Air Freight Logistics",
+        "quantity": 1.0,
+        "unit_price": 5382.45,
+        "line_total": 5382.45,
+        "hsn_sac": "996511",
+        "bbox": [
+          0.0672,
+          0.3552,
+          0.9328,
+          0.3742
+        ]
+      },
+      {
+        "description": "Server Rack Enclosure 42U with PDU",
+        "quantity": 3.0,
+        "unit_price": 40808.59,
+        "line_total": 122425.77,
+        "hsn_sac": "853710",
+        "bbox": [
+          0.0672,
+          0.3765,
+          0.9328,
+          0.3955
+        ]
+      }
+    ],
+    "page_width": 595.2755905511812,
+    "page_height": 841.8897637795277
+  }
+}
