@@ -1,0 +1,252 @@
+{
+  "id": "GEN_00003",
+  "label": "genuine",
+  "fraud_types": [],
+  "mode": "clean",
+  "is_scanned": false,
+  "spec": {
+    "invoice_number": "BE/26-27/003",
+    "invoice_date": "2026-05-10",
+    "due_date": "2026-05-25",
+    "vendor_id": "VND-003",
+    "vendor_name": "Bharat Enterprise Solutions",
+    "vendor_gstin": "01ZQGCJ1175F1ZF",
+    "vendor_pan": "ZQGCJ1175F",
+    "vendor_address": "Plot 532, Sector 56, Industrial Area, Jammu and Kashmir",
+    "vendor_email": "billing@bharat.co.in",
+    "vendor_phone": "+91 7448578003",
+    "vendor_state_code": "01",
+    "buyer_name": "Pragati Commercial Real Estate Ltd",
+    "buyer_gstin": "09AABCP0123N1ZH",
+    "buyer_address": "Noida Expressway, Sector 125, Noida, UP",
+    "buyer_state_code": "09",
+    "currency": "INR",
+    "items": [
+      {
+        "description": "Armed Security Personnel Deployment (8hr Shift)",
+        "hsn_sac": "998525",
+        "quantity": 2.0,
+        "unit": "Month",
+        "unit_price": 19860.03,
+        "line_total": 39720.06
+      },
+      {
+        "description": "Commercial Facility Deep Cleaning & Sanitization",
+        "hsn_sac": "998533",
+        "quantity": 3.0,
+        "unit": "Visit",
+        "unit_price": 13841.07,
+        "line_total": 41523.21
+      }
+    ],
+    "subtotal": 81243.27,
+    "tax_rate": 0.05,
+    "discount": 0.0,
+    "shipping": 0.0,
+    "grand_total": 85305.43,
+    "amount_in_words": "Eighty-Five Thousand Three Hundred And Five Rupees and Forty-Three Paise Only",
+    "bank_name": "Punjab National Bank",
+    "account_number": "7176667598589809",
+    "ifsc": "PUNB0002065",
+    "template_id": "gst_tax_invoice"
+  },
+  "ground_truth": {
+    "fields": {
+      "vendor.name": {
+        "value": "Bharat Enterprise Solutions",
+        "raw": "Bharat Enterprise Solutions",
+        "bbox": [
+          0.0672,
+          0.0915,
+          0.3116,
+          0.1093
+        ],
+        "page": 0
+      },
+      "vendor.address": {
+        "value": "Plot 532, Sector 56, Industrial Area, Jammu and Kashmir",
+        "raw": "Plot 532, Sector 56, Industrial Area, Jammu and Kashmir",
+        "bbox": [
+          0.0672,
+          0.1117,
+          0.4063,
+          0.1259
+        ],
+        "page": 0
+      },
+      "vendor.gstin": {
+        "value": "01ZQGCJ1175F1ZF",
+        "raw": "GSTIN/UIN: 01ZQGCJ1175F1ZF",
+        "bbox": [
+          0.0672,
+          0.1283,
+          0.2666,
+          0.1425
+        ],
+        "page": 0
+      },
+      "vendor.state_code": {
+        "value": "01",
+        "raw": "State Code: 01",
+        "bbox": [
+          0.0672,
+          0.1425,
+          0.1568,
+          0.1568
+        ],
+        "page": 0
+      },
+      "invoice_number": {
+        "value": "BE/26-27/003",
+        "raw": "Invoice No: BE/26-27/003",
+        "bbox": [
+          0.5168,
+          0.0938,
+          0.6958,
+          0.1093
+        ],
+        "page": 0
+      },
+      "invoice_date": {
+        "value": "2026-05-10",
+        "raw": "Date: 2026-05-10",
+        "bbox": [
+          0.5168,
+          0.1117,
+          0.6214,
+          0.1259
+        ],
+        "page": 0
+      },
+      "due_date": {
+        "value": "2026-05-25",
+        "raw": "Payment Due: 2026-05-25",
+        "bbox": [
+          0.5168,
+          0.1283,
+          0.6744,
+          0.1425
+        ],
+        "page": 0
+      },
+      "buyer.name": {
+        "value": "Pragati Commercial Real Estate Ltd",
+        "raw": "Bill To: Pragati Commercial Real Estate Ltd",
+        "bbox": [
+          0.0672,
+          0.177,
+          0.3781,
+          0.1924
+        ],
+        "page": 0
+      },
+      "buyer.address": {
+        "value": "Noida Expressway, Sector 125, Noida, UP",
+        "raw": "Noida Expressway, Sector 125, Noida, UP",
+        "bbox": [
+          0.0672,
+          0.1924,
+          0.3197,
+          0.2067
+        ],
+        "page": 0
+      },
+      "buyer.gstin": {
+        "value": "09AABCP0123N1ZH",
+        "raw": "GSTIN: 09AABCP0123N1ZH",
+        "bbox": [
+          0.0672,
+          0.2067,
+          0.2442,
+          0.2209
+        ],
+        "page": 0
+      },
+      "subtotal": {
+        "value": 81243.27,
+        "raw": "Rs. 81,243.27",
+        "bbox": [
+          0.8568,
+          0.3183,
+          0.9412,
+          0.3326
+        ],
+        "page": 0
+      },
+      "tax.igst": {
+        "value": 4062.16,
+        "raw": "Rs. 4,062.16",
+        "bbox": [
+          0.865,
+          0.335,
+          0.9412,
+          0.3492
+        ],
+        "page": 0
+      },
+      "grand_total": {
+        "value": 85305.43,
+        "raw": "Rs. 85,305.43",
+        "bbox": [
+          0.8357,
+          0.354,
+          0.9412,
+          0.3706
+        ],
+        "page": 0
+      },
+      "amount_in_words": {
+        "value": "Eighty-Five Thousand Three Hundred And Five Rupees and Forty-Three Paise Only",
+        "raw": "Amount in Words: Eighty-Five Thousand Three Hundred And Five Rupees and Forty-Three Paise Only",
+        "bbox": [
+          0.0672,
+          0.386,
+          0.6782,
+          0.4003
+        ],
+        "page": 0
+      },
+      "payment.account_number": {
+        "value": "7176667598589809",
+        "raw": "Bank Account: Punjab National Bank A/c No: 7176667598589809 IFSC: PUNB0002065",
+        "bbox": [
+          0.0672,
+          0.4098,
+          0.5894,
+          0.424
+        ],
+        "page": 0
+      }
+    },
+    "items": [
+      {
+        "description": "Armed Security Personnel Deployment (8hr Shift)",
+        "quantity": 2.0,
+        "unit_price": 19860.03,
+        "line_total": 39720.06,
+        "hsn_sac": "998525",
+        "bbox": [
+          0.0504,
+          0.2589,
+          0.9496,
+          0.2756
+        ]
+      },
+      {
+        "description": "Commercial Facility Deep Cleaning & Sanitization",
+        "quantity": 3.0,
+        "unit_price": 13841.07,
+        "line_total": 41523.21,
+        "hsn_sac": "998533",
+        "bbox": [
+          0.0504,
+          0.2779,
+          0.9496,
+          0.2946
+        ]
+      }
+    ],
+    "page_width": 595.2755905511812,
+    "page_height": 841.8897637795277
+  }
+}

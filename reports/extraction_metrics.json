@@ -1,0 +1,110 @@
+{
+  "text_layer": {
+    "invoice_number": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "invoice_date": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "vendor.name": {
+      "precision": 1.0,
+      "recall": 0.8571,
+      "f1": 0.9231
+    },
+    "vendor.gstin": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "subtotal": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "tax.total": {
+      "precision": 1.0,
+      "recall": 0.9196,
+      "f1": 0.9581
+    },
+    "grand_total": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  },
+  "scanned_ocr": {
+    "invoice_number": {
+      "precision": 1.0,
+      "recall": 0.9911,
+      "f1": 0.9955
+    },
+    "invoice_date": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "vendor.name": {
+      "precision": 1.0,
+      "recall": 0.7054,
+      "f1": 0.8272
+    },
+    "vendor.gstin": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "subtotal": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "tax.total": {
+      "precision": 1.0,
+      "recall": 0.9196,
+      "f1": 0.9581
+    },
+    "grand_total": {
+      "precision": 1.0,
+      "recall": 0.6429,
+      "f1": 0.7826
+    }
+  },
+  "overall": {
+    "text_layer": {
+      "precision": 1.0,
+      "recall": 0.9681,
+      "f1": 0.9838
+    },
+    "scanned_ocr": {
+      "precision": 1.0,
+      "recall": 0.8941,
+      "f1": 0.9441
+    }
+  },
+  "per_template": {
+    "two_column": {
+      "accuracy": 0.9955,
+      "total_evals": 224
+    },
+    "compact_thermal": {
+      "accuracy": 0.9821,
+      "total_evals": 224
+    },
+    "classic_table": {
+      "accuracy": 1.0,
+      "total_evals": 112
+    },
+    "modern_minimal": {
+      "accuracy": 0.9911,
+      "total_evals": 112
+    },
+    "gst_tax_invoice": {
+      "accuracy": 0.8304,
+      "total_evals": 112
+    }
+  }
+}

@@ -1,0 +1,253 @@
+{
+  "id": "TAM_00005",
+  "label": "tampered",
+  "fraud_types": [
+    "TAX_AMOUNT_MISMATCH",
+    "GRAND_TOTAL_MISMATCH"
+  ],
+  "mode": "re-render",
+  "affected_fields": [
+    "tax.total",
+    "grand_total"
+  ],
+  "is_scanned": true,
+  "spec": {
+    "invoice_number": "INV-2026-0504",
+    "invoice_date": "2026-04-22",
+    "due_date": "2026-04-29",
+    "vendor_id": "VND-005",
+    "vendor_name": "Vistara Digital Systems",
+    "vendor_gstin": "20HRLCX7157B1ZA",
+    "vendor_pan": "HRLCX7157B",
+    "vendor_address": "Plot 81, Sector 12, Industrial Area, Jharkhand",
+    "vendor_email": "billing@vistara.co.in",
+    "vendor_phone": "+91 9987670782",
+    "vendor_state_code": "20",
+    "buyer_name": "Trident Retail & Consumer Goods LLP",
+    "buyer_gstin": "33AABCT3456J1ZC",
+    "buyer_address": "Mount Road, Anna Salai, Chennai, TN",
+    "buyer_state_code": "33",
+    "currency": "INR",
+    "items": [
+      {
+        "description": "Commercial Facility Deep Cleaning & Sanitization",
+        "hsn_sac": "998533",
+        "quantity": 3.0,
+        "unit": "Visit",
+        "unit_price": 16367.23,
+        "line_total": 49101.69
+      },
+      {
+        "description": "Cloud Infrastructure Compute (AWS/Azure)",
+        "hsn_sac": "998313",
+        "quantity": 5.0,
+        "unit": "Month",
+        "unit_price": 23094.56,
+        "line_total": 115472.8
+      },
+      {
+        "description": "Server Rack Enclosure 42U with PDU",
+        "hsn_sac": "853710",
+        "quantity": 10.0,
+        "unit": "Unit",
+        "unit_price": 41858.86,
+        "line_total": 418588.6
+      },
+      {
+        "description": "Armed Security Personnel Deployment (8hr Shift)",
+        "hsn_sac": "998525",
+        "quantity": 12.0,
+        "unit": "Month",
+        "unit_price": 23291.3,
+        "line_total": 279495.6
+      }
+    ],
+    "subtotal": 862658.69,
+    "tax_rate": 0.05,
+    "discount": 0.0,
+    "shipping": 0.0,
+    "grand_total": 908241.62,
+    "amount_in_words": "Nine Lakh Five Thousand Seven Hundred And Ninety-One Rupees and Sixty-Two Paise Only",
+    "bank_name": "HDFC Bank",
+    "account_number": "32675406741504",
+    "ifsc": "HDFC0003364",
+    "template_id": "compact_thermal"
+  },
+  "ground_truth": {
+    "fields": {
+      "vendor.name": {
+        "value": "Vistara Digital Systems",
+        "raw": "Vistara Digital Systems",
+        "bbox": [
+          0.3699,
+          0.0344,
+          0.6301,
+          0.0558
+        ],
+        "page": 0
+      },
+      "vendor.address": {
+        "value": "Plot 81, Sector 12, Industrial Area, Jharkhand",
+        "raw": "Plot 81, Sector 12, Industrial Area, Jharkhand",
+        "bbox": [
+          0.3644,
+          0.0594,
+          0.6356,
+          0.0736
+        ],
+        "page": 0
+      },
+      "vendor.gstin": {
+        "value": "20HRLCX7157B1ZA",
+        "raw": "GSTIN: 20HRLCX7157B1ZA",
+        "bbox": [
+          0.4137,
+          0.0736,
+          0.5863,
+          0.0879
+        ],
+        "page": 0
+      },
+      "invoice_number": {
+        "value": "INV-2026-0504",
+        "raw": "INV: INV-2026-0504",
+        "bbox": [
+          0.0756,
+          0.1069,
+          0.1973,
+          0.1212
+        ],
+        "page": 0
+      },
+      "invoice_date": {
+        "value": "2026-04-22",
+        "raw": "DATE: 2026-04-22",
+        "bbox": [
+          0.8124,
+          0.1069,
+          0.9244,
+          0.1212
+        ],
+        "page": 0
+      },
+      "buyer.name": {
+        "value": "Trident Retail & Consumer Goods LLP",
+        "raw": "CUST: Trident Retail & Consumer Goods LLP",
+        "bbox": [
+          0.0756,
+          0.1235,
+          0.3489,
+          0.1378
+        ],
+        "page": 0
+      },
+      "buyer.gstin": {
+        "value": "33AABCT3456J1ZC",
+        "raw": "CUST GST: 33AABCT3456J1ZC",
+        "bbox": [
+          0.7272,
+          0.1235,
+          0.9244,
+          0.1378
+        ],
+        "page": 0
+      },
+      "subtotal": {
+        "value": 862658.69,
+        "raw": "SUBTOTAL: Rs. 8,62,658.69",
+        "bbox": [
+          0.7511,
+          0.2566,
+          0.9244,
+          0.2708
+        ],
+        "page": 0
+      },
+      "tax.total": {
+        "value": 43132.93,
+        "raw": "TAX (5%): Rs. 43,132.93",
+        "bbox": [
+          0.775,
+          0.2708,
+          0.9244,
+          0.2851
+        ],
+        "page": 0
+      },
+      "grand_total": {
+        "value": 908241.62,
+        "raw": "TOTAL: Rs. 9,08,241.62",
+        "bbox": [
+          0.7386,
+          0.2874,
+          0.9244,
+          0.3041
+        ],
+        "page": 0
+      },
+      "payment.account_number": {
+        "value": "32675406741504",
+        "raw": "Bank: HDFC Bank A/C 32675406741504",
+        "bbox": [
+          0.0756,
+          0.3195,
+          0.3199,
+          0.3338
+        ],
+        "page": 0
+      }
+    },
+    "items": [
+      {
+        "description": "Commercial Facility Deep Cleaning & Sanitization",
+        "quantity": 3.0,
+        "unit_price": 16367.23,
+        "line_total": 49101.69,
+        "bbox": [
+          0.0672,
+          0.1687,
+          0.9328,
+          0.1829
+        ]
+      },
+      {
+        "description": "Cloud Infrastructure Compute (AWS/Azure)",
+        "quantity": 5.0,
+        "unit_price": 23094.56,
+        "line_total": 115472.8,
+        "bbox": [
+          0.0672,
+          0.1853,
+          0.9328,
+          0.1996
+        ]
+      },
+      {
+        "description": "Server Rack Enclosure 42U with PDU",
+        "quantity": 10.0,
+        "unit_price": 41858.86,
+        "line_total": 418588.6,
+        "bbox": [
+          0.0672,
+          0.2019,
+          0.9328,
+          0.2162
+        ]
+      },
+      {
+        "description": "Armed Security Personnel Deployment (8hr Shift)",
+        "quantity": 12.0,
+        "unit_price": 23291.3,
+        "line_total": 279495.6,
+        "bbox": [
+          0.0672,
+          0.2186,
+          0.9328,
+          0.2328
+        ]
+      }
+    ],
+    "page_width": 595.2755905511812,
+    "page_height": 841.8897637795277
+  }
+}

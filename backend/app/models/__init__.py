@@ -1,0 +1,33 @@
+from backend.app.models.entities import (
+    AuditEvent,
+    Base,
+    Batch,
+    ExtractionEdit,
+    Invoice,
+    InvoiceDocument,
+    InvoiceEmbedding,
+    InvoiceFinding,
+    InvoiceItem,
+    InvoiceToken,
+    RiskScoreRecord,
+    Setting,
+    Vendor,
+    VendorAccount,
+)
+
+__all__ = [
+    "Base",
+    "Vendor",
+    "VendorAccount",
+    "Invoice",
+    "InvoiceItem",
+    "InvoiceDocument",
+    "InvoiceToken",
+    "InvoiceEmbedding",
+    "ExtractionEdit",
+    "InvoiceFinding",
+    "RiskScoreRecord",
+    "AuditEvent",
+    "Setting",
+    "Batch",
+]

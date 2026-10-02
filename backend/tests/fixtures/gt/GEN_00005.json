@@ -1,0 +1,246 @@
+{
+  "id": "GEN_00005",
+  "label": "genuine",
+  "fraud_types": [],
+  "mode": "clean",
+  "is_scanned": true,
+  "spec": {
+    "invoice_number": "INV-2025-0005",
+    "invoice_date": "2025-12-14",
+    "due_date": "2025-12-21",
+    "vendor_id": "VND-005",
+    "vendor_name": "Vistara Digital Systems",
+    "vendor_gstin": "20HRLCX7157B1ZA",
+    "vendor_pan": "HRLCX7157B",
+    "vendor_address": "Plot 81, Sector 12, Industrial Area, Jharkhand",
+    "vendor_email": "billing@vistara.co.in",
+    "vendor_phone": "+91 9987670782",
+    "vendor_state_code": "20",
+    "buyer_name": "Nova Telecom & Infrastructure Ltd",
+    "buyer_gstin": "24AABCN2345L1ZJ",
+    "buyer_address": "SG Highway, Prahlad Nagar, Ahmedabad, GJ",
+    "buyer_state_code": "24",
+    "currency": "INR",
+    "items": [
+      {
+        "description": "Ergonomic Mesh Office Chairs",
+        "hsn_sac": "940310",
+        "quantity": 10.0,
+        "unit": "Unit",
+        "unit_price": 9422.21,
+        "line_total": 94222.1
+      },
+      {
+        "description": "Enterprise SaaS Software License (per seat)",
+        "hsn_sac": "997331",
+        "quantity": 1.0,
+        "unit": "Seat",
+        "unit_price": 4057.01,
+        "line_total": 4057.01
+      },
+      {
+        "description": "Network Security Audit & Penetration Testing",
+        "hsn_sac": "998311",
+        "quantity": 5.0,
+        "unit": "Service",
+        "unit_price": 88964.21,
+        "line_total": 444821.05
+      },
+      {
+        "description": "Creative Digital Advertising & Media Campaign",
+        "hsn_sac": "998361",
+        "quantity": 3.0,
+        "unit": "Campaign",
+        "unit_price": 37163.2,
+        "line_total": 111489.6
+      }
+    ],
+    "subtotal": 654589.76,
+    "tax_rate": 0.05,
+    "discount": 0.0,
+    "shipping": 0.0,
+    "grand_total": 687319.25,
+    "amount_in_words": "Six Lakh Eighty-Seven Thousand Three Hundred And Nineteen Rupees and Twenty-Five Paise Only",
+    "bank_name": "HDFC Bank",
+    "account_number": "32675406741504",
+    "ifsc": "HDFC0003364",
+    "template_id": "compact_thermal"
+  },
+  "ground_truth": {
+    "fields": {
+      "vendor.name": {
+        "value": "Vistara Digital Systems",
+        "raw": "Vistara Digital Systems",
+        "bbox": [
+          0.3699,
+          0.0344,
+          0.6301,
+          0.0558
+        ],
+        "page": 0
+      },
+      "vendor.address": {
+        "value": "Plot 81, Sector 12, Industrial Area, Jharkhand",
+        "raw": "Plot 81, Sector 12, Industrial Area, Jharkhand",
+        "bbox": [
+          0.3644,
+          0.0594,
+          0.6356,
+          0.0736
+        ],
+        "page": 0
+      },
+      "vendor.gstin": {
+        "value": "20HRLCX7157B1ZA",
+        "raw": "GSTIN: 20HRLCX7157B1ZA",
+        "bbox": [
+          0.4137,
+          0.0736,
+          0.5863,
+          0.0879
+        ],
+        "page": 0
+      },
+      "invoice_number": {
+        "value": "INV-2025-0005",
+        "raw": "INV: INV-2025-0005",
+        "bbox": [
+          0.0756,
+          0.1069,
+          0.1973,
+          0.1212
+        ],
+        "page": 0
+      },
+      "invoice_date": {
+        "value": "2025-12-14",
+        "raw": "DATE: 2025-12-14",
+        "bbox": [
+          0.8124,
+          0.1069,
+          0.9244,
+          0.1212
+        ],
+        "page": 0
+      },
+      "buyer.name": {
+        "value": "Nova Telecom & Infrastructure Ltd",
+        "raw": "CUST: Nova Telecom & Infrastructure Ltd",
+        "bbox": [
+          0.0756,
+          0.1235,
+          0.3243,
+          0.1378
+        ],
+        "page": 0
+      },
+      "buyer.gstin": {
+        "value": "24AABCN2345L1ZJ",
+        "raw": "CUST GST: 24AABCN2345L1ZJ",
+        "bbox": [
+          0.728,
+          0.1235,
+          0.9244,
+          0.1378
+        ],
+        "page": 0
+      },
+      "subtotal": {
+        "value": 654589.76,
+        "raw": "SUBTOTAL: Rs. 6,54,589.76",
+        "bbox": [
+          0.7511,
+          0.2566,
+          0.9244,
+          0.2708
+        ],
+        "page": 0
+      },
+      "tax.total": {
+        "value": 32729.49,
+        "raw": "TAX (5%): Rs. 32,729.49",
+        "bbox": [
+          0.775,
+          0.2708,
+          0.9244,
+          0.2851
+        ],
+        "page": 0
+      },
+      "grand_total": {
+        "value": 687319.25,
+        "raw": "TOTAL: Rs. 6,87,319.25",
+        "bbox": [
+          0.7386,
+          0.2874,
+          0.9244,
+          0.3041
+        ],
+        "page": 0
+      },
+      "payment.account_number": {
+        "value": "32675406741504",
+        "raw": "Bank: HDFC Bank A/C 32675406741504",
+        "bbox": [
+          0.0756,
+          0.3195,
+          0.3199,
+          0.3338
+        ],
+        "page": 0
+      }
+    },
+    "items": [
+      {
+        "description": "Ergonomic Mesh Office Chairs",
+        "quantity": 10.0,
+        "unit_price": 9422.21,
+        "line_total": 94222.1,
+        "bbox": [
+          0.0672,
+          0.1687,
+          0.9328,
+          0.1829
+        ]
+      },
+      {
+        "description": "Enterprise SaaS Software License (per seat)",
+        "quantity": 1.0,
+        "unit_price": 4057.01,
+        "line_total": 4057.01,
+        "bbox": [
+          0.0672,
+          0.1853,
+          0.9328,
+          0.1996
+        ]
+      },
+      {
+        "description": "Network Security Audit & Penetration Testing",
+        "quantity": 5.0,
+        "unit_price": 88964.21,
+        "line_total": 444821.05,
+        "bbox": [
+          0.0672,
+          0.2019,
+          0.9328,
+          0.2162
+        ]
+      },
+      {
+        "description": "Creative Digital Advertising & Media Campaign",
+        "quantity": 3.0,
+        "unit_price": 37163.2,
+        "line_total": 111489.6,
+        "bbox": [
+          0.0672,
+          0.2186,
+          0.9328,
+          0.2328
+        ]
+      }
+    ],
+    "page_width": 595.2755905511812,
+    "page_height": 841.8897637795277
+  }
+}
