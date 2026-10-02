@@ -65,7 +65,7 @@ Configure the model repository in your backend environment (`.env` or production
 
 ```bash
 # Hugging Face Hub Private/Public Model ID
-LAYOUTLM_MODEL_ID="your-org/invoiceguard-layoutlmv3"
+LAYOUTLM_MODEL_ID="kronos070/LayoutLMv3"
 
 # Hugging Face Access Token (required for private repos or gated models)
 HF_TOKEN="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
