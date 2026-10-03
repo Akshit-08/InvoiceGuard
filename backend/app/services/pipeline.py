@@ -130,5 +130,175 @@ class DocumentPipeline:
 
         return upload_res, extraction_res
 
+    async def analyze_invoice(self, invoice_id: str, db: Session) -> dict:
+        """Run all detection engines, fuse into a risk score, and save to DB."""
+        from backend.app.schemas.contracts import InvoiceData
+        from backend.app.services.engines.base import AnalysisContext
+        from backend.app.services.engines.rules.financial import FinancialRulesEngine
+        from backend.app.services.engines.rules.tax_identity import TaxIdentityRulesEngine
+        from backend.app.services.engines.rules.identifiers import IdentifiersRulesEngine
+        from backend.app.services.engines.duplicate import DuplicateEngine
+        from backend.app.services.engines.vendor import VendorEngine
+        from backend.app.services.engines.bank import BankEngine
+        from backend.app.services.engines.visual.forensics import VisualEngine
+        from backend.app.services.fusion.baseline import fusion_engine
+        from backend.app.models.entities import InvoiceFinding, RiskScoreRecord
+
+        inv = db.query(Invoice).filter(Invoice.id == invoice_id).first()
+        if not inv or not inv.raw_extracted_json:
+            raise ValueError(f"Invoice {invoice_id} not found or not extracted.")
+
+        data = InvoiceData.model_validate(inv.raw_extracted_json)
+        
+        # Load tokens if available (optional for rules)
+        tokens = []
+        # Populate vendor history and indices for ML engines
+        vendor_history = []
+        all_vendors = []
+        vendor_accounts = []
+        all_accounts = []
+        duplicate_history = []
+        embeddings = {}
+
+        if inv.vendor_id:
+            past_invs = db.query(Invoice).filter(Invoice.vendor_id == inv.vendor_id, Invoice.id != invoice_id).all()
+            for pi in past_invs:
+                if pi.raw_extracted_json:
+                    vendor_history.append(pi.raw_extracted_json)
+
+        from backend.app.models.entities import Vendor, VendorAccount
+        vendors_db = db.query(Vendor).all()
+        for v in vendors_db:
+            all_vendors.append({"id": v.id, "name": v.name, "gstin": v.gstin})
+            
+        accounts_db = db.query(VendorAccount).all()
+        for a in accounts_db:
+            all_accounts.append({
+                "account_hash": a.account_hash, 
+                "vendor_id": a.vendor_id, 
+                "vendor_name": a.vendor.name if a.vendor else "Unknown",
+                "ifsc": a.ifsc
+            })
+            if a.vendor_id == inv.vendor_id:
+                vendor_accounts.append({"account_hash": a.account_hash, "ifsc": a.ifsc})
+                
+        all_invoices = db.query(Invoice).all()
+        for ci in all_invoices:
+            if ci.raw_extracted_json:
+                pi_data = ci.raw_extracted_json
+                # Build canonical string
+                vendor = pi_data.get("vendor", {}).get("name", {}).get("value", "").strip().lower()
+                inv_num = pi_data.get("invoice_number", {}).get("value", "").strip().lower()
+                date = pi_data.get("invoice_date", {}).get("value", "").strip().lower()
+                total = str(pi_data.get("grand_total", {}).get("value", 0.0))
+                items = sorted([str(i.get("description", {}).get("value", "")).strip().lower() for i in pi_data.get("items", [])])
+                canonical_string = f"{vendor} | {inv_num} | {date} | {total} | {' | '.join(items)}"
+                
+                duplicate_history.append({
+                    "id": ci.id,
+                    "content_hash": ci.content_hash,
+                    "phash": ci.phash,
+                    "vendor_name": vendor,
+                    "invoice_number": inv_num,
+                    "invoice_date": date,
+                    "grand_total": pi_data.get("grand_total", {}).get("value", 0.0),
+                    "canonical_string": canonical_string,
+                })
+
+        indices = {
+            "vendor_id": inv.vendor_id,
+            "vendor_accounts": vendor_accounts,
+            "all_accounts": all_accounts,
+            "duplicate_history": duplicate_history,
+            "embeddings": embeddings,
+        }
+
+        ctx = AnalysisContext(
+            invoice_id=invoice_id,
+            data=data,
+            tokens=tokens,
+            vendor_history=vendor_history,
+            indices=indices,
+            all_vendors=all_vendors,
+            content_hash=inv.content_hash,
+            phash=inv.phash,
+        )
+
+        engines = [
+            FinancialRulesEngine(),
+            TaxIdentityRulesEngine(),
+            IdentifiersRulesEngine(),
+            DuplicateEngine(),
+            VendorEngine(),
+            BankEngine(),
+            VisualEngine(),
+        ]
+
+        signals = []
+        for engine in engines:
+            sig = engine.analyze(ctx)
+            signals.append(sig)
+
+        # Fuse
+        risk_result = fusion_engine.fuse(signals)
+
+        # Save findings
+        db.query(InvoiceFinding).filter(InvoiceFinding.invoice_id == invoice_id).delete()
+        for sig in signals:
+            for f in sig.findings:
+                finding_rec = InvoiceFinding(
+                    invoice_id=invoice_id,
+                    engine=f.engine,
+                    category=f.category,
+                    type=f.type,
+                    severity=f.severity,
+                    score=f.score,
+                    confidence=f.confidence,
+                    title=f.title,
+                    summary=f.summary,
+                    evidence_json=f.evidence,
+                    field=f.field,
+                    bbox_json=f.bbox,
+                    recommended_action=f.recommended_action
+                )
+                db.add(finding_rec)
+
+        # Save risk score
+        db.query(RiskScoreRecord).filter(RiskScoreRecord.invoice_id == invoice_id).delete()
+        risk_rec = RiskScoreRecord(
+            invoice_id=invoice_id,
+            overall_score=risk_result.overall_score,
+            level=risk_result.level,
+            probability=risk_result.probability,
+            confidence=risk_result.confidence,
+            baseline_score=risk_result.baseline_score,
+            ml_score=risk_result.ml_score,
+            signals_json=risk_result.signals,
+            shap_json=risk_result.shap_top,
+            escalations_json=risk_result.escalations,
+            recommendation=risk_result.recommendation,
+        )
+        db.add(risk_rec)
+
+        inv.status = "analyzed"
+        inv.risk_level = risk_result.level
+        inv.overall_score = risk_result.overall_score
+        
+        # Determine review status
+        if risk_result.level in ("HIGH", "CRITICAL"):
+            inv.review_status = "needs_review"
+
+        db.commit()
+
+        await event_bus.emit(
+            invoice_id=invoice_id,
+            stage="analyze",
+            status="completed",
+            message=f"Analysis complete. Score: {risk_result.overall_score} ({risk_result.level})",
+            progress=1.0,
+        )
+
+        return risk_result.model_dump()
+
 
 pipeline = DocumentPipeline()

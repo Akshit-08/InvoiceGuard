@@ -80,3 +80,17 @@ def get_invoice_extraction(
         needs_manual_verification=inv.needs_manual_verification,
         read_quality=inv.read_quality,
     )
+
+
+@router.post("/{invoice_id}/analyze")
+async def analyze_invoice(
+    invoice_id: str,
+    db: Session = Depends(get_db),
+):
+    """Run all detection engines and fuse into a risk score."""
+    from backend.app.services.pipeline import pipeline
+    
+    # Run the analysis job synchronously for now (can be async task)
+    result = await pipeline.analyze_invoice(invoice_id, db)
+    return result
+
