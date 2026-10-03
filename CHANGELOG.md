@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] — Day 2 Block 7
+
+### Added
+- **Risk Fusion System (Blueprint §9)**:
+  - `feature_builder.py`: 31-feature vector (7 scores + 7 confidences + 17 engineered) for XGBoost input.
+  - `xgb_model.py`: Lazy-loading XGBoost + isotonic calibration wrapper with `FUSION_MODE=baseline` env override and graceful fallback when model artifact is absent.
+  - `shap_explain.py`: SHAP TreeExplainer for CalibratedClassifierCV — returns top-N ordered contributors with direction labels.
+  - `thresholds.py`: `score_to_level()` (LOW/MEDIUM/HIGH/CRITICAL), `apply_escalations()` (multi-signal floor 65 + critical anomaly floor 75, never lowers score), `compute_confidence_band()` (geometric mean → HIGH/MEDIUM/LOW).
+  - `fusion.py`: Complete orchestrator (noisy-OR baseline + XGBoost blend + escalations + SHAP + narrative). Replaces the stub in `baseline.py`. Config read from `config/fusion.yaml` at runtime.
+  - `explain/narrative.py`: Plain-English narrative builder, top-5 key risk indicators, escalation notices, 16-entry hint lookup table for "what would lower the risk".
+  - `explain/recommendations.py`: Per-level recommendation text and structured action objects for frontend review workflow.
+- **Training Pipeline** (`ml/training/train_fusion.py`):
+  - Multiprocessing feature extraction with disk cache (resume on re-run).
+  - Train/test split by vendor AND template to prevent leakage.
+  - XGBoost `monotone_constraints=increasing` on all features (guarantees more evidence never lowers risk score).
+  - Isotonic calibration (CalibratedClassifierCV, 5-fold cross-validation).
+  - Saves <10 MB joblib artifact + updates `ml/artifacts/model_manifest.json`.
+- **Evaluation Script** (`ml/evaluation/run.py`):
+  - Metrics: ROC-AUC, PR-AUC, Precision/Recall/F1 at MEDIUM threshold (score ≥ 30).
+  - Per-fraud-type recall, false-positive rate on genuine invoices.
+  - Latency p50/p95, ablation table (baseline vs combined).
+  - Outputs `reports/metrics.json` + auto-generated `reports/EVALUATION.md`.
+- **Config** (`config/fusion.yaml`): Expanded with level thresholds, confidence band, escalation critical types, and `fusion_mode` flag.
+- **Tests** (`backend/tests/unit/test_fusion.py`): 47 new tests — 93 total now passing.
+
+### Changed
+- `pipeline.py`: Updated to use the new `fusion.py` orchestrator and passes `extraction_confidence` + `invoice_meta` for accurate confidence band.
+- `config/fusion.yaml`: Extended with level thresholds, confidence band config, critical anomaly types.
+
 ## [0.1.0] - 2026-10-02
 
 ### Added

@@ -61,3 +61,53 @@
   - 46/46 unit tests passing across all engines and settings (`pytest backend/tests -v`).
   - Zero lint/formatting errors (`ruff check .` clean).
 
+## Day 2 Block 7 — Risk Fusion (Section 9) — Completed
+
+### Completed
+- **Feature Builder (`backend/app/services/fusion/feature_builder.py`):**
+  - 31-dimensional feature vector: 7 signal scores + 7 signal confidences + 17 engineered features.
+  - Engineered features: finding count, severity mass, critical/high counts, engines above 50/70 thresholds, max score, min confidence, score variance, critical finding type flags (shared bank, exact dup, lookalike vendor, GSTIN invalid, amount outlier), round-total flag, item count, extraction confidence.
+- **XGBoost Model Wrapper (`backend/app/services/fusion/xgb_model.py`):**
+  - Lazy-loading, graceful fallback when model artifact is absent.
+  - `FUSION_MODE=baseline` env override to skip ML entirely.
+  - `predict_score(feat_vec)` → 0–100 calibrated ML score.
+- **SHAP Explanation (`backend/app/services/fusion/shap_explain.py`):**
+  - `compute_shap_top()` using `TreeExplainer` on CalibratedClassifierCV base estimator.
+  - Returns top-N contributors sorted by |SHAP value| with direction labels.
+- **Thresholds (`backend/app/services/fusion/thresholds.py`):**
+  - `score_to_level()`: LOW/MEDIUM/HIGH/CRITICAL boundaries (0–29/30–59/60–79/80–100).
+  - `apply_escalations()`: multi-signal floor (≥2 signals ≥70 → floor 65) + critical anomaly floor (SHARED_BANK, MODIFIED_DUPLICATE, EXACT_FILE_DUPLICATE → floor 75). Never lowers score.
+  - `compute_confidence_band()`: geometric mean of extraction and engine confidence → HIGH/MEDIUM/LOW.
+- **Main Fusion Orchestrator (`backend/app/services/fusion/fusion.py`):**
+  - Full pipeline: noisy-OR baseline → XGBoost ML score → configurable blend → escalations → level → SHAP → narrative.
+  - All config loaded from `config/fusion.yaml` at runtime (fully configurable).
+  - Backward-compatible `fusion_engine.fuse(signals)` API.
+- **Explain Package (`backend/app/services/explain/`):**
+  - `narrative.py`: plain-English narrative, top-5 key indicators, escalation notices, low-confidence warnings, lower-risk hints with 16-entry type lookup table.
+  - `recommendations.py`: per-level recommendation text + structured action objects for frontend review workflow.
+- **Training Script (`ml/training/train_fusion.py`):**
+  - Multiprocessing feature extraction (caches signal vectors to disk for resume on re-run).
+  - Splits by vendor AND template to prevent leakage.
+  - XGBoost with `monotone_constraints=increasing` on all features (guarantees more evidence never lowers risk).
+  - Isotonic calibration (CalibratedClassifierCV, 5-fold).
+  - Saves <10 MB artifact + updates `ml/artifacts/model_manifest.json`.
+- **Evaluation Script (`ml/evaluation/run.py`):**
+  - Full metrics: ROC-AUC, PR-AUC, precision/recall/F1 at MEDIUM threshold (score ≥ 30).
+  - Per-fraud-type recall, false-positive rate on genuine invoices.
+  - Latency p50/p95, ablation (baseline vs combined).
+  - Outputs `reports/metrics.json` + `reports/EVALUATION.md`.
+- **Config (`config/fusion.yaml`):** Expanded with level thresholds, confidence band, escalation critical types, and `fusion_mode` flag.
+- **Tests (`backend/tests/unit/test_fusion.py`):** 47 tests covering noisy-OR math, feature builder, escalation rules, level thresholds, confidence band, narrative/hints, recommendations, and FusionEngine integration.
+- **Totals:** 93/93 tests passing, `ruff check .` zero errors.
+
+### Run Commands for Data + Training + Evaluation
+```bash
+# 1. Generate synthetic data (run this; paste back summary + any errors)
+python scripts/generate_data.py --seed 42 --genuine 300 --tampered 300 --visual-pairs 200 --out data/synthetic
+
+# 2. Train fusion model (run after generate_data.py; paste back summary + any errors)
+python ml/training/train_fusion.py --manifest data/synthetic/manifest.csv --pdf-dir data/synthetic/pdf --gt-dir data/synthetic/gt --out ml/artifacts/fusion_xgb.joblib
+
+# 3. Run evaluation (run after train_fusion.py; paste back summary + any errors)
+python ml/evaluation/run.py --manifest data/synthetic/manifest.csv --pdf-dir data/synthetic/pdf --gt-dir data/synthetic/gt
+```
