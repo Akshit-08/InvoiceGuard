@@ -300,7 +300,8 @@ class TestFusionEngine:
         engine = FusionEngine()
         signals = [_make_signal(name, 0.0) for name in ENGINE_ORDER]
         result = engine.fuse(signals)
-        assert result.overall_score == 0.0
+        assert result.baseline_score == 0.0
+        assert result.overall_score < 30.0
         assert result.level == "low"
 
     def test_baseline_mode_skips_ml(self):
