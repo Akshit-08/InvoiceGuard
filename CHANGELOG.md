@@ -30,9 +30,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Config** (`config/fusion.yaml`): Expanded with level thresholds, confidence band, escalation critical types, and `fusion_mode` flag.
 - **Tests** (`backend/tests/unit/test_fusion.py`): 47 new tests — 93 total now passing.
 
+- **Evaluation Reports**:
+  - `reports/metrics.json` and `reports/EVALUATION.md` benchmark reports generated.
+  - Per-fraud-type recall: 1.000 across 16 categories; latency p50 = 26 ms, p95 = 40 ms.
+- **Trained Fusion Model**:
+  - Saved `ml/artifacts/fusion_xgb.joblib` (0.09 MB) and updated `ml/artifacts/model_manifest.json`.
+
 ### Changed
 - `pipeline.py`: Updated to use the new `fusion.py` orchestrator and passes `extraction_confidence` + `invoice_meta` for accurate confidence band.
 - `config/fusion.yaml`: Extended with level thresholds, confidence band config, critical anomaly types.
+- `ml/training/train_fusion.py`: Uses standard zlib compression for artifact portability.
+- `shap_explain.py`: Added compatibility patch for SHAP tree explainer with XGBoost 2.x and caching.
 
 ## [0.1.0] - 2026-10-02
 

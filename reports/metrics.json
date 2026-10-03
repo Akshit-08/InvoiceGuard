@@ -1,0 +1,42 @@
+{
+  "roc_auc": 0.5406,
+  "pr_auc": 0.6612,
+  "precision": 0.625,
+  "recall": 1.0,
+  "f1": 0.7692,
+  "threshold_used": 30.0,
+  "false_positive_rate_on_genuine": 1.0,
+  "per_fraud_type_recall": {
+    "AMOUNT_OUTLIER": 1.0,
+    "AMOUNT_WORDS_MISMATCH": 1.0,
+    "BANK_ACCOUNT_CHANGED": 1.0,
+    "DATE_IN_FUTURE;DUE_BEFORE_INVOICE": 1.0,
+    "EXACT_FILE_DUPLICATE": 1.0,
+    "GRAND_TOTAL_MISMATCH": 1.0,
+    "GSTIN_CHECKSUM_FAIL": 1.0,
+    "INVOICE_NUMBER_REUSED": 1.0,
+    "INVOICE_NUMBER_SEQUENCE_ANOMALY": 1.0,
+    "LINE_TOTAL_MISMATCH": 1.0,
+    "LOOKALIKE_VENDOR_NAME": 1.0,
+    "NEAR_DUPLICATE": 1.0,
+    "SHARED_BANK_ACCOUNT_ACROSS_VENDORS": 1.0,
+    "TAX_AMOUNT_MISMATCH;GRAND_TOTAL_MISMATCH": 1.0,
+    "TAX_RATE_INVALID_SLAB;TAX_AMOUNT_MISMATCH": 1.0,
+    "VISUAL_TAMPER_PATCH;GRAND_TOTAL_MISMATCH": 1.0
+  },
+  "ablation": {
+    "baseline_roc_auc": 0.5167,
+    "combined_roc_auc": 0.5406
+  },
+  "latency": {
+    "p50_s": 0.026,
+    "p95_s": 0.04,
+    "mean_s": 0.029
+  },
+  "dataset": {
+    "total": 800,
+    "genuine": 300,
+    "tampered": 500,
+    "test_total": 112
+  }
+}

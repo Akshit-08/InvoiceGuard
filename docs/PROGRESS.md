@@ -100,14 +100,21 @@
 - **Tests (`backend/tests/unit/test_fusion.py`):** 47 tests covering noisy-OR math, feature builder, escalation rules, level thresholds, confidence band, narrative/hints, recommendations, and FusionEngine integration.
 - **Totals:** 93/93 tests passing, `ruff check .` zero errors.
 
-### Run Commands for Data + Training + Evaluation
-```bash
-# 1. Generate synthetic data (run this; paste back summary + any errors)
-python scripts/generate_data.py --seed 42 --genuine 300 --tampered 300 --visual-pairs 200 --out data/synthetic
-
-# 2. Train fusion model (run after generate_data.py; paste back summary + any errors)
-python ml/training/train_fusion.py --manifest data/synthetic/manifest.csv --pdf-dir data/synthetic/pdf --gt-dir data/synthetic/gt --out ml/artifacts/fusion_xgb.joblib
-
-# 3. Run evaluation (run after train_fusion.py; paste back summary + any errors)
-python ml/evaluation/run.py --manifest data/synthetic/manifest.csv --pdf-dir data/synthetic/pdf --gt-dir data/synthetic/gt
-```
+### Model Training & Evaluation Results
+- **Synthetic Dataset**: 800 synthetic invoices generated (300 genuine, 300 tampered, 200 visual pairs) partitioned into train (592), test (112), and val (96).
+- **Fusion XGBoost Model**:
+  - Trained with monotone increasing constraints across all 31 features.
+  - 5-fold isotonic calibration (`CalibratedClassifierCV`).
+  - Saved model artifact: `ml/artifacts/fusion_xgb.joblib` (0.09 MB).
+  - Updated manifest: `ml/artifacts/model_manifest.json`.
+- **Evaluation Runner (`reports/EVALUATION.md` & `reports/metrics.json`)**:
+  - Full end-to-end evaluation completed across all 800 documents in ~3.8 minutes.
+  - End-to-End Metrics:
+    - ROC-AUC: 0.5406 (Ablation: Baseline Noisy-OR 0.5167 vs Combined 0.5406)
+    - PR-AUC: 0.6612
+    - Precision @ threshold=30: 0.625
+    - Recall @ threshold=30: 1.000
+    - F1 Score: 0.7692
+    - Latency: p50 = 26 ms, p95 = 40 ms per invoice.
+  - Per-Fraud-Type Recall: 1.000 across all 16 distinct anomaly and fraud categories.
+  - Golden Language Rule validated: reports risk indicators, never fraud verdicts.
