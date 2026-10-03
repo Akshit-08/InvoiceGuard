@@ -1,72 +1,157 @@
-import { motion } from 'framer-motion'
+import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  getSortedRowModel,
+  SortingState,
+} from '@tanstack/react-table'
+import { Search, Filter, Download, ArrowUpDown } from 'lucide-react'
+
 import { invoiceApi } from '@/api/client'
-import { RiskBadge } from '@/components/RiskBadge'
-import { ErrorState, SkeletonCard } from '@/components/ui'
-import { formatCurrency, formatRelativeTime } from '@/lib/utils'
-import { FileText } from 'lucide-react'
+import { RiskBadge, SeverityChip } from '@/components/RiskBadge'
+import { formatCurrency, formatDate, scoreToLevel } from '@/lib/utils'
+import type { InvoiceDetail } from '@/api/types'
+
+const columnHelper = createColumnHelper<Partial<InvoiceDetail>>()
 
 export default function HistoryPage() {
-  const { data, isLoading, error, refetch } = useQuery({
+  const navigate = useNavigate()
+  const [sorting, setSorting] = useState<SortingState>([])
+  
+  const { data, isLoading, error } = useQuery({
     queryKey: ['invoices-list'],
     queryFn: () => invoiceApi.list({ limit: 50 }),
   })
 
-  if (isLoading) return <div className="p-6 space-y-3">{[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}</div>
-  if (error) return <ErrorState title="Could not load history" onRetry={() => refetch()} />
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('invoice_number', {
+        header: 'Invoice',
+        cell: info => <span className="font-medium">{info.getValue() || '—'}</span>,
+      }),
+      columnHelper.accessor(row => row.vendor?.name, {
+        id: 'vendor',
+        header: 'Vendor',
+        cell: info => info.getValue() || '—',
+      }),
+      columnHelper.accessor('invoice_date', {
+        header: 'Date',
+        cell: info => <span className="font-mono text-xs">{formatDate(info.getValue())}</span>,
+      }),
+      columnHelper.accessor('grand_total', {
+        header: 'Amount',
+        cell: info => <span className="font-mono tabular-nums">{formatCurrency(info.getValue())}</span>,
+      }),
+      columnHelper.accessor('overall_score', {
+        header: 'Risk',
+        cell: info => {
+          const score = info.getValue()
+          if (score == null) return <span className="text-xs text-neutral-500">Pending</span>
+          return <RiskBadge level={scoreToLevel(score)} size="sm" />
+        },
+      }),
+      columnHelper.accessor('review_status', {
+        header: 'Status',
+        cell: info => {
+          const s = info.getValue()
+          if (!s) return null
+          return (
+            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full capitalize" style={{ background: 'var(--bg-subtle)', color: 'var(--text-secondary)' }}>
+              {s.replace('_', ' ')}
+            </span>
+          )
+        },
+      }),
+    ],
+    []
+  )
 
-  const items = data?.items ?? []
+  const table = useReactTable({
+    data: (data?.items as any[]) ?? [],
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  })
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold" style={{ letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>Invoice History</h1>
-      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{data?.total ?? 0} invoices processed</p>
-
-      <div className="surface overflow-hidden">
-        {items.length === 0 ? (
-          <div className="p-12 text-center">
-            <FileText size={32} className="mx-auto mb-3 opacity-30" style={{ color: 'var(--text-tertiary)' }} />
-            <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>No invoices yet. Upload one to get started.</p>
-            <Link to="/analyze" className="btn-primary mt-4 inline-flex">Upload invoice</Link>
-          </div>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b" style={{ borderColor: 'var(--border-hairline)', background: 'var(--bg-subtle)' }}>
-                {['Invoice #', 'Vendor', 'Date', 'Amount', 'Risk', 'Uploaded'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((inv, i) => (
-                <motion.tr
-                  key={inv.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: i * 0.03 }}
-                  className="border-b transition-colors duration-100"
-                  style={{ borderColor: 'var(--border-hairline)' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-subtle)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = '')}
-                >
-                  <td className="px-4 py-3">
-                    <Link to={`/invoices/${inv.id}`} className="font-mono text-xs hover:underline" style={{ color: 'var(--accent)' }}>
-                      {inv.invoice_number ?? inv.id.slice(0, 12)}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3" style={{ color: 'var(--text-primary)' }}>{inv.vendor_name ?? '—'}</td>
-                  <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>{inv.invoice_date ?? '—'}</td>
-                  <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{formatCurrency(inv.grand_total)}</td>
-                  <td className="px-4 py-3">{inv.risk_level ? <RiskBadge level={inv.risk_level} size="sm" /> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}</td>
-                  <td className="px-4 py-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>{formatRelativeTime(inv.created_at)}</td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+    <div className="p-6 h-full flex flex-col">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Analysis History</h1>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>All processed invoices and their risk assessments.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="btn-ghost px-3 py-1.5 text-sm h-9">
+            <Download size={14} /> Export
+          </button>
+        </div>
       </div>
-    </motion.div>
+
+      <div className="surface flex-1 flex flex-col min-h-0">
+        <div className="p-4 border-b flex items-center justify-between gap-4" style={{ borderColor: 'var(--border-hairline)' }}>
+          <div className="relative flex-1 max-w-sm">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-tertiary)' }} />
+            <input 
+              type="text" 
+              placeholder="Search invoices..." 
+              className="w-full bg-transparent border rounded-lg pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 transition-all"
+              style={{ borderColor: 'var(--border-default)', color: 'var(--text-primary)' }}
+            />
+          </div>
+          <button className="btn-ghost px-3 py-1.5 text-sm h-9">
+            <Filter size={14} /> Filters
+          </button>
+        </div>
+        
+        <div className="flex-1 overflow-auto hide-scrollbar">
+          {isLoading ? (
+             <div className="p-8 text-center text-sm" style={{ color: 'var(--text-tertiary)' }}>Loading history...</div>
+          ) : error ? (
+             <div className="p-8 text-center text-sm text-red-500">Failed to load history</div>
+          ) : (
+            <table className="w-full text-sm text-left">
+              <thead className="sticky top-0 bg-base z-10 text-xs font-medium uppercase tracking-wider" style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}>
+                {table.getHeaderGroups().map(headerGroup => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map(header => (
+                      <th key={header.id} className="px-4 py-3 border-b cursor-pointer hover:bg-neutral-500/5 transition-colors" style={{ borderColor: 'var(--border-hairline)' }} onClick={header.column.getToggleSortingHandler()}>
+                        <div className="flex items-center gap-2">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {{
+                            asc: <ArrowUpDown size={12} className="opacity-100" />,
+                            desc: <ArrowUpDown size={12} className="opacity-100 rotate-180" />,
+                          }[header.column.getIsSorted() as string] ?? <ArrowUpDown size={12} className="opacity-0 group-hover:opacity-50" />}
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody className="divide-y" style={{ divideColor: 'var(--border-hairline)' }}>
+                {table.getRowModel().rows.map(row => (
+                  <tr 
+                    key={row.id} 
+                    className="hover:bg-neutral-500/5 transition-colors cursor-pointer group"
+                    onClick={() => navigate(`/invoices/${row.original.id}`)}
+                  >
+                    {row.getVisibleCells().map(cell => (
+                      <td key={cell.id} className="px-4 py-3">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
