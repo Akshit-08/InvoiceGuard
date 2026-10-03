@@ -1,0 +1,32 @@
+# Indian GST Slab Structure (Date-Aware)
+# Source: Central Board of Indirect Taxes and Customs (CBIC) & GST Council
+# Includes legacy GST 1.0 slabs (2017-07-01 to 2025-09-21) and GST 2.0 slabs (effective 2025-09-22)
+
+tolerance: 0.05
+
+slabs:
+  - name: "GST 1.0 (July 2017 - September 2025)"
+    valid_from: "2017-07-01"
+    valid_to: "2025-09-21"
+    standard_rates:
+      - 0.0
+      - 5.0
+      - 12.0
+      - 18.0
+      - 28.0
+    special_rates:
+      - 0.25 # Rough diamonds / precious stones
+      - 1.5  # Affordable housing scheme
+      - 3.0  # Gold, silver, jewellery
+
+  - name: "GST 2.0 (September 2025 onwards)"
+    valid_from: "2025-09-22"
+    valid_to: "9999-12-31"
+    standard_rates:
+      - 0.0  # Nil/Exempt
+      - 5.0  # Basic consumption/mass use
+      - 18.0 # Standard rate
+      - 40.0 # Consolidated demerit / luxury rate
+    special_rates:
+      - 0.25 # Precious stones
+      - 3.0  # Gold and jewellery

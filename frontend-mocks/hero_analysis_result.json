@@ -1,0 +1,488 @@
+{
+  "id": "inv-hero-03-critical",
+  "original_filename": "03_hero_critical.pdf",
+  "page_count": 1,
+  "invoice_number": "INV-2026-0042",
+  "invoice_date": "2026-03-15",
+  "grand_total": 153900.0,
+  "currency": "INR",
+  "status": "analyzed",
+  "risk_level": "CRITICAL",
+  "overall_score": 88.5,
+  "review_status": "needs_review",
+  "review_note": null,
+  "read_quality": 0.98,
+  "extraction_confidence": 0.98,
+  "needs_manual_verification": false,
+  "created_at": "2026-03-15T10:30:00Z",
+  "data": {
+    "vendor": {
+      "name": {
+        "value": "Apex Cloud Technologies Pvt Ltd",
+        "conf": 0.98,
+        "bbox": [
+          0.1,
+          0.08,
+          0.45,
+          0.12
+        ]
+      },
+      "gstin": {
+        "value": "27AABCA1234F1Z9",
+        "conf": 0.97,
+        "bbox": [
+          0.1,
+          0.13,
+          0.35,
+          0.15
+        ]
+      },
+      "pan": {
+        "value": "AABCA1234F",
+        "conf": 0.95,
+        "bbox": [
+          0.1,
+          0.16,
+          0.28,
+          0.18
+        ]
+      },
+      "address": {
+        "value": "Unit 402, Trade Tower, Mumbai 400051",
+        "conf": 0.92,
+        "bbox": [
+          0.1,
+          0.19,
+          0.5,
+          0.22
+        ]
+      }
+    },
+    "buyer": {
+      "name": {
+        "value": "Acme Global Solutions India Ltd",
+        "conf": 0.97,
+        "bbox": [
+          0.55,
+          0.08,
+          0.9,
+          0.12
+        ]
+      },
+      "gstin": {
+        "value": "07AAACG1234M1Z2",
+        "conf": 0.96,
+        "bbox": [
+          0.55,
+          0.13,
+          0.8,
+          0.15
+        ]
+      },
+      "address": {
+        "value": "Barakhamba Road, Connaught Place, New Delhi 110001",
+        "conf": 0.93,
+        "bbox": [
+          0.55,
+          0.16,
+          0.9,
+          0.2
+        ]
+      }
+    },
+    "invoice_number": {
+      "value": "INV-2026-0042",
+      "conf": 0.99,
+      "bbox": [
+        0.65,
+        0.22,
+        0.88,
+        0.25
+      ]
+    },
+    "invoice_date": {
+      "value": "2026-03-15",
+      "conf": 0.98,
+      "bbox": [
+        0.65,
+        0.26,
+        0.88,
+        0.28
+      ]
+    },
+    "currency": {
+      "value": "INR",
+      "conf": 0.99,
+      "bbox": [
+        0.65,
+        0.29,
+        0.75,
+        0.31
+      ]
+    },
+    "items": [
+      {
+        "description": {
+          "value": "Enterprise Cloud Migration Consulting",
+          "conf": 0.96,
+          "bbox": [
+            0.1,
+            0.38,
+            0.5,
+            0.41
+          ]
+        },
+        "quantity": {
+          "value": 2.0,
+          "conf": 0.98,
+          "bbox": [
+            0.52,
+            0.38,
+            0.58,
+            0.41
+          ]
+        },
+        "unit_price": {
+          "value": 15000.0,
+          "conf": 0.97,
+          "bbox": [
+            0.6,
+            0.38,
+            0.72,
+            0.41
+          ]
+        },
+        "line_total": {
+          "value": 40000.0,
+          "conf": 0.95,
+          "bbox": [
+            0.75,
+            0.38,
+            0.9,
+            0.41
+          ]
+        }
+      },
+      {
+        "description": {
+          "value": "Dedicated Kubernetes Infrastructure",
+          "conf": 0.95,
+          "bbox": [
+            0.1,
+            0.43,
+            0.5,
+            0.46
+          ]
+        },
+        "quantity": {
+          "value": 1.0,
+          "conf": 0.98,
+          "bbox": [
+            0.52,
+            0.43,
+            0.58,
+            0.46
+          ]
+        },
+        "unit_price": {
+          "value": 65000.0,
+          "conf": 0.97,
+          "bbox": [
+            0.6,
+            0.43,
+            0.72,
+            0.46
+          ]
+        },
+        "line_total": {
+          "value": 65000.0,
+          "conf": 0.96,
+          "bbox": [
+            0.75,
+            0.43,
+            0.9,
+            0.46
+          ]
+        }
+      }
+    ],
+    "subtotal": {
+      "value": 105000.0,
+      "conf": 0.97,
+      "bbox": [
+        0.75,
+        0.52,
+        0.9,
+        0.55
+      ]
+    },
+    "tax": {
+      "total": {
+        "value": 18900.0,
+        "conf": 0.96,
+        "bbox": [
+          0.75,
+          0.56,
+          0.9,
+          0.59
+        ]
+      },
+      "igst": {
+        "value": 18900.0,
+        "conf": 0.96,
+        "bbox": [
+          0.75,
+          0.56,
+          0.9,
+          0.59
+        ]
+      }
+    },
+    "grand_total": {
+      "value": 153900.0,
+      "conf": 0.98,
+      "bbox": [
+        0.75,
+        0.62,
+        0.92,
+        0.66
+      ]
+    },
+    "payment": {
+      "bank_name": {
+        "value": "HDFC Bank",
+        "conf": 0.92,
+        "bbox": [
+          0.1,
+          0.72,
+          0.3,
+          0.75
+        ]
+      },
+      "account_number": {
+        "value": "50100987658891",
+        "conf": 0.95,
+        "bbox": [
+          0.1,
+          0.76,
+          0.38,
+          0.79
+        ]
+      },
+      "ifsc": {
+        "value": "HDFC0001234",
+        "conf": 0.96,
+        "bbox": [
+          0.1,
+          0.8,
+          0.28,
+          0.83
+        ]
+      }
+    }
+  },
+  "risk": {
+    "overall_score": 88.5,
+    "level": "CRITICAL",
+    "probability": 0.932,
+    "confidence": 0.95,
+    "baseline_score": 86.2,
+    "ml_score": 90.8,
+    "signals": {
+      "financial": 82.0,
+      "tax_identity": 45.0,
+      "identifiers": 35.0,
+      "duplicate": 74.0,
+      "vendor": 78.0,
+      "bank_change": 85.0,
+      "visual": 70.0,
+      "extraction": 10.0
+    },
+    "shap_top": [
+      {
+        "feature": "bank_change_score",
+        "importance": 0.28,
+        "direction": "increases_risk",
+        "value": 85.0
+      },
+      {
+        "feature": "financial_score",
+        "importance": 0.24,
+        "direction": "increases_risk",
+        "value": 82.0
+      },
+      {
+        "feature": "vendor_score",
+        "importance": 0.19,
+        "direction": "increases_risk",
+        "value": 78.0
+      },
+      {
+        "feature": "duplicate_score",
+        "importance": 0.15,
+        "direction": "increases_risk",
+        "value": 74.0
+      },
+      {
+        "feature": "finding_count",
+        "importance": 0.11,
+        "direction": "increases_risk",
+        "value": 5.0
+      }
+    ],
+    "escalations": [
+      "Multiple high-risk signals (financial=82.0, bank_change=85.0, vendor=78.0, duplicate=74.0) enforced floor 65",
+      "New bank account discrepancy on established vendor enforced risk floor 75"
+    ],
+    "recommendation": "Block automated payment release immediately. Requires senior controller sign-off and verbal bank verification.",
+    "disclaimer": "InvoiceGuard flags anomalies for human review. It does not determine fraud."
+  },
+  "signals": {
+    "financial": 82.0,
+    "tax_identity": 45.0,
+    "identifiers": 35.0,
+    "duplicate": 74.0,
+    "vendor": 78.0,
+    "bank_change": 85.0,
+    "visual": 70.0,
+    "extraction": 10.0
+  },
+  "findings": [
+    {
+      "id": "find-1",
+      "engine": "financial",
+      "category": "rule",
+      "type": "LINE_TOTAL_MISMATCH",
+      "severity": "high",
+      "score": 75.0,
+      "confidence": 0.95,
+      "title": "Line Item #1 Arithmetic Mismatch",
+      "summary": "Line 1 specifies quantity 2 @ \u20b915,000.00 yielding expected \u20b930,000.00, but line total shows \u20b940,000.00 (difference +\u20b910,000.00).",
+      "evidence": {
+        "expected": 30000.0,
+        "found": 40000.0,
+        "difference": 10000.0
+      },
+      "field": "items[0].line_total",
+      "bbox": [
+        0.75,
+        0.38,
+        0.9,
+        0.41
+      ],
+      "recommended_action": "Verify line item rate and billed quantity against quotation."
+    },
+    {
+      "id": "find-2",
+      "engine": "financial",
+      "category": "rule",
+      "type": "GRAND_TOTAL_MISMATCH",
+      "severity": "critical",
+      "score": 85.0,
+      "confidence": 0.96,
+      "title": "Grand Total Summation Mismatch",
+      "summary": "Calculated total from subtotal and tax is \u20b9123,900.00, but stated grand total is \u20b9153,900.00 (unexplained difference +\u20b930,000.00).",
+      "evidence": {
+        "expected": 123900.0,
+        "found": 153900.0,
+        "difference": 30000.0
+      },
+      "field": "grand_total",
+      "bbox": [
+        0.75,
+        0.62,
+        0.92,
+        0.66
+      ],
+      "recommended_action": "Review invoice arithmetic and verify whether unauthorized surcharges were added."
+    },
+    {
+      "id": "find-3",
+      "engine": "bank_change",
+      "category": "statistical",
+      "type": "BANK_ACCOUNT_CHANGED",
+      "severity": "high",
+      "score": 85.0,
+      "confidence": 0.98,
+      "title": "Unseen Bank Account for Established Vendor",
+      "summary": "Vendor Apex Cloud previously remitted to account ending in 1234 across 18 invoices. Current invoice directs payment to unseen account XXXXXX8891.",
+      "evidence": {
+        "expected": "XXXXXX1234",
+        "found": "XXXXXX8891",
+        "difference": "New unverified account"
+      },
+      "field": "payment.account_number",
+      "bbox": [
+        0.1,
+        0.76,
+        0.38,
+        0.79
+      ],
+      "recommended_action": "Perform out-of-band verbal callback to vendor finance contact before remitting funds."
+    },
+    {
+      "id": "find-4",
+      "engine": "vendor",
+      "category": "statistical",
+      "type": "AMOUNT_OUTLIER",
+      "severity": "medium",
+      "score": 68.0,
+      "confidence": 0.9,
+      "title": "Billed Amount 3.8x Above Vendor Median",
+      "summary": "Invoice amount of \u20b9153,900.00 is 3.8x higher than vendor's historical median transaction (\u20b940,500.00; MAD z-score: 4.1).",
+      "evidence": {
+        "expected": 40500.0,
+        "found": 153900.0,
+        "difference": 113400.0
+      },
+      "field": "grand_total",
+      "bbox": [
+        0.75,
+        0.62,
+        0.92,
+        0.66
+      ],
+      "recommended_action": "Obtain secondary managerial approval for volume spike."
+    },
+    {
+      "id": "find-5",
+      "engine": "duplicate",
+      "category": "ml",
+      "type": "NEAR_DUPLICATE",
+      "severity": "medium",
+      "score": 72.0,
+      "confidence": 0.92,
+      "title": "High Similarity to Previous Invoice",
+      "summary": "Invoice matches 94% text and structure of prior invoice INV-2025-0089 with modified grand total.",
+      "evidence": {
+        "similarity": 0.94,
+        "matched_invoice_id": "inv-past-089"
+      },
+      "field": "invoice_number",
+      "bbox": [
+        0.65,
+        0.22,
+        0.88,
+        0.25
+      ],
+      "recommended_action": "Confirm whether this is a revised rebill or duplicate claim."
+    }
+  ],
+  "matches": [
+    {
+      "matched_invoice_id": "inv-past-089",
+      "matched_invoice_number": "INV-2025-0089",
+      "similarity": 0.94,
+      "status": "near_duplicate",
+      "date": "2025-11-20",
+      "total": 48500.0
+    }
+  ],
+  "vendor": {
+    "id": "vend-apex-01",
+    "name": "Apex Cloud Technologies Pvt Ltd",
+    "gstin": "27AABCA1234F1Z9",
+    "pan": "AABCA1234F",
+    "category": "Cloud & IT Services"
+  }
+}

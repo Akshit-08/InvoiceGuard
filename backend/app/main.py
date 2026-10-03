@@ -145,6 +145,21 @@ def create_app() -> FastAPI:
     from backend.app.api.v1.invoices import router as invoices_router
     app.include_router(invoices_router, prefix=settings.API_V1_STR)
 
+    from backend.app.api.v1.demo import router as demo_router
+    app.include_router(demo_router, prefix=settings.API_V1_STR)
+
+    from backend.app.api.v1.vendors import router as vendors_router
+    app.include_router(vendors_router, prefix=settings.API_V1_STR)
+
+    from backend.app.api.v1.dashboard import router as dashboard_router
+    app.include_router(dashboard_router, prefix=settings.API_V1_STR)
+
+    from backend.app.api.v1.settings import router as settings_router
+    app.include_router(settings_router, prefix=settings.API_V1_STR)
+
+    from backend.app.api.v1.models import router as models_router
+    app.include_router(models_router, prefix=settings.API_V1_STR)
+
     return app
 
 
