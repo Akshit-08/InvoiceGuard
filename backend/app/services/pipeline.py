@@ -141,6 +141,7 @@ class DocumentPipeline:
         from backend.app.services.engines.vendor import VendorEngine
         from backend.app.services.engines.bank import BankEngine
         from backend.app.services.engines.visual.forensics import VisualEngine
+        from backend.app.services.engines.extraction import ExtractionConfidenceEngine
         from backend.app.services.fusion.baseline import fusion_engine
         from backend.app.models.entities import InvoiceFinding, RiskScoreRecord
 
@@ -232,6 +233,7 @@ class DocumentPipeline:
             VendorEngine(),
             BankEngine(),
             VisualEngine(),
+            ExtractionConfidenceEngine(),
         ]
 
         signals = []
