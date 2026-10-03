@@ -52,9 +52,7 @@ def _run_pipeline_for_row(row: dict, pdf_dir: str, gt_dir: str) -> dict[str, Any
         return None
 
     try:
-        from backend.app.schemas.contracts import InvoiceData
         from backend.app.services.engines.bank import BankEngine
-        from backend.app.services.engines.base import AnalysisContext
         from backend.app.services.engines.duplicate import DuplicateEngine
         from backend.app.services.engines.extraction import ExtractionConfidenceEngine
         from backend.app.services.engines.rules.financial import FinancialRulesEngine
@@ -63,33 +61,13 @@ def _run_pipeline_for_row(row: dict, pdf_dir: str, gt_dir: str) -> dict[str, Any
         from backend.app.services.engines.vendor import VendorEngine
         from backend.app.services.engines.visual.forensics import VisualEngine
         from backend.app.services.fusion.fusion import FusionEngine
+        from ml.common import analysis_context_from_gt, invoice_data_from_gt
 
         with open(gt_path, encoding="utf-8") as f:
             gt = json.load(f)
 
-        invoice_data_dict = gt.get("invoice_data", {})
-        if not invoice_data_dict:
-            return None
-
-        data = InvoiceData.model_validate(invoice_data_dict)
-
-        ctx = AnalysisContext(
-            invoice_id=invoice_id,
-            data=data,
-            tokens=[],
-            page_images=[],
-            pdf_path=str(pdf_path) if str(pdf_path).endswith(".pdf") else None,
-            vendor_history=gt.get("vendor_history", []),
-            indices={
-                "vendor_id": gt.get("vendor_id"),
-                "vendor_accounts": gt.get("vendor_accounts", []),
-                "all_accounts": gt.get("all_accounts", []),
-                "duplicate_history": gt.get("duplicate_history", []),
-                "embeddings": {},
-            },
-            all_vendors=gt.get("all_vendors", []),
-            content_hash=gt.get("content_hash"),
-        )
+        data = invoice_data_from_gt(gt)
+        ctx = analysis_context_from_gt(invoice_id, gt, data, pdf_path)
 
         engines = [
             FinancialRulesEngine(),
@@ -130,7 +108,7 @@ def _run_pipeline_for_row(row: dict, pdf_dir: str, gt_dir: str) -> dict[str, Any
 
         return {
             "invoice_id": invoice_id,
-            "label": int(row["label"]),
+            "label": 0 if str(row["label"]).strip().lower() == "genuine" else (1 if str(row["label"]).strip().lower() == "tampered" else int(row["label"])),
             "fraud_types": fraud_types,
             "split": row.get("split", "test"),
             "final_score": result.overall_score,

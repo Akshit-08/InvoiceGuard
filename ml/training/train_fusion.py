@@ -36,6 +36,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
+
 # ── Lazy imports (require package install) ────────────────────────────────────
 def _require(pkg: str) -> Any:
     try:
@@ -59,27 +60,30 @@ def _process_one(args: tuple) -> tuple[str, dict | None]:
     """
     row, pdf_dir, gt_dir = args
     invoice_id = row["id"]
-    label = int(row["label"])
+
+    # Label may be 'genuine'/'tampered' (strings) or 0/1 (integers)
+    raw_label = row["label"]
+    if isinstance(raw_label, str):
+        label = 0 if raw_label.strip().lower() == "genuine" else 1
+    else:
+        label = int(raw_label)
 
     # Build PDF path
     pdf_path = Path(pdf_dir) / f"{invoice_id}.pdf"
     if not pdf_path.exists():
-        # Try .png
         pdf_path = Path(pdf_dir) / f"{invoice_id}.png"
         if not pdf_path.exists():
             logger.warning("Document not found for %s — skipping.", invoice_id)
             return invoice_id, None
 
-    # Load ground truth JSON for InvoiceData
+    # Load ground truth JSON
     gt_path = Path(gt_dir) / f"{invoice_id}.json"
     if not gt_path.exists():
         logger.warning("GT JSON not found for %s — skipping.", invoice_id)
         return invoice_id, None
 
     try:
-        from backend.app.schemas.contracts import InvoiceData
         from backend.app.services.engines.bank import BankEngine
-        from backend.app.services.engines.base import AnalysisContext
         from backend.app.services.engines.duplicate import DuplicateEngine
         from backend.app.services.engines.extraction import ExtractionConfidenceEngine
         from backend.app.services.engines.rules.financial import FinancialRulesEngine
@@ -88,35 +92,13 @@ def _process_one(args: tuple) -> tuple[str, dict | None]:
         from backend.app.services.engines.vendor import VendorEngine
         from backend.app.services.engines.visual.forensics import VisualEngine
         from backend.app.services.fusion.feature_builder import build_feature_vector
+        from ml.common import analysis_context_from_gt, invoice_data_from_gt
 
-        with open(gt_path, encoding="utf-8") as f:
-            gt = json.load(f)
+        with open(gt_path, encoding="utf-8") as fh:
+            gt = json.load(fh)
 
-        # The GT JSON has an invoice_data key with extracted fields
-        invoice_data_dict = gt.get("invoice_data", {})
-        if not invoice_data_dict:
-            return invoice_id, None
-
-        data = InvoiceData.model_validate(invoice_data_dict)
-        grand_total = data.grand_total.value if data.grand_total else 0.0
-
-        ctx = AnalysisContext(
-            invoice_id=invoice_id,
-            data=data,
-            tokens=[],
-            page_images=[],
-            pdf_path=str(pdf_path) if str(pdf_path).endswith(".pdf") else None,
-            vendor_history=gt.get("vendor_history", []),
-            indices={
-                "vendor_id": gt.get("vendor_id"),
-                "vendor_accounts": gt.get("vendor_accounts", []),
-                "all_accounts": gt.get("all_accounts", []),
-                "duplicate_history": gt.get("duplicate_history", []),
-                "embeddings": {},
-            },
-            all_vendors=gt.get("all_vendors", []),
-            content_hash=gt.get("content_hash"),
-        )
+        data = invoice_data_from_gt(gt)
+        ctx = analysis_context_from_gt(invoice_id, gt, data, pdf_path)
 
         engines = [
             FinancialRulesEngine(),
@@ -134,13 +116,14 @@ def _process_one(args: tuple) -> tuple[str, dict | None]:
             try:
                 sig = engine.analyze(ctx)
                 signals.append(sig)
-            except Exception as e:
-                logger.debug("Engine %s failed on %s: %s", engine.name, invoice_id, e)
+            except Exception as eng_exc:  # noqa: BLE001
+                logger.debug("Engine %s failed on %s: %s", engine.name, invoice_id, eng_exc)
 
+        grand_total_val = float(data.grand_total.value) if data.grand_total and data.grand_total.value else 0.0
         invoice_meta = {
-            "grand_total": grand_total,
+            "grand_total": grand_total_val,
             "item_count": len(data.items),
-            "extraction_confidence": gt.get("extraction_confidence", 1.0),
+            "extraction_confidence": 1.0,  # GT data is perfect quality
         }
 
         feat_values, feat_names = build_feature_vector(signals, invoice_meta)
@@ -197,20 +180,20 @@ def main() -> None:
 
     if not args.no_cache and cache_path.exists():
         logger.info("Loading feature cache from %s …", cache_path)
-        with open(cache_path, "rb") as f:
-            feature_rows = pickle.load(f)
+        with open(cache_path, "rb") as fh:
+            feature_rows = pickle.load(fh)  # noqa: S301
         logger.info("Cache has %d entries.", len(feature_rows))
 
-    uncached_ids = [
+    uncached_rows = [
         row for _, row in df_manifest.iterrows()
         if row["id"] not in feature_rows
     ]
-    logger.info("%d documents need feature extraction.", len(uncached_ids))
+    logger.info("%d documents need feature extraction.", len(uncached_rows))
 
-    if uncached_ids:
+    if uncached_rows:
         worker_args = [
             (row, args.pdf_dir, args.gt_dir)
-            for row in uncached_ids
+            for row in uncached_rows
         ]
 
         t0 = time.time()
@@ -229,19 +212,21 @@ def main() -> None:
                 feature_rows[inv_id] = row_dict
                 new_count += 1
 
-        logger.info("Successfully extracted %d/%d features.", new_count, len(uncached_ids))
+        logger.info("Successfully extracted %d/%d features.", new_count, len(uncached_rows))
 
         # Save updated cache
         cache_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(cache_path, "wb") as f:
-            pickle.dump(feature_rows, f)
+        with open(cache_path, "wb") as fh:
+            pickle.dump(feature_rows, fh)
         logger.info("Cache saved to %s.", cache_path)
 
     # ── Build feature DataFrame ───────────────────────────────────────────────
     rows = list(feature_rows.values())
     if len(rows) < 50:
-        logger.error("Too few samples (%d) to train a meaningful model. "
-                     "Run the data generator first.", len(rows))
+        logger.error(
+            "Too few samples (%d) to train a meaningful model. "
+            "Run the data generator first.", len(rows)
+        )
         sys.exit(1)
 
     df = pd.DataFrame(rows)
@@ -252,21 +237,26 @@ def main() -> None:
     train_mask = df["split"] == "train"
     test_mask = df["split"] == "test"
 
-    feature_cols = [c for c in df.columns
-                    if c not in ("label", "invoice_id", "vendor_id", "template_id", "split")]
+    feature_cols = [
+        c for c in df.columns
+        if c not in ("label", "invoice_id", "vendor_id", "template_id", "split")
+    ]
 
     X_train = df.loc[train_mask, feature_cols].fillna(0.0).values
     y_train = df.loc[train_mask, "label"].values
     X_test = df.loc[test_mask, feature_cols].fillna(0.0).values
     y_test = df.loc[test_mask, "label"].values
 
-    logger.info("Train: %d samples (pos=%d). Test: %d samples (pos=%d).",
-                len(y_train), y_train.sum(),
-                len(y_test), y_test.sum())
+    logger.info(
+        "Train: %d samples (pos=%d). Test: %d samples (pos=%d).",
+        len(y_train), int(y_train.sum()), len(y_test), int(y_test.sum()),
+    )
 
     if len(np.unique(y_train)) < 2:
-        logger.error("Training set has only one class — cannot train. "
-                     "Ensure tampered invoices are in the training split.")
+        logger.error(
+            "Training set has only one class — cannot train. "
+            "Ensure tampered invoices are in the training split."
+        )
         sys.exit(1)
 
     # ── Import ML packages ────────────────────────────────────────────────────
@@ -302,8 +292,10 @@ def main() -> None:
         n_jobs=-1,
     )
 
-    logger.info("Training XGBoost (n_estimators=400, monotone_constraints on %d features) …",
-                len(feature_cols))
+    logger.info(
+        "Training XGBoost (n_estimators=400, monotone_constraints on %d features) …",
+        len(feature_cols),
+    )
     xgb_clf.fit(X_train, y_train)
 
     # ── Isotonic calibration ──────────────────────────────────────────────────
@@ -357,8 +349,8 @@ def main() -> None:
     manifest_out = out_path.parent / "model_manifest.json"
     existing: dict = {}
     if manifest_out.exists():
-        with open(manifest_out, encoding="utf-8") as f:
-            existing = json.load(f)
+        with open(manifest_out, encoding="utf-8") as fh:
+            existing = json.load(fh)
 
     existing["fusion_xgb"] = {
         "path": str(out_path),
@@ -370,8 +362,8 @@ def main() -> None:
         "metrics": metrics,
     }
 
-    with open(manifest_out, "w", encoding="utf-8") as f:
-        json.dump(existing, f, indent=2)
+    with open(manifest_out, "w", encoding="utf-8") as fh:
+        json.dump(existing, fh, indent=2)
     logger.info("Model manifest updated: %s", manifest_out)
 
 
