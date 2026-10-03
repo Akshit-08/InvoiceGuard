@@ -1,0 +1,24 @@
+{
+  "invoice_a_id": "inv-hero-03-critical",
+  "invoice_b_id": "inv-past-089",
+  "differences": [
+    {
+      "field": "invoice_number",
+      "invoice_a_value": "INV-2026-0042",
+      "invoice_b_value": "INV-2025-0089",
+      "status": "changed"
+    },
+    {
+      "field": "grand_total",
+      "invoice_a_value": 153900.0,
+      "invoice_b_value": 48500.0,
+      "status": "changed"
+    },
+    {
+      "field": "subtotal",
+      "invoice_a_value": 105000.0,
+      "invoice_b_value": 40500.0,
+      "status": "changed"
+    }
+  ]
+}

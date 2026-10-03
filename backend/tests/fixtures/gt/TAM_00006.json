@@ -1,0 +1,353 @@
+{
+  "id": "TAM_00006",
+  "label": "tampered",
+  "fraud_types": [
+    "GSTIN_CHECKSUM_FAIL"
+  ],
+  "mode": "re-render",
+  "affected_fields": [
+    "vendor.gstin"
+  ],
+  "is_scanned": false,
+  "spec": {
+    "invoice_number": "INV-2025-0505",
+    "invoice_date": "2025-11-04",
+    "due_date": "2025-11-11",
+    "vendor_id": "VND-006",
+    "vendor_name": "Trident Logistics & Transport",
+    "vendor_gstin": "22PYHCK9153B1Z0",
+    "vendor_pan": "PYHCK9153B",
+    "vendor_address": "Plot 175, Sector 62, Industrial Area, Chhattisgarh",
+    "vendor_email": "billing@trident.co.in",
+    "vendor_phone": "+91 8277332790",
+    "vendor_state_code": "22",
+    "buyer_name": "Kavach Financial Technologies Ltd",
+    "buyer_gstin": "29AABCK9012H1ZJ",
+    "buyer_address": "Outer Ring Road, Bellandur, Bengaluru, KA",
+    "buyer_state_code": "29",
+    "currency": "INR",
+    "items": [
+      {
+        "description": "LaserJet High-Yield Toner Cartridges (Black)",
+        "hsn_sac": "844399",
+        "quantity": 5.0,
+        "unit": "Pack",
+        "unit_price": 6123.29,
+        "line_total": 30616.45
+      },
+      {
+        "description": "Armed Security Personnel Deployment (8hr Shift)",
+        "hsn_sac": "998525",
+        "quantity": 12.0,
+        "unit": "Month",
+        "unit_price": 21281.44,
+        "line_total": 255377.28
+      },
+      {
+        "description": "Industrial Diesel Generator Maintenance & AMC",
+        "hsn_sac": "998719",
+        "quantity": 10.0,
+        "unit": "Quarter",
+        "unit_price": 16050.63,
+        "line_total": 160506.3
+      },
+      {
+        "description": "Enterprise SaaS Software License (per seat)",
+        "hsn_sac": "997331",
+        "quantity": 5.0,
+        "unit": "Seat",
+        "unit_price": 4921.04,
+        "line_total": 24605.2
+      },
+      {
+        "description": "Commercial Facility Deep Cleaning & Sanitization",
+        "hsn_sac": "998533",
+        "quantity": 12.0,
+        "unit": "Visit",
+        "unit_price": 14563.23,
+        "line_total": 174758.76
+      }
+    ],
+    "subtotal": 645863.99,
+    "tax_rate": 0.05,
+    "discount": 0.0,
+    "shipping": 0.0,
+    "grand_total": 678157.19,
+    "amount_in_words": "Six Lakh Seventy-Eight Thousand One Hundred And Fifty-Seven Rupees and Nineteen Paise Only",
+    "bank_name": "Punjab National Bank",
+    "account_number": "47396304647646",
+    "ifsc": "PUNB0009065",
+    "template_id": "classic_table"
+  },
+  "ground_truth": {
+    "fields": {
+      "vendor.name": {
+        "value": "Trident Logistics & Transport",
+        "raw": "Trident Logistics & Transport",
+        "bbox": [
+          0.0672,
+          0.0725,
+          0.3495,
+          0.0915
+        ],
+        "page": 0
+      },
+      "vendor.address": {
+        "value": "Plot 175, Sector 62, Industrial Area, Chhattisgarh",
+        "raw": "Plot 175, Sector 62, Industrial Area, Chhattisgarh",
+        "bbox": [
+          0.0672,
+          0.0938,
+          0.3958,
+          0.1093
+        ],
+        "page": 0
+      },
+      "vendor.gstin": {
+        "value": "22PYHCK9153B1Z0",
+        "raw": "GSTIN: 22PYHCK9153B1Z0",
+        "bbox": [
+          0.0672,
+          0.1117,
+          0.263,
+          0.1271
+        ],
+        "page": 0
+      },
+      "vendor.pan": {
+        "value": "PYHCK9153B",
+        "raw": "PAN: PYHCK9153B",
+        "bbox": [
+          0.0672,
+          0.1271,
+          0.2025,
+          0.1425
+        ],
+        "page": 0
+      },
+      "vendor.email": {
+        "value": "billing@trident.co.in",
+        "raw": "Email: billing@trident.co.in",
+        "bbox": [
+          0.0672,
+          0.1425,
+          0.2455,
+          0.158
+        ],
+        "page": 0
+      },
+      "invoice_number": {
+        "value": "INV-2025-0505",
+        "raw": "INV-2025-0505",
+        "bbox": [
+          0.7648,
+          0.076,
+          0.8673,
+          0.0915
+        ],
+        "page": 0
+      },
+      "invoice_date": {
+        "value": "2025-11-04",
+        "raw": "2025-11-04",
+        "bbox": [
+          0.7648,
+          0.0938,
+          0.8421,
+          0.1093
+        ],
+        "page": 0
+      },
+      "due_date": {
+        "value": "2025-11-11",
+        "raw": "2025-11-11",
+        "bbox": [
+          0.7648,
+          0.1117,
+          0.8421,
+          0.1271
+        ],
+        "page": 0
+      },
+      "buyer.name": {
+        "value": "Kavach Financial Technologies Ltd",
+        "raw": "Kavach Financial Technologies Ltd",
+        "bbox": [
+          0.084,
+          0.1912,
+          0.365,
+          0.2079
+        ],
+        "page": 0
+      },
+      "buyer.address": {
+        "value": "Outer Ring Road, Bellandur, Bengaluru, KA",
+        "raw": "Outer Ring Road, Bellandur, Bengaluru, KA",
+        "bbox": [
+          0.084,
+          0.2091,
+          0.3432,
+          0.2233
+        ],
+        "page": 0
+      },
+      "buyer.gstin": {
+        "value": "29AABCK9012H1ZJ",
+        "raw": "GSTIN: 29AABCK9012H1ZJ",
+        "bbox": [
+          0.084,
+          0.2209,
+          0.2595,
+          0.2352
+        ],
+        "page": 0
+      },
+      "subtotal": {
+        "value": 645863.99,
+        "raw": "Rs. 6,45,863.99",
+        "bbox": [
+          0.8168,
+          0.4169,
+          0.9244,
+          0.4324
+        ],
+        "page": 0
+      },
+      "tax.igst": {
+        "value": 32293.2,
+        "raw": "Rs. 32,293.20",
+        "bbox": [
+          0.8303,
+          0.4335,
+          0.9244,
+          0.449
+        ],
+        "page": 0
+      },
+      "grand_total": {
+        "value": 678157.19,
+        "raw": "Rs. 6,78,157.19",
+        "bbox": [
+          0.7998,
+          0.4537,
+          0.9194,
+          0.4704
+        ],
+        "page": 0
+      },
+      "amount_in_words": {
+        "value": "Six Lakh Seventy-Eight Thousand One Hundred And Fifty-Seven Rupees and Nineteen Paise Only",
+        "raw": "Amount in Words: Six Lakh Seventy-Eight Thousand One Hundred And Fifty-Seven Rupees and Nineteen Paise Only",
+        "bbox": [
+          0.0672,
+          0.4858,
+          0.7664,
+          0.5001
+        ],
+        "page": 0
+      },
+      "payment.bank_name": {
+        "value": "Punjab National Bank",
+        "raw": "Bank: Punjab National Bank",
+        "bbox": [
+          0.0806,
+          0.5238,
+          0.248,
+          0.5381
+        ],
+        "page": 0
+      },
+      "payment.account_number": {
+        "value": "47396304647646",
+        "raw": "A/C: 47396304647646",
+        "bbox": [
+          0.0806,
+          0.5381,
+          0.2166,
+          0.5523
+        ],
+        "page": 0
+      },
+      "payment.ifsc": {
+        "value": "PUNB0009065",
+        "raw": "IFSC: PUNB0009065",
+        "bbox": [
+          0.0806,
+          0.5511,
+          0.2084,
+          0.5654
+        ],
+        "page": 0
+      }
+    },
+    "items": [
+      {
+        "description": "LaserJet High-Yield Toner Cartridges (Black)",
+        "quantity": 5.0,
+        "unit_price": 6123.29,
+        "line_total": 30616.45,
+        "hsn_sac": "844399",
+        "bbox": [
+          0.0672,
+          0.291,
+          0.9328,
+          0.31
+        ]
+      },
+      {
+        "description": "Armed Security Personnel Deployment (8hr Shift)",
+        "quantity": 12.0,
+        "unit_price": 21281.44,
+        "line_total": 255377.28,
+        "hsn_sac": "998525",
+        "bbox": [
+          0.0672,
+          0.3124,
+          0.9328,
+          0.3314
+        ]
+      },
+      {
+        "description": "Industrial Diesel Generator Maintenance & AMC",
+        "quantity": 10.0,
+        "unit_price": 16050.63,
+        "line_total": 160506.3,
+        "hsn_sac": "998719",
+        "bbox": [
+          0.0672,
+          0.3338,
+          0.9328,
+          0.3528
+        ]
+      },
+      {
+        "description": "Enterprise SaaS Software License (per seat)",
+        "quantity": 5.0,
+        "unit_price": 4921.04,
+        "line_total": 24605.2,
+        "hsn_sac": "997331",
+        "bbox": [
+          0.0672,
+          0.3552,
+          0.9328,
+          0.3742
+        ]
+      },
+      {
+        "description": "Commercial Facility Deep Cleaning & Sanitization",
+        "quantity": 12.0,
+        "unit_price": 14563.23,
+        "line_total": 174758.76,
+        "hsn_sac": "998533",
+        "bbox": [
+          0.0672,
+          0.3765,
+          0.9328,
+          0.3955
+        ]
+      }
+    ],
+    "page_width": 595.2755905511812,
+    "page_height": 841.8897637795277
+  }
+}

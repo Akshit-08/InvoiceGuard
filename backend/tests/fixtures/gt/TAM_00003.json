@@ -1,0 +1,279 @@
+{
+  "id": "TAM_00003",
+  "label": "tampered",
+  "fraud_types": [
+    "AMOUNT_OUTLIER"
+  ],
+  "mode": "pdf-edit",
+  "affected_fields": [
+    "grand_total",
+    "subtotal"
+  ],
+  "is_scanned": false,
+  "spec": {
+    "invoice_number": "BE/26-27/502",
+    "invoice_date": "2026-09-06",
+    "due_date": "2026-09-21",
+    "vendor_id": "VND-003",
+    "vendor_name": "Bharat Enterprise Solutions",
+    "vendor_gstin": "01ZQGCJ1175F1ZF",
+    "vendor_pan": "ZQGCJ1175F",
+    "vendor_address": "Plot 532, Sector 56, Industrial Area, Jammu and Kashmir",
+    "vendor_email": "billing@bharat.co.in",
+    "vendor_phone": "+91 7448578003",
+    "vendor_state_code": "01",
+    "buyer_name": "Apex Global Logistics India Pvt Ltd",
+    "buyer_gstin": "07AABCA1234F1ZB",
+    "buyer_address": "DLF Cyber City, Tower B, Gurugram, Haryana",
+    "buyer_state_code": "07",
+    "currency": "INR",
+    "items": [
+      {
+        "description": "Industrial Diesel Generator Maintenance & AMC",
+        "hsn_sac": "998719",
+        "quantity": 2.0,
+        "unit": "Quarter",
+        "unit_price": 46493.69,
+        "line_total": 92987.38
+      },
+      {
+        "description": "High-Speed Dedicated Fiber Internet (1 Gbps)",
+        "hsn_sac": "998422",
+        "quantity": 12.0,
+        "unit": "Month",
+        "unit_price": 51432.74,
+        "line_total": 617192.88
+      },
+      {
+        "description": "Network Security Audit & Penetration Testing",
+        "hsn_sac": "998311",
+        "quantity": 3.0,
+        "unit": "Service",
+        "unit_price": 262222.48,
+        "line_total": 786667.44
+      }
+    ],
+    "subtotal": 1496847.74,
+    "tax_rate": 0.05,
+    "discount": 0.0,
+    "shipping": 0.0,
+    "grand_total": 1571690.13,
+    "amount_in_words": "Fifteen Lakh Seventy-One Thousand Six Hundred And Ninety Rupees and Thirteen Paise Only",
+    "bank_name": "Punjab National Bank",
+    "account_number": "7176667598589809",
+    "ifsc": "PUNB0002065",
+    "template_id": "gst_tax_invoice"
+  },
+  "ground_truth": {
+    "fields": {
+      "vendor.name": {
+        "value": "Bharat Enterprise Solutions",
+        "raw": "Bharat Enterprise Solutions",
+        "bbox": [
+          0.0672,
+          0.0915,
+          0.3116,
+          0.1093
+        ],
+        "page": 0
+      },
+      "vendor.address": {
+        "value": "Plot 532, Sector 56, Industrial Area, Jammu and Kashmir",
+        "raw": "Plot 532, Sector 56, Industrial Area, Jammu and Kashmir",
+        "bbox": [
+          0.0672,
+          0.1117,
+          0.4063,
+          0.1259
+        ],
+        "page": 0
+      },
+      "vendor.gstin": {
+        "value": "01ZQGCJ1175F1ZF",
+        "raw": "GSTIN/UIN: 01ZQGCJ1175F1ZF",
+        "bbox": [
+          0.0672,
+          0.1283,
+          0.2666,
+          0.1425
+        ],
+        "page": 0
+      },
+      "vendor.state_code": {
+        "value": "01",
+        "raw": "State Code: 01",
+        "bbox": [
+          0.0672,
+          0.1425,
+          0.1568,
+          0.1568
+        ],
+        "page": 0
+      },
+      "invoice_number": {
+        "value": "BE/26-27/502",
+        "raw": "Invoice No: BE/26-27/502",
+        "bbox": [
+          0.5168,
+          0.0938,
+          0.6958,
+          0.1093
+        ],
+        "page": 0
+      },
+      "invoice_date": {
+        "value": "2026-09-06",
+        "raw": "Date: 2026-09-06",
+        "bbox": [
+          0.5168,
+          0.1117,
+          0.6214,
+          0.1259
+        ],
+        "page": 0
+      },
+      "due_date": {
+        "value": "2026-09-21",
+        "raw": "Payment Due: 2026-09-21",
+        "bbox": [
+          0.5168,
+          0.1283,
+          0.6744,
+          0.1425
+        ],
+        "page": 0
+      },
+      "buyer.name": {
+        "value": "Apex Global Logistics India Pvt Ltd",
+        "raw": "Bill To: Apex Global Logistics India Pvt Ltd",
+        "bbox": [
+          0.0672,
+          0.177,
+          0.3764,
+          0.1924
+        ],
+        "page": 0
+      },
+      "buyer.address": {
+        "value": "DLF Cyber City, Tower B, Gurugram, Haryana",
+        "raw": "DLF Cyber City, Tower B, Gurugram, Haryana",
+        "bbox": [
+          0.0672,
+          0.1924,
+          0.3428,
+          0.2067
+        ],
+        "page": 0
+      },
+      "buyer.gstin": {
+        "value": "07AABCA1234F1ZB",
+        "raw": "GSTIN: 07AABCA1234F1ZB",
+        "bbox": [
+          0.0672,
+          0.2067,
+          0.2434,
+          0.2209
+        ],
+        "page": 0
+      },
+      "subtotal": {
+        "value": 1496847.74,
+        "raw": "Rs. 14,96,847.74",
+        "bbox": [
+          0.8381,
+          0.3373,
+          0.9412,
+          0.3516
+        ],
+        "page": 0
+      },
+      "tax.igst": {
+        "value": 74842.39,
+        "raw": "Rs. 74,842.39",
+        "bbox": [
+          0.8575,
+          0.354,
+          0.9412,
+          0.3682
+        ],
+        "page": 0
+      },
+      "grand_total": {
+        "value": 1571690.13,
+        "raw": "Rs. 15,71,690.13",
+        "bbox": [
+          0.8123,
+          0.373,
+          0.9412,
+          0.3896
+        ],
+        "page": 0
+      },
+      "amount_in_words": {
+        "value": "Fifteen Lakh Seventy-One Thousand Six Hundred And Ninety Rupees and Thirteen Paise Only",
+        "raw": "Amount in Words: Fifteen Lakh Seventy-One Thousand Six Hundred And Ninety Rupees and Thirteen Paise Only",
+        "bbox": [
+          0.0672,
+          0.405,
+          0.7424,
+          0.4193
+        ],
+        "page": 0
+      },
+      "payment.account_number": {
+        "value": "7176667598589809",
+        "raw": "Bank Account: Punjab National Bank A/c No: 7176667598589809 IFSC: PUNB0002065",
+        "bbox": [
+          0.0672,
+          0.4288,
+          0.5894,
+          0.4431
+        ],
+        "page": 0
+      }
+    },
+    "items": [
+      {
+        "description": "Industrial Diesel Generator Maintenance & AMC",
+        "quantity": 2.0,
+        "unit_price": 46493.69,
+        "line_total": 92987.38,
+        "hsn_sac": "998719",
+        "bbox": [
+          0.0504,
+          0.2589,
+          0.9496,
+          0.2756
+        ]
+      },
+      {
+        "description": "High-Speed Dedicated Fiber Internet (1 Gbps)",
+        "quantity": 12.0,
+        "unit_price": 51432.74,
+        "line_total": 617192.88,
+        "hsn_sac": "998422",
+        "bbox": [
+          0.0504,
+          0.2779,
+          0.9496,
+          0.2946
+        ]
+      },
+      {
+        "description": "Network Security Audit & Penetration Testing",
+        "quantity": 3.0,
+        "unit_price": 262222.48,
+        "line_total": 786667.44,
+        "hsn_sac": "998311",
+        "bbox": [
+          0.0504,
+          0.297,
+          0.9496,
+          0.3136
+        ]
+      }
+    ],
+    "page_width": 595.2755905511812,
+    "page_height": 841.8897637795277
+  }
+}

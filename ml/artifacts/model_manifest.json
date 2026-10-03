@@ -1,0 +1,18 @@
+{
+  "fusion_xgb": {
+    "path": "ml\\artifacts\\fusion_xgb.joblib",
+    "size_mb": 0.089,
+    "feature_count": 31,
+    "monotone_constraints": "increasing_all",
+    "calibration": "isotonic_5fold",
+    "trained_on": "2026-10-03T12:51:45.544069",
+    "metrics": {
+      "roc_auc": 0.531,
+      "pr_auc": 0.6542,
+      "n_train": 592,
+      "n_test": 112,
+      "n_pos_train": 370,
+      "n_pos_test": 70
+    }
+  }
+}

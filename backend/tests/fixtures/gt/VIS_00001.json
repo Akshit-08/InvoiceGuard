@@ -1,0 +1,333 @@
+{
+  "id": "VIS_00001",
+  "label": "tampered",
+  "fraud_types": [
+    "VISUAL_TAMPER_PATCH",
+    "GRAND_TOTAL_MISMATCH"
+  ],
+  "mode": "pixel-edit",
+  "affected_fields": [
+    "grand_total"
+  ],
+  "is_scanned": false,
+  "spec": {
+    "invoice_number": "TAX/26-27/01000",
+    "invoice_date": "2026-09-04",
+    "due_date": "2026-10-04",
+    "vendor_id": "VND-001",
+    "vendor_name": "Apex Solutions Pvt Ltd",
+    "vendor_gstin": "15LJGCL9809B1ZR",
+    "vendor_pan": "LJGCL9809B",
+    "vendor_address": "Plot 366, Sector 19, Industrial Area, Mizoram",
+    "vendor_email": "billing@apex.co.in",
+    "vendor_phone": "+91 8880583531",
+    "vendor_state_code": "15",
+    "buyer_name": "Kavach Financial Technologies Ltd",
+    "buyer_gstin": "29AABCK9012H1ZJ",
+    "buyer_address": "Outer Ring Road, Bellandur, Bengaluru, KA",
+    "buyer_state_code": "29",
+    "currency": "INR",
+    "items": [
+      {
+        "description": "Executive Solid Oak Conference Desk",
+        "hsn_sac": "940330",
+        "quantity": 3.0,
+        "unit": "Unit",
+        "unit_price": 31606.35,
+        "line_total": 94819.05
+      },
+      {
+        "description": "Server Rack Enclosure 42U with PDU",
+        "hsn_sac": "853710",
+        "quantity": 3.0,
+        "unit": "Unit",
+        "unit_price": 39491.5,
+        "line_total": 118474.5
+      },
+      {
+        "description": "Creative Digital Advertising & Media Campaign",
+        "hsn_sac": "998361",
+        "quantity": 1.0,
+        "unit": "Campaign",
+        "unit_price": 38580.61,
+        "line_total": 38580.61
+      },
+      {
+        "description": "LaserJet High-Yield Toner Cartridges (Black)",
+        "hsn_sac": "844399",
+        "quantity": 10.0,
+        "unit": "Pack",
+        "unit_price": 6889.18,
+        "line_total": 68891.8
+      }
+    ],
+    "subtotal": 320765.96,
+    "tax_rate": 0.18,
+    "discount": 0.0,
+    "shipping": 0.0,
+    "grand_total": 378503.83,
+    "amount_in_words": "Three Lakh Seventy-Eight Thousand Five Hundred And Three Rupees and Eighty-Three Paise Only",
+    "bank_name": "Axis Bank",
+    "account_number": "5111510954941348",
+    "ifsc": "UTIB0009066",
+    "template_id": "classic_table"
+  },
+  "ground_truth": {
+    "fields": {
+      "vendor.name": {
+        "value": "Apex Solutions Pvt Ltd",
+        "raw": "Apex Solutions Pvt Ltd",
+        "bbox": [
+          0.0672,
+          0.0725,
+          0.2879,
+          0.0915
+        ],
+        "page": 0
+      },
+      "vendor.address": {
+        "value": "Plot 366, Sector 19, Industrial Area, Mizoram",
+        "raw": "Plot 366, Sector 19, Industrial Area, Mizoram",
+        "bbox": [
+          0.0672,
+          0.0938,
+          0.368,
+          0.1093
+        ],
+        "page": 0
+      },
+      "vendor.gstin": {
+        "value": "15LJGCL9809B1ZR",
+        "raw": "GSTIN: 15LJGCL9809B1ZR",
+        "bbox": [
+          0.0672,
+          0.1117,
+          0.2621,
+          0.1271
+        ],
+        "page": 0
+      },
+      "vendor.pan": {
+        "value": "LJGCL9809B",
+        "raw": "PAN: LJGCL9809B",
+        "bbox": [
+          0.0672,
+          0.1271,
+          0.1974,
+          0.1425
+        ],
+        "page": 0
+      },
+      "vendor.email": {
+        "value": "billing@apex.co.in",
+        "raw": "Email: billing@apex.co.in",
+        "bbox": [
+          0.0672,
+          0.1425,
+          0.2363,
+          0.158
+        ],
+        "page": 0
+      },
+      "invoice_number": {
+        "value": "TAX/26-27/01000",
+        "raw": "TAX/26-27/01000",
+        "bbox": [
+          0.7648,
+          0.076,
+          0.8833,
+          0.0915
+        ],
+        "page": 0
+      },
+      "invoice_date": {
+        "value": "2026-09-04",
+        "raw": "2026-09-04",
+        "bbox": [
+          0.7648,
+          0.0938,
+          0.8421,
+          0.1093
+        ],
+        "page": 0
+      },
+      "due_date": {
+        "value": "2026-10-04",
+        "raw": "2026-10-04",
+        "bbox": [
+          0.7648,
+          0.1117,
+          0.8421,
+          0.1271
+        ],
+        "page": 0
+      },
+      "buyer.name": {
+        "value": "Kavach Financial Technologies Ltd",
+        "raw": "Kavach Financial Technologies Ltd",
+        "bbox": [
+          0.084,
+          0.1912,
+          0.365,
+          0.2079
+        ],
+        "page": 0
+      },
+      "buyer.address": {
+        "value": "Outer Ring Road, Bellandur, Bengaluru, KA",
+        "raw": "Outer Ring Road, Bellandur, Bengaluru, KA",
+        "bbox": [
+          0.084,
+          0.2091,
+          0.3432,
+          0.2233
+        ],
+        "page": 0
+      },
+      "buyer.gstin": {
+        "value": "29AABCK9012H1ZJ",
+        "raw": "GSTIN: 29AABCK9012H1ZJ",
+        "bbox": [
+          0.084,
+          0.2209,
+          0.2595,
+          0.2352
+        ],
+        "page": 0
+      },
+      "subtotal": {
+        "value": 320765.96,
+        "raw": "Rs. 3,20,765.96",
+        "bbox": [
+          0.8168,
+          0.3955,
+          0.9244,
+          0.411
+        ],
+        "page": 0
+      },
+      "tax.igst": {
+        "value": 57737.87,
+        "raw": "Rs. 57,737.87",
+        "bbox": [
+          0.8303,
+          0.4122,
+          0.9244,
+          0.4276
+        ],
+        "page": 0
+      },
+      "grand_total": {
+        "value": 378503.83,
+        "raw": "Rs. 3,78,503.83",
+        "bbox": [
+          0.7998,
+          0.4324,
+          0.9194,
+          0.449
+        ],
+        "page": 0
+      },
+      "amount_in_words": {
+        "value": "Three Lakh Seventy-Eight Thousand Five Hundred And Three Rupees and Eighty-Three Paise Only",
+        "raw": "Amount in Words: Three Lakh Seventy-Eight Thousand Five Hundred And Three Rupees and Eighty-Three Paise Only",
+        "bbox": [
+          0.0672,
+          0.4644,
+          0.7731,
+          0.4787
+        ],
+        "page": 0
+      },
+      "payment.bank_name": {
+        "value": "Axis Bank",
+        "raw": "Bank: Axis Bank",
+        "bbox": [
+          0.0806,
+          0.5024,
+          0.1785,
+          0.5167
+        ],
+        "page": 0
+      },
+      "payment.account_number": {
+        "value": "5111510954941348",
+        "raw": "A/C: 5111510954941348",
+        "bbox": [
+          0.0806,
+          0.5167,
+          0.2315,
+          0.5309
+        ],
+        "page": 0
+      },
+      "payment.ifsc": {
+        "value": "UTIB0009066",
+        "raw": "IFSC: UTIB0009066",
+        "bbox": [
+          0.0806,
+          0.5298,
+          0.2016,
+          0.544
+        ],
+        "page": 0
+      }
+    },
+    "items": [
+      {
+        "description": "Executive Solid Oak Conference Desk",
+        "quantity": 3.0,
+        "unit_price": 31606.35,
+        "line_total": 94819.05,
+        "hsn_sac": "940330",
+        "bbox": [
+          0.0672,
+          0.291,
+          0.9328,
+          0.31
+        ]
+      },
+      {
+        "description": "Server Rack Enclosure 42U with PDU",
+        "quantity": 3.0,
+        "unit_price": 39491.5,
+        "line_total": 118474.5,
+        "hsn_sac": "853710",
+        "bbox": [
+          0.0672,
+          0.3124,
+          0.9328,
+          0.3314
+        ]
+      },
+      {
+        "description": "Creative Digital Advertising & Media Campaign",
+        "quantity": 1.0,
+        "unit_price": 38580.61,
+        "line_total": 38580.61,
+        "hsn_sac": "998361",
+        "bbox": [
+          0.0672,
+          0.3338,
+          0.9328,
+          0.3528
+        ]
+      },
+      {
+        "description": "LaserJet High-Yield Toner Cartridges (Black)",
+        "quantity": 10.0,
+        "unit_price": 6889.18,
+        "line_total": 68891.8,
+        "hsn_sac": "844399",
+        "bbox": [
+          0.0672,
+          0.3552,
+          0.9328,
+          0.3742
+        ]
+      }
+    ],
+    "page_width": 595.2755905511812,
+    "page_height": 841.8897637795277
+  }
+}

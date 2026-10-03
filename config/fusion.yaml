@@ -1,0 +1,49 @@
+# Risk Fusion Configuration — Blueprint Section 9
+# All thresholds are configurable via the settings API (PUT /settings).
+
+# ── Engine weights for noisy-OR baseline ────────────────────────────────────
+# Higher weight = signal has more leverage when it's high.
+weights:
+  financial: 0.85
+  tax_identity: 0.60
+  duplicate: 0.80
+  vendor: 0.60
+  bank_change: 0.80
+  identifiers: 0.40
+  visual: 0.50
+
+# ── Blend ratio (baseline vs. ML model) ─────────────────────────────────────
+combination_ratio:
+  baseline: 0.50
+  ml: 0.50
+
+# ── Escalation rules ─────────────────────────────────────────────────────────
+escalations:
+  # ≥ N independent signals at or above this score → enforce floor
+  multi_signal_count: 2
+  multi_signal_threshold: 70.0
+  multi_signal_floor: 65.0
+  # These finding types trigger the critical anomaly floor unconditionally
+  critical_anomaly_types:
+    - BANK_ACCOUNT_SHARED_WITH_OTHER_VENDOR
+    - MODIFIED_DUPLICATE
+    - EXACT_FILE_DUPLICATE
+  critical_anomaly_floor: 75.0
+
+# ── Risk level thresholds (upper-inclusive) ──────────────────────────────────
+level_thresholds:
+  low_max: 29
+  medium_max: 59
+  high_max: 79
+  # critical = 80–100
+
+# ── Confidence band ──────────────────────────────────────────────────────────
+# Derived from extraction_confidence × evidence_agreement.
+confidence_band:
+  high_min: 0.75
+  medium_min: 0.45
+  # below medium_min → LOW confidence band
+
+# ── FUSION_MODE flag ─────────────────────────────────────────────────────────
+# Set FUSION_MODE=baseline (or env var) to skip XGBoost and use only noisy-OR.
+fusion_mode: auto   # auto | baseline

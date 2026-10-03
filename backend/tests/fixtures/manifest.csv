@@ -1,0 +1,15 @@
+id,filename,label,fraud_types,mode,vendor_id,template_id,is_scanned,split,grand_total
+GEN_00001,GEN_00001.pdf,genuine,,clean,VND-001,classic_table,True,train,539860.42
+GEN_00002,GEN_00002.pdf,genuine,,clean,VND-002,modern_minimal,False,train,1286826.4
+GEN_00003,GEN_00003.pdf,genuine,,clean,VND-003,gst_tax_invoice,False,train,85305.43
+GEN_00004,GEN_00004.pdf,genuine,,clean,VND-004,two_column,False,train,1041143.32
+GEN_00005,GEN_00005.pdf,genuine,,clean,VND-005,compact_thermal,True,train,687319.25
+GEN_00006,GEN_00006.pdf,genuine,,clean,VND-006,classic_table,False,train,564787.19
+TAM_00001,TAM_00001.pdf,tampered,LINE_TOTAL_MISMATCH,re-render,VND-001,classic_table,True,train,392005.45
+TAM_00002,TAM_00002.pdf,tampered,GRAND_TOTAL_MISMATCH,pixel-edit,VND-002,modern_minimal,False,train,1518338.94
+TAM_00003,TAM_00003.pdf,tampered,AMOUNT_OUTLIER,pdf-edit,VND-003,gst_tax_invoice,False,train,1571690.13
+TAM_00004,TAM_00004.pdf,tampered,TAX_RATE_INVALID_SLAB;TAX_AMOUNT_MISMATCH,re-render,VND-004,two_column,False,train,450829.23
+TAM_00005,TAM_00005.pdf,tampered,TAX_AMOUNT_MISMATCH;GRAND_TOTAL_MISMATCH,re-render,VND-005,compact_thermal,True,train,908241.62
+TAM_00006,TAM_00006.pdf,tampered,GSTIN_CHECKSUM_FAIL,re-render,VND-006,classic_table,False,train,678157.19
+VIS_00001,VIS_00001.pdf,tampered,VISUAL_TAMPER_PATCH;GRAND_TOTAL_MISMATCH,pixel-edit,VND-001,classic_table,False,train,378503.83
+VIS_00002,VIS_00002.pdf,tampered,VISUAL_TAMPER_PATCH;GRAND_TOTAL_MISMATCH,pixel-edit,VND-002,modern_minimal,False,train,222156.77
