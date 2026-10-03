@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { CheckCircle2, XCircle, AlertTriangle, ArrowRight, MousePointerClick } from 'lucide-react'
+import { CheckCircle2, XCircle, AlertTriangle, MousePointerClick } from 'lucide-react'
 
 import { invoiceApi } from '@/api/client'
 import { RiskBadge } from '@/components/RiskBadge'

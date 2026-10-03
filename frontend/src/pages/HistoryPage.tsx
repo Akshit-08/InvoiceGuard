@@ -12,11 +12,11 @@ import {
 import { Search, Filter, Download, ArrowUpDown } from 'lucide-react'
 
 import { invoiceApi } from '@/api/client'
-import { RiskBadge, SeverityChip } from '@/components/RiskBadge'
+import { RiskBadge } from '@/components/RiskBadge'
 import { formatCurrency, formatDate, scoreToLevel } from '@/lib/utils'
-import type { InvoiceDetail } from '@/api/types'
+import type { InvoiceListItem } from '@/api/types'
 
-const columnHelper = createColumnHelper<Partial<InvoiceDetail>>()
+const columnHelper = createColumnHelper<InvoiceListItem>()
 
 export default function HistoryPage() {
   const navigate = useNavigate()
@@ -33,7 +33,7 @@ export default function HistoryPage() {
         header: 'Invoice',
         cell: info => <span className="font-medium">{info.getValue() || '—'}</span>,
       }),
-      columnHelper.accessor(row => row.vendor?.name, {
+      columnHelper.accessor(row => row.vendor_name || row.vendor?.name, {
         id: 'vendor',
         header: 'Vendor',
         cell: info => info.getValue() || '—',
@@ -133,7 +133,7 @@ export default function HistoryPage() {
                   </tr>
                 ))}
               </thead>
-              <tbody className="divide-y" style={{ divideColor: 'var(--border-hairline)' }}>
+              <tbody className="divide-y divide-neutral-800">
                 {table.getRowModel().rows.map(row => (
                   <tr 
                     key={row.id} 

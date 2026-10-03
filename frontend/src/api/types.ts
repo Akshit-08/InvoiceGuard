@@ -189,6 +189,7 @@ export interface InvoiceListItem {
   review_status?: ReviewStatus
   created_at?: string
   vendor_name?: string
+  vendor?: { name?: string }
 }
 
 export interface InvoiceListResponse {
@@ -205,12 +206,18 @@ export interface UploadResponse {
 }
 
 export interface DashboardStats {
-  total_invoices: number
-  analyzed: number
-  needs_review: number
-  high_critical: number
-  duplicate_alerts: number
-  risk_distribution?: {
+  kpis: {
+    total_invoices: number
+    analyzed_count: number
+    needs_review_count: number
+    high_critical_count: number
+    duplicate_alerts: number
+    total_volume?: number
+    total_analyzed?: number
+    needs_review?: number
+    high_critical?: number
+  }
+  risk_distribution: {
     low: number
     medium: number
     high: number
@@ -218,6 +225,9 @@ export interface DashboardStats {
   }
   anomaly_categories?: Record<string, number>
   recent_analyses?: InvoiceListItem[]
+  trend?: Array<{ date: string; count: number; high_risk: number }>
+  top_vendors?: Array<{ id: string; name: string; invoice_count: number; avg_risk_score: number }>
+  categories?: Record<string, number>
 }
 
 export interface VendorProfile {
@@ -228,6 +238,7 @@ export interface VendorProfile {
   category?: string
   invoice_count: number
   total_billed?: number
+  total_volume?: number
   avg_risk_score?: number
   known_accounts?: Array<{
     last4: string

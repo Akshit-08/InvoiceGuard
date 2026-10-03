@@ -73,9 +73,32 @@ cp .env.example .env
 uvicorn backend.app.main:app --reload --port 8000
 ```
 
+### Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+# Visit http://localhost:5173
+```
+
+### One-Command Full Stack Launcher
+```bash
+# Windows (PowerShell)
+./scripts/dev.ps1
+# or
+npm run dev
+
+# Linux/macOS
+./scripts/dev.sh
+```
+
 ### Running Tests
 ```bash
+# Backend unit & integration tests
 pytest backend/tests
+
+# Frontend unit tests
+npm run test:frontend
 ```
 
 ### Running Evaluation & Metrics

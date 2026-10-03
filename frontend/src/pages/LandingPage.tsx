@@ -7,7 +7,6 @@ import {
   Building2, CreditCard, Eye, CheckCircle2,
   AlertTriangle, AlertCircle, Zap,
 } from 'lucide-react'
-import { Disclaimer } from '@/components/ui'
 import { useReducedMotion } from '@/hooks/useMotion'
 
 // ── Animated Invoice Mock ─────────────────────────────────────

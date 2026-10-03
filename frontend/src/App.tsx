@@ -16,6 +16,7 @@ const ReviewPage     = lazy(() => import('@/pages/ReviewPage'))
 const VendorsPage    = lazy(() => import('@/pages/VendorsPage'))
 const InsightsPage   = lazy(() => import('@/pages/InsightsPage'))
 const SettingsPage   = lazy(() => import('@/pages/SettingsPage'))
+const ComparePage    = lazy(() => import('@/pages/ComparePage'))
 const NotFoundPage   = lazy(() => import('@/pages/NotFoundPage'))
 
 const queryClient = new QueryClient({
@@ -61,6 +62,7 @@ export default function App() {
                       <Route path="/vendors"          element={<VendorsPage />} />
                       <Route path="/insights"         element={<InsightsPage />} />
                       <Route path="/settings"         element={<SettingsPage />} />
+                      <Route path="/compare/:a/:b"    element={<ComparePage />} />
                       <Route path="/404"              element={<NotFoundPage />} />
                       <Route path="*"                 element={<Navigate to="/404" replace />} />
                     </Routes>

@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-10-03
+
+### Added
+- **Frontend Architecture & Design System (Blueprint §14)**:
+  - React 18 + Vite + TypeScript strict mode with Tailwind CSS v4 and Radix UI / shadcn foundations.
+  - Complete dark/light theming with security-ops design aesthetic, custom CSS tokens, and glassmorphism.
+  - Variable font integration (`@fontsource-variable/inter` and `@fontsource-variable/jetbrains-mono`).
+  - Swappable API layer with automatic offline mock fallbacks and typed OpenAPI contracts.
+- **Pages & User Workflows**:
+  - `LandingPage`: Product presentation, animated invoice scan hero, feature grid, and live demo quick-launch.
+  - `AnalyzePage`: Drag-and-drop file upload, SSE pipeline visual stepper, 8 curated demo hero samples, and split-pane human-in-the-loop extraction review.
+  - `InvoicePage`: Full showpiece invoice analysis view with `react-zoom-pan-pinch` document viewer, interactive normalized bounding box overlays (`[0, 1]`), synchronized finding highlight cards, SVG radial risk gauge, signal breakdown bars, SHAP feature contributors, and reviewer actions.
+  - `DashboardPage`: Overview analytics with animated KPI counters, Recharts risk distribution donut, 30-day anomaly trend area chart, top category bars, and quick dropzone.
+  - `HistoryPage`: TanStack Table with multi-column sorting, search, risk badge indicators, and detail navigation.
+  - `ReviewPage`: Keyboard-driven review queue (`j`/`k`/`c`/`f`/`a`/`Enter`) with quick decision logging.
+  - `VendorsPage`: Vendor registry with MAD band timeline chart, known account tracking, and outlier flagging.
+  - `ComparePage`: Side-by-side duplicate and anomaly diff comparison with currency deltas.
+  - `InsightsPage`: Live ML evaluation metrics, ROC/PR AUC cards, and baseline vs fusion ablation bar charts.
+  - `SettingsPage`: Interactive engine toggles, sensitivity sliders, and live risk threshold preview.
+  - `NotFoundPage`: Custom 404 page with return routing.
+- **Testing, Quality & Tooling**:
+  - Vitest test suite for bounding box maths, currency formatting, and level mapping (12/12 passing).
+  - Clean TypeScript compilation (`npx tsc --noEmit` clean).
+  - Integrated dev runners (`scripts/dev.ps1`, `scripts/dev.sh`, root `npm run dev`) launching frontend and backend concurrently.
+  - Updated GitHub Actions CI workflow with frontend lint, typecheck, unit tests, and production build.
+
 ## [0.2.0] - 2026-10-03
 
 ### Added

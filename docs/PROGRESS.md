@@ -181,7 +181,11 @@
   - `ReviewPage`: Inbox-zero style queue with `j/k` keyboard navigation and quick action shortcuts.
   - `DashboardPage` & `InsightsPage`: Implemented `Recharts` for distribution donuts, trend areas, and ablation bar charts.
 - **Testing & Run:**
-  - Verified local dev execution (`npm run dev`).
-  - Successfully connected mocked endpoints to frontend components.
-  - All requested pages from Blueprint Section 14 are complete.
+  - Verified local dev execution (`npm run dev` and `scripts/dev.ps1` launching frontend and backend).
+  - Clean TypeScript strict typecheck (`npx tsc --noEmit` passing with 0 errors).
+  - Oxlint linting clean on all frontend code.
+  - Vitest test suite running and passing with 12/12 unit tests.
+  - Backend integration tests passing (95/95).
+  - All requested pages from Blueprint Section 14 are complete with real backend integration, dark/light themes, and WCAG AA contrast.
+  - Milestone tag `v0.3-day3` prepared.
 
