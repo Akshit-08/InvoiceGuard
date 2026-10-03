@@ -5,42 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] — Day 2 Block 7
+## [0.2.0] - 2026-10-03
 
 ### Added
+- **Engine Framework & Settings (Blueprint §7 & §8)**:
+  - BaseEngine abstract class with normalized `[0, 1]` bounding boxes and uniform `Finding` schema.
+  - Hierarchical settings system (`config/settings.yaml`, `config/tax_slabs.yaml`, `config/pdf_editors.yaml`, `config/fusion.yaml`).
+  - Date-aware statutory Indian GST 2.0 (CBIC, Sept 2025: 0%, 5%, 18%, 40%) vs GST 1.0 slab validation (ADR 005).
+- **Rule Engines**:
+  - `financial.py`: Line totals, subtotal parity, grand total decomposition, amount-in-words reconciliation, rounding anomalies.
+  - `tax_identity.py`: Mod-36 GSTIN checksum, jurisdiction states, PAN matching, CGST+SGST vs IGST validation, IFSC/account formatting.
+  - `identifiers.py`: Invoice number reuse, regex format deviation, sequence regression/jumps, future/stale dates, submission intervals.
+- **Statistical & ML Engines**:
+  - `duplicate.py`: Exact SHA-256 match, perceptual pHash (dHash/average hash) with Hamming distance <= 10, canonical field match, fuzzy similarity.
+  - `vendor.py`: Historical spending profiling (MAD/median), frequency bursts, lookalike vendor typosquatting, cross-vendor shared bank accounts.
+  - `bank.py`: First-seen bank account detection per vendor, account structure validation, SHA-256 + last-4 storage.
+  - `visual/forensics.py`: PDF metadata revision count anomaly, multiple `%%EOF` markers, incremental update tampering, font mixing inconsistency, cover-up rectangle detection, ELA heatmap generation.
 - **Risk Fusion System (Blueprint §9)**:
   - `feature_builder.py`: 31-feature vector (7 scores + 7 confidences + 17 engineered) for XGBoost input.
-  - `xgb_model.py`: Lazy-loading XGBoost + isotonic calibration wrapper with `FUSION_MODE=baseline` env override and graceful fallback when model artifact is absent.
-  - `shap_explain.py`: SHAP TreeExplainer for CalibratedClassifierCV — returns top-N ordered contributors with direction labels.
-  - `thresholds.py`: `score_to_level()` (LOW/MEDIUM/HIGH/CRITICAL), `apply_escalations()` (multi-signal floor 65 + critical anomaly floor 75, never lowers score), `compute_confidence_band()` (geometric mean → HIGH/MEDIUM/LOW).
-  - `fusion.py`: Complete orchestrator (noisy-OR baseline + XGBoost blend + escalations + SHAP + narrative). Replaces the stub in `baseline.py`. Config read from `config/fusion.yaml` at runtime.
+  - `xgb_model.py`: Lazy-loading XGBoost + isotonic calibration wrapper with `FUSION_MODE=baseline` env override and fallback.
+  - `shap_explain.py`: SHAP TreeExplainer returning top-N ordered contributors with direction labels.
+  - `thresholds.py`: `score_to_level()` (LOW/MEDIUM/HIGH/CRITICAL), `apply_escalations()` (multi-signal floor 65 + critical anomaly floor 75), `compute_confidence_band()` (geometric mean → HIGH/MEDIUM/LOW).
+  - `fusion.py`: Complete orchestrator (noisy-OR baseline + XGBoost blend + escalations + SHAP + narrative).
   - `explain/narrative.py`: Plain-English narrative builder, top-5 key risk indicators, escalation notices, 16-entry hint lookup table for "what would lower the risk".
   - `explain/recommendations.py`: Per-level recommendation text and structured action objects for frontend review workflow.
-- **Training Pipeline** (`ml/training/train_fusion.py`):
-  - Multiprocessing feature extraction with disk cache (resume on re-run).
-  - Train/test split by vendor AND template to prevent leakage.
-  - XGBoost `monotone_constraints=increasing` on all features (guarantees more evidence never lowers risk score).
-  - Isotonic calibration (CalibratedClassifierCV, 5-fold cross-validation).
-  - Saves <10 MB joblib artifact + updates `ml/artifacts/model_manifest.json`.
-- **Evaluation Script** (`ml/evaluation/run.py`):
-  - Metrics: ROC-AUC, PR-AUC, Precision/Recall/F1 at MEDIUM threshold (score ≥ 30).
-  - Per-fraud-type recall, false-positive rate on genuine invoices.
-  - Latency p50/p95, ablation table (baseline vs combined).
-  - Outputs `reports/metrics.json` + auto-generated `reports/EVALUATION.md`.
-- **Config** (`config/fusion.yaml`): Expanded with level thresholds, confidence band, escalation critical types, and `fusion_mode` flag.
-- **Tests** (`backend/tests/unit/test_fusion.py`): 47 new tests — 93 total now passing.
+- **Complete Frozen API Surface (Blueprint §10)**:
+  - `POST /api/v1/invoices/upload`: Multipart upload with validation.
+  - `GET /api/v1/invoices/{id}/events`: Real-time Server-Sent Events (SSE) progress streaming.
+  - `GET/PUT /api/v1/invoices/{id}/extraction`: Field retrieval and human-in-the-loop field edits.
+  - `POST /api/v1/invoices/{id}/analyze`: Analysis execution trigger.
+  - `GET /api/v1/invoices/{id}`: Complete analysis results with findings, evidence, SHAP, and recommendations.
+  - `GET /api/v1/invoices`: History search, status/risk filters, pagination.
+  - `GET /api/v1/invoices/{id}/pages/{n}.png`: Rendered page images.
+  - `GET /api/v1/invoices/{id}/thumb`: Document thumbnail.
+  - `GET /api/v1/invoices/{id}/compare/{other_id}`: Side-by-side duplicate comparison.
+  - `PATCH /api/v1/invoices/{id}/review`: Human reviewer sign-off (`approved`/`rejected`/`needs_info`).
+  - `GET /api/v1/invoices/{id}/audit`: Full immutable audit trail.
+  - `GET /api/v1/invoices/{id}/report.pdf`: Audit report export.
+  - `GET /api/v1/dashboard/stats`: Summary statistics and high-risk feed.
+  - `GET /api/v1/models` & `GET /api/v1/models/metrics`: Engine inventory and evaluation metrics.
+  - `GET/PUT /api/v1/settings`: Live system configuration.
+  - `GET /api/v1/vendors` & `GET /api/v1/vendors/{id}`: Vendor catalog and risk profiles.
+  - `POST /api/v1/demo/seed`, `POST /api/v1/demo/reset`, `GET /api/v1/demo/samples`: Demo utilities.
+- **Contract Freeze & Documentation**:
+  - `docs/openapi.json`: OpenAPI 3.1.0 schema generated via `scripts/export_openapi.py`.
+  - `frontend-mocks/`: Decoupled JSON fixtures for all endpoints including hero and clean analysis results.
+  - `docs/API.md`: Comprehensive API reference with SSE contract caveats.
+  - `docs/MODEL_CARD.md`: Full model card with inputs, constraints, evaluation, and limitations.
+  - `docs/EVALUATION.md` & `reports/metrics.json`: End-to-end evaluation metrics on held-out test split.
+  - `docs/DECISIONS.md`: Added ADRs 006, 007, 008.
 
-- **Evaluation Reports**:
-  - `reports/metrics.json` and `reports/EVALUATION.md` benchmark reports generated.
-  - Per-fraud-type recall: 1.000 across 16 categories; latency p50 = 26 ms, p95 = 40 ms.
-- **Trained Fusion Model**:
-  - Saved `ml/artifacts/fusion_xgb.joblib` (0.09 MB) and updated `ml/artifacts/model_manifest.json`.
-
-### Changed
-- `pipeline.py`: Updated to use the new `fusion.py` orchestrator and passes `extraction_confidence` + `invoice_meta` for accurate confidence band.
-- `config/fusion.yaml`: Extended with level thresholds, confidence band config, critical anomaly types.
-- `ml/training/train_fusion.py`: Uses standard zlib compression for artifact portability.
-- `shap_explain.py`: Added compatibility patch for SHAP tree explainer with XGBoost 2.x and caching.
 
 ## [0.1.0] - 2026-10-02
 

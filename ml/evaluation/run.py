@@ -163,6 +163,30 @@ def compute_metrics(df_results: pd.DataFrame) -> dict[str, Any]:
     metrics["f1"] = round(float(f1), 4)
     metrics["threshold_used"] = MEDIUM_THRESHOLD
 
+    # ── Confusion matrix ──────────────────────────────────────────────────────
+    from sklearn.metrics import confusion_matrix as sk_confusion_matrix
+    from sklearn.metrics import precision_recall_curve, roc_curve
+
+    cm = sk_confusion_matrix(y_true, y_pred, labels=[0, 1])
+    tn, fp, fn, tp = int(cm[0, 0]), int(cm[0, 1]), int(cm[1, 0]), int(cm[1, 1])
+    metrics["confusion_matrix"] = {
+        "tn": tn,
+        "fp": fp,
+        "fn": fn,
+        "tp": tp,
+    }
+
+    # ── Curve data (sampled for JSON charting in UI) ───────────────────────────
+    if len(np.unique(y_true)) > 1:
+        fpr, tpr, _ = roc_curve(y_true, y_score)
+        step_roc = max(1, len(fpr) // 25)
+        prec, rec, _ = precision_recall_curve(y_true, y_score)
+        step_pr = max(1, len(prec) // 25)
+        metrics["curve_data"] = {
+            "roc": [{"fpr": round(float(f), 4), "tpr": round(float(t), 4)} for f, t in zip(fpr[::step_roc], tpr[::step_roc])],
+            "pr": [{"precision": round(float(p), 4), "recall": round(float(r), 4)} for p, r in zip(prec[::step_pr], rec[::step_pr])],
+        }
+
     # ── False positive rate on genuine invoices ───────────────────────────────
     genuine_df = test_df[test_df["label"] == 0]
     if len(genuine_df) > 0:
@@ -253,6 +277,13 @@ def generate_evaluation_md(metrics: dict[str, Any]) -> str:
         f"| False-positive rate (genuine invoices) | "
         f"{metrics.get('false_positive_rate_on_genuine', '-')} |",
         "",
+        "## Confusion Matrix (@ threshold=30)",
+        "",
+        "| | Predicted Genuine (<30) | Predicted Tampered (>=30) |",
+        "|---|---|---|",
+        f"| **Actual Genuine** | TN = {metrics.get('confusion_matrix', {}).get('tn', 0)} | FP = {metrics.get('confusion_matrix', {}).get('fp', 0)} |",
+        f"| **Actual Tampered** | FN = {metrics.get('confusion_matrix', {}).get('fn', 0)} | TP = {metrics.get('confusion_matrix', {}).get('tp', 0)} |",
+        "",
         "## Latency",
         "",
     ]
@@ -312,6 +343,9 @@ def main() -> None:
     parser.add_argument("--gt-dir", default="data/synthetic/gt")
     parser.add_argument("--out", default="reports/metrics.json")
     parser.add_argument("--eval-md", default="reports/EVALUATION.md")
+    parser.add_argument("--docs-md", default="docs/EVALUATION.md")
+    parser.add_argument("--split", default="test",
+                        help="Split to evaluate (default: test; use 'all' for entire dataset).")
     parser.add_argument("--max-rows", type=int, default=None,
                         help="Limit number of rows processed (for quick smoke test).")
     args = parser.parse_args()
@@ -322,10 +356,13 @@ def main() -> None:
         sys.exit(1)
 
     df_manifest = pd.read_csv(manifest_path)
+    if args.split and args.split.lower() != "all":
+        df_manifest = df_manifest[df_manifest["split"] == args.split.lower()].copy()
+
     if args.max_rows:
         df_manifest = df_manifest.head(args.max_rows)
 
-    logger.info("Evaluating on %d documents …", len(df_manifest))
+    logger.info("Evaluating on %d documents (split=%s) …", len(df_manifest), args.split)
 
     results = []
     for _, row in df_manifest.iterrows():
@@ -350,24 +387,33 @@ def main() -> None:
         json.dump(metrics, f, indent=2)
     logger.info("Metrics saved to %s.", out_path)
 
-    # Save EVALUATION.md
+    # Save reports/EVALUATION.md and docs/EVALUATION.md
     md_content = generate_evaluation_md(metrics)
-    md_path = Path(args.eval_md)
-    md_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(md_path, "w", encoding="utf-8") as f:
-        f.write(md_content)
-    logger.info("Evaluation report saved to %s.", md_path)
+    for p_str in (args.eval_md, args.docs_md):
+        md_path = Path(p_str)
+        md_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(md_path, "w", encoding="utf-8") as f:
+            f.write(md_content)
+        logger.info("Evaluation report saved to %s.", md_path)
 
     # Print summary
-    logger.info("=== SUMMARY ===")
-    logger.info("ROC-AUC: %s", metrics.get("roc_auc"))
-    logger.info("PR-AUC: %s", metrics.get("pr_auc"))
-    logger.info("F1: %s", metrics.get("f1"))
-    logger.info("FP rate on genuine: %s", metrics.get("false_positive_rate_on_genuine"))
+    print("\n" + "=" * 60)
+    print("           INVOICEGUARD EVALUATION SUMMARY")
+    print("=" * 60)
+    print(f"ROC-AUC:                {metrics.get('roc_auc', 'N/A')}")
+    print(f"PR-AUC:                 {metrics.get('pr_auc', 'N/A')}")
+    print(f"Precision @ 30:         {metrics.get('precision', 'N/A')}")
+    print(f"Recall @ 30:            {metrics.get('recall', 'N/A')}")
+    print(f"F1 Score:               {metrics.get('f1', 'N/A')}")
+    print(f"False Positive Rate:    {metrics.get('false_positive_rate_on_genuine', 'N/A')}")
+    cm = metrics.get("confusion_matrix", {})
+    print(f"Confusion Matrix:       TN={cm.get('tn', 0)}, FP={cm.get('fp', 0)}, FN={cm.get('fn', 0)}, TP={cm.get('tp', 0)}")
     latency = metrics.get("latency", {})
     if latency:
-        logger.info("Latency p50: %ss, p95: %ss", latency.get("p50_s"), latency.get("p95_s"))
+        print(f"Latency:                p50={latency.get('p50_s')}s, p95={latency.get('p95_s')}s")
+    print("=" * 60 + "\n")
 
 
 if __name__ == "__main__":
     main()
+

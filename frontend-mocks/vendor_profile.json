@@ -1,0 +1,42 @@
+{
+  "id": "vend-apex-01",
+  "name": "Apex Cloud Technologies Pvt Ltd",
+  "gstin": "27AABCA1234F1Z9",
+  "pan": "AABCA1234F",
+  "address": "Unit 402, Trade Tower, Mumbai 400051",
+  "email": "billing@apexcloud.in",
+  "phone": "+91 22 2847 9900",
+  "category": "Cloud & IT Services",
+  "known_accounts": [
+    {
+      "id": "acc-1",
+      "masked_account": "XXXXXX1234",
+      "bank_name": "HDFC Bank",
+      "ifsc": "HDFC0001234",
+      "invoice_count": 18,
+      "first_seen": "2024-06-10T00:00:00Z",
+      "last_seen": "2026-01-15T00:00:00Z"
+    },
+    {
+      "id": "acc-2",
+      "masked_account": "XXXXXX8891",
+      "bank_name": "HDFC Bank",
+      "ifsc": "HDFC0001234",
+      "invoice_count": 1,
+      "first_seen": "2026-03-15T10:30:00Z",
+      "last_seen": "2026-03-15T10:30:00Z"
+    }
+  ],
+  "recent_invoices": [
+    {
+      "id": "inv-hero-03-critical",
+      "invoice_number": "INV-2026-0042",
+      "vendor_name": "Apex Cloud Technologies Pvt Ltd",
+      "grand_total": 153900.0,
+      "status": "analyzed",
+      "risk_level": "CRITICAL",
+      "overall_score": 88.5,
+      "created_at": "2026-03-15T10:30:00Z"
+    }
+  ]
+}

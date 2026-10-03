@@ -78,15 +78,28 @@ uvicorn backend.app.main:app --reload --port 8000
 pytest backend/tests
 ```
 
-### Generating Synthetic Data
+### Running Evaluation & Metrics
 ```bash
-python scripts/generate_data.py --seed 42 --genuine 300 --tampered 300 --visual-pairs 200 --out data/synthetic
+# Run full evaluation across test split
+python ml/evaluation/run.py
+
+# Export OpenAPI schema and frontend mock fixtures
+python scripts/export_openapi.py
+```
+
+### Seeding Demo Data
+```bash
+# Seed 8 hero sample invoices across risk bands
+python scripts/seed_demo.py
 ```
 
 ---
 
 ## Repository Documentation
 - [Master Blueprint (Source of Truth)](docs/BLUEPRINT.md)
+- [API Reference & Contracts](docs/API.md)
+- [Evaluation Report & Metrics](docs/EVALUATION.md)
+- [Model Card](docs/MODEL_CARD.md)
 - [Daily Progress Log](docs/PROGRESS.md)
 - [Architecture Decision Records](docs/DECISIONS.md)
 - [Agent & Engineering Guidelines](AGENTS.md)

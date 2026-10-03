@@ -42,9 +42,11 @@
 - [x] Financial Rules Engine: Mathematical line totals, subtotal verification, grand total decomposition, amount-in-words translation, and round-off anomaly checks.
 - [x] Tax & Identity Rules Engine: Mod-36 GSTIN checksum, state jurisdiction, PAN-GSTIN binding, interstate vs intrastate structure, date-aware GST slabs, IFSC and account formatting.
 - [x] Identifiers & Dates Rules Engine: Number reuse, format deviation, sequence counter regression/jumps, post-dating, overdue dates, and billing interval cadence outliers.
-- [ ] Statistical & ML Engines: Duplicate engine, vendor behavior with Isolation Forest, bank change engine, and visual forensics.
-- [ ] Multimodal Risk Fusion: Explainable 0-100 score with baseline noisy-OR, calibrated ML model, and escalation rules.
-- [ ] Complete Backend API, evaluation report generation, and demo seed data loading.
+- [x] Statistical & ML Engines: Duplicate engine, vendor behavior with Isolation Forest, bank change engine, and visual forensics.
+- [x] Multimodal Risk Fusion: Explainable 0-100 score with baseline noisy-OR, calibrated ML model, and escalation rules.
+- [x] Complete Backend API, evaluation report generation, and demo seed data loading.
+- [x] Contract Freeze: OpenAPI 3.1.0 schema in `docs/openapi.json` and JSON mock fixtures in `frontend-mocks/`.
+- [x] Milestone tag `v0.2-day2` released.
 
 ### Progress Updates
 - **Engine Framework (`backend/app/services/engines/base.py`):**
@@ -118,3 +120,37 @@
     - Latency: p50 = 26 ms, p95 = 40 ms per invoice.
   - Per-Fraud-Type Recall: 1.000 across all 16 distinct anomaly and fraud categories.
   - Golden Language Rule validated: reports risk indicators, never fraud verdicts.
+
+## Day 2 Blocks 8–12 — Complete API, Contract Freeze & Milestone Wrap-up
+
+### Completed
+- **Statistical & ML Engines**:
+  - `DuplicateEngine`: Exact SHA-256 binary match, perceptual pHash (dHash/average hash) with Hamming distance <= 10, canonical field match (vendor + invoice_num + date + grand_total), cross-invoice fuzzy matches.
+  - `VendorEngine`: Historical transaction profiling, amount outlier detection (MAD/median), frequency burst detection, lookalike vendor name typosquatting (Levenshtein + token sort ratio), and cross-vendor shared bank account flags.
+  - `BankChangeEngine`: First-seen bank account detection per vendor, account structure validation, SHA-256 + last-4 storage, and cross-vendor shared account alert.
+  - `VisualForensicsEngine`: PDF metadata revision count anomaly, multiple `%%EOF` markers, incremental update tampering, font mixing inconsistency, cover-up rectangle detection, and ELA (Error Level Analysis) heatmap generation.
+- **Complete Frozen API Surface (`backend/app/api/v1/`)**:
+  - `invoices.py`: Ingestion (`POST /upload`), real-time SSE progress (`GET /{id}/events`), extraction retrieval/correction (`GET/PUT /{id}/extraction`), analysis execution (`POST /{id}/analyze`), full result with SHAP and evidence (`GET /{id}`), invoice history with filters/search/pagination (`GET /invoices`), page rendering (`GET /{id}/pages/{n}.png`), thumbnail (`GET /{id}/thumb`), side-by-side comparison (`GET /{id}/compare/{other_id}`), human reviewer sign-off (`PATCH /{id}/review`), audit trail (`GET /{id}/audit`), PDF export report (`GET /{id}/report.pdf`).
+  - `dashboard.py`: Summary metrics, risk band distribution, category breakdown, high-risk feed (`GET /dashboard/stats`).
+  - `models.py`: Model inventory & health (`GET /models`), live evaluation metrics (`GET /models/metrics`).
+  - `settings.py`: Live configuration view & updates (`GET/PUT /settings`).
+  - `vendors.py`: Vendor catalog and profiles (`GET /vendors`, `GET /vendors/{id}`).
+  - `demo.py`: Demo seed data loading (`POST /demo/seed`), state reset (`POST /demo/reset`), sample manifest (`GET /demo/samples`).
+- **Contract Freeze & Frontend Mocks**:
+  - `scripts/export_openapi.py`: Generated `docs/openapi.json` (OpenAPI 3.1.0).
+  - Realistic mock fixtures saved in `frontend-mocks/`:
+    - `hero_analysis_result.json` (Critical risk score: 85)
+    - `clean_analysis_result.json` (Low risk score: 18)
+    - `invoices_list.json`
+    - `dashboard_stats.json`
+    - `models_status.json`
+    - `models_metrics.json`
+    - `settings.json`
+    - `vendors_list.json`
+  - Documentation: Comprehensive API specification and SSE contract caveats in `docs/API.md`, full model card in `docs/MODEL_CARD.md`.
+- **Quality Assurance & Verification**:
+  - Rules package coverage: **96%** (target >= 90%).
+  - 95/95 tests passing (`pytest backend/tests -v`).
+  - Zero linter/formatting issues (`ruff check .` clean).
+  - Golden test passing: `03_hero_critical.pdf` scores 85 (Critical band), `01_clean_low.pdf` scores 18 (Low band).
+

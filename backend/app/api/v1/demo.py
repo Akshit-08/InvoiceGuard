@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-from sqlalchemy.orm import Session
-from backend.app.deps import get_db
-from backend.app.models.entities import Vendor, Invoice, RiskScoreRecord, InvoiceFinding
 import json
-import asyncio
-import os
 import sys
 from pathlib import Path
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from backend.app.deps import get_db
+from backend.app.models.entities import Invoice, InvoiceFinding, RiskScoreRecord, Vendor
 
 # Ensure we can import from scripts
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
@@ -21,16 +21,16 @@ async def seed_demo(background_tasks: BackgroundTasks, db: Session = Depends(get
     try:
         from scripts.seed_demo import build_hero_demo_samples
         expected_bands = build_hero_demo_samples("data/samples")
-        
-        # We would normally parse the expected_bands, generate the PDFs, upload them, 
+
+        # We would normally parse the expected_bands, generate the PDFs, upload them,
         # run extraction, run analysis, and assert the results.
-        # For Day 2 purposes, generating them and returning success is sufficient, 
+        # For Day 2 purposes, generating them and returning success is sufficient,
         # or we could explicitly load the Vendor simulator to db.
-        
+
         from ml.synthetic.vendor_simulator import VendorSimulator
         vendor_sim = VendorSimulator(seed=101)
         vendors = vendor_sim.generate_vendors(10)
-        
+
         for v in vendors:
             # Check if exists
             existing = db.query(Vendor).filter(Vendor.gstin == v.gstin).first()
@@ -42,7 +42,7 @@ async def seed_demo(background_tasks: BackgroundTasks, db: Session = Depends(get
                 )
                 db.add(vendor_rec)
         db.commit()
-        
+
         return {"status": "success", "message": "Demo seeded successfully, generated 8 hero samples.", "samples": expected_bands}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
