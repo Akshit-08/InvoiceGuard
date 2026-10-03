@@ -10,6 +10,7 @@ Implements Blueprint section 8.4:
 
 import numpy as np
 from rapidfuzz import fuzz
+
 from backend.app.schemas.contracts import Finding, SignalResult
 from backend.app.services.engines.base import AnalysisContext, BaseEngine
 from backend.app.services.settings_service import settings_service
@@ -36,10 +37,10 @@ class VectorIndex:
         if q_norm == 0:
             return []
         q_vec = q_vec / q_norm
-        
+
         scores = np.dot(self.matrix, q_vec)
         top_indices = np.argsort(scores)[::-1][:top_k]
-        
+
         return [(self.ids[i], float(scores[i])) for i in top_indices]
 
 
@@ -74,7 +75,7 @@ class DuplicateEngine(BaseEngine):
         # The indices dictionary should contain 'duplicate_history' and 'embeddings'
         history = context.indices.get("duplicate_history", [])
         current_data = context.data
-        
+
         # We need the current invoice dict representation for comparison
         curr_dict = {
             "vendor_name": current_data.vendor.name.value if current_data.vendor.name else "",
@@ -84,7 +85,7 @@ class DuplicateEngine(BaseEngine):
             "items": [i.description.value for i in current_data.items if i.description and i.description.value]
         }
         curr_canonical = build_canonical_string(curr_dict)
-        
+
         # 1. EXACT_FILE_DUPLICATE (SHA-256)
         curr_hash = context.content_hash
         if curr_hash:
@@ -104,7 +105,7 @@ class DuplicateEngine(BaseEngine):
                         related_invoice_ids=[hist.get("id")]
                     ))
                     break
-        
+
         # 2. NEAR_IMAGE_DUPLICATE (pHash)
         curr_phash = context.phash
         if curr_phash:
@@ -201,7 +202,7 @@ class DuplicateEngine(BaseEngine):
             if score > best_fuzz:
                 best_fuzz = score
                 best_fuzz_id = hist.get("id")
-        
+
         if best_fuzz >= 90.0:
             findings.append(self.create_finding(
                 finding_type="NEAR_DUPLICATE_TEXT",

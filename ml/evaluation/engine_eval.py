@@ -3,8 +3,6 @@
 Runs precision/recall for duplicate engine and ROC-AUC for Vendor IF.
 """
 
-import json
-from pathlib import Path
 
 def run_duplicate_evaluation(manifest_path: str):
     print("Evaluating Duplicate Engine...")

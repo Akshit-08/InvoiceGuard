@@ -12,9 +12,11 @@ Implements Blueprint section 8.5:
 
 import numpy as np
 from rapidfuzz import fuzz
+
 from backend.app.schemas.contracts import Finding, SignalResult
 from backend.app.services.engines.base import AnalysisContext, BaseEngine
 from backend.app.services.settings_service import settings_service
+
 
 def median_absolute_deviation(data: list[float]) -> float:
     if not data:
@@ -29,8 +31,9 @@ class VendorEngine(BaseEngine):
 
     def __init__(self):
         try:
-            import joblib
             import os
+
+            import joblib
             model_path = "ml/artifacts/vendor_if_model.joblib"
             if os.path.exists(model_path):
                 self.if_model = joblib.load(model_path)
@@ -50,15 +53,14 @@ class VendorEngine(BaseEngine):
         all_vendors = context.all_vendors
         data = context.data
         curr_total = data.grand_total.value if data.grand_total else 0.0
-        
+
         # Cross-vendor lookalikes & shared entities
         curr_vendor_name = (data.vendor.name.value or "").strip()
         curr_gstin = (data.vendor.gstin.value or "").strip()
-        curr_address = (data.vendor.address.value or "").strip()
-        
+
         # We need the vendor id from context if it's there
         curr_vendor_id = context.indices.get("vendor_id")
-        
+
         for v in all_vendors:
             if curr_vendor_id and v.get("id") == curr_vendor_id:
                 continue
@@ -78,7 +80,7 @@ class VendorEngine(BaseEngine):
                         difference=f"{ratio}% similarity with {v_name}",
                         recommended_action="Verify if this is a typosquatting attempt or a duplicate vendor record."
                     ))
-            
+
             if curr_gstin and v.get("gstin") == curr_gstin:
                 findings.append(self.create_finding(
                     finding_type="SHARED_GSTIN",
@@ -119,7 +121,7 @@ class VendorEngine(BaseEngine):
         if amounts:
             med_amount = np.median(amounts)
             mad_amount = median_absolute_deviation(amounts)
-            
+
             # AMOUNT_OUTLIER
             if mad_amount > 0 and curr_total > 0:
                 z_score = abs(curr_total - med_amount) / mad_amount

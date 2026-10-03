@@ -10,6 +10,7 @@ Implements Blueprint section 8.8:
 from backend.app.schemas.contracts import Finding, SignalResult
 from backend.app.services.engines.base import AnalysisContext, BaseEngine
 
+
 class ExtractionConfidenceEngine(BaseEngine):
     name = "extraction"
     category = "rule"
@@ -26,11 +27,10 @@ class ExtractionConfidenceEngine(BaseEngine):
             "grand_total": data.grand_total
         }
 
-        needs_manual_verification = False
 
         for field_name, field_obj in critical_fields.items():
             if not field_obj or field_obj.value is None or str(field_obj.value).strip() == "":
-                needs_manual_verification = True
+                # Mark at engine level (aggregated in features dict)
                 findings.append(self.create_finding(
                     finding_type="CRITICAL_FIELD_MISSING",
                     severity="info",
@@ -44,7 +44,7 @@ class ExtractionConfidenceEngine(BaseEngine):
                     recommended_action="Manually enter the missing information."
                 ))
             elif getattr(field_obj, "conf", 1.0) < 0.6:
-                needs_manual_verification = True
+                # Note: needs_manual_verification is aggregated at engine level
                 findings.append(self.create_finding(
                     finding_type="OCR_LOW_CONFIDENCE",
                     severity="info",
@@ -59,13 +59,13 @@ class ExtractionConfidenceEngine(BaseEngine):
                     field=field_name,
                     bbox=field_obj.bbox
                 ))
-        
+
         # Calculate overall confidence
         confs = []
         for field_obj in critical_fields.values():
             if field_obj and field_obj.value is not None:
                 confs.append(getattr(field_obj, "conf", 1.0))
-        
+
         overall_confidence = sum(confs) / len(confs) if confs else 0.0
 
         return SignalResult(

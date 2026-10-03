@@ -132,25 +132,25 @@ class DocumentPipeline:
 
     async def analyze_invoice(self, invoice_id: str, db: Session) -> dict:
         """Run all detection engines, fuse into a risk score, and save to DB."""
-        from backend.app.schemas.contracts import InvoiceData
-        from backend.app.services.engines.base import AnalysisContext
-        from backend.app.services.engines.rules.financial import FinancialRulesEngine
-        from backend.app.services.engines.rules.tax_identity import TaxIdentityRulesEngine
-        from backend.app.services.engines.rules.identifiers import IdentifiersRulesEngine
-        from backend.app.services.engines.duplicate import DuplicateEngine
-        from backend.app.services.engines.vendor import VendorEngine
-        from backend.app.services.engines.bank import BankEngine
-        from backend.app.services.engines.visual.forensics import VisualEngine
-        from backend.app.services.engines.extraction import ExtractionConfidenceEngine
-        from backend.app.services.fusion.baseline import fusion_engine
         from backend.app.models.entities import InvoiceFinding, RiskScoreRecord
+        from backend.app.schemas.contracts import InvoiceData
+        from backend.app.services.engines.bank import BankEngine
+        from backend.app.services.engines.base import AnalysisContext
+        from backend.app.services.engines.duplicate import DuplicateEngine
+        from backend.app.services.engines.extraction import ExtractionConfidenceEngine
+        from backend.app.services.engines.rules.financial import FinancialRulesEngine
+        from backend.app.services.engines.rules.identifiers import IdentifiersRulesEngine
+        from backend.app.services.engines.rules.tax_identity import TaxIdentityRulesEngine
+        from backend.app.services.engines.vendor import VendorEngine
+        from backend.app.services.engines.visual.forensics import VisualEngine
+        from backend.app.services.fusion.fusion import fusion_engine
 
         inv = db.query(Invoice).filter(Invoice.id == invoice_id).first()
         if not inv or not inv.raw_extracted_json:
             raise ValueError(f"Invoice {invoice_id} not found or not extracted.")
 
         data = InvoiceData.model_validate(inv.raw_extracted_json)
-        
+
         # Load tokens if available (optional for rules)
         tokens = []
         # Populate vendor history and indices for ML engines
@@ -171,18 +171,18 @@ class DocumentPipeline:
         vendors_db = db.query(Vendor).all()
         for v in vendors_db:
             all_vendors.append({"id": v.id, "name": v.name, "gstin": v.gstin})
-            
+
         accounts_db = db.query(VendorAccount).all()
         for a in accounts_db:
             all_accounts.append({
-                "account_hash": a.account_hash, 
-                "vendor_id": a.vendor_id, 
+                "account_hash": a.account_hash,
+                "vendor_id": a.vendor_id,
                 "vendor_name": a.vendor.name if a.vendor else "Unknown",
                 "ifsc": a.ifsc
             })
             if a.vendor_id == inv.vendor_id:
                 vendor_accounts.append({"account_hash": a.account_hash, "ifsc": a.ifsc})
-                
+
         all_invoices = db.query(Invoice).all()
         for ci in all_invoices:
             if ci.raw_extracted_json:
@@ -194,7 +194,7 @@ class DocumentPipeline:
                 total = str(pi_data.get("grand_total", {}).get("value", 0.0))
                 items = sorted([str(i.get("description", {}).get("value", "")).strip().lower() for i in pi_data.get("items", [])])
                 canonical_string = f"{vendor} | {inv_num} | {date} | {total} | {' | '.join(items)}"
-                
+
                 duplicate_history.append({
                     "id": ci.id,
                     "content_hash": ci.content_hash,
@@ -241,8 +241,17 @@ class DocumentPipeline:
             sig = engine.analyze(ctx)
             signals.append(sig)
 
-        # Fuse
-        risk_result = fusion_engine.fuse(signals)
+        # Fuse — pass extraction metadata so confidence band works correctly
+        invoice_meta = {
+            "grand_total": data.grand_total.value if data.grand_total else 0.0,
+            "item_count": len(data.items),
+            "extraction_confidence": inv.extraction_confidence or 0.0,
+        }
+        risk_result = fusion_engine.fuse(
+            signals,
+            invoice_meta=invoice_meta,
+            extraction_confidence=float(inv.extraction_confidence or 0.0),
+        )
 
         # Save findings
         db.query(InvoiceFinding).filter(InvoiceFinding.invoice_id == invoice_id).delete()
@@ -285,7 +294,7 @@ class DocumentPipeline:
         inv.status = "analyzed"
         inv.risk_level = risk_result.level
         inv.overall_score = risk_result.overall_score
-        
+
         # Determine review status
         if risk_result.level in ("HIGH", "CRITICAL"):
             inv.review_status = "needs_review"

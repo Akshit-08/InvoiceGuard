@@ -8,6 +8,7 @@ Implements Blueprint section 8.6:
 """
 
 import hashlib
+
 from backend.app.schemas.contracts import Finding, SignalResult
 from backend.app.services.engines.base import AnalysisContext, BaseEngine
 from backend.app.services.settings_service import settings_service
@@ -31,7 +32,7 @@ class BankEngine(BaseEngine):
 
         data = context.data
         vendor_id = context.indices.get("vendor_id")
-        
+
         if not vendor_id:
             return SignalResult(name=self.name, score=0.0, confidence=1.0, findings=findings, features=features)
 
@@ -72,7 +73,7 @@ class BankEngine(BaseEngine):
         for acc in all_accounts:
             if acc.get("account_hash") == account_h and acc.get("vendor_id") != vendor_id:
                 shared_with.append(acc.get("vendor_name", "Unknown Vendor"))
-        
+
         if shared_with:
             findings.append(self.create_finding(
                 finding_type="BANK_ACCOUNT_SHARED_WITH_OTHER_VENDOR",

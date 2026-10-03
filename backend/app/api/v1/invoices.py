@@ -89,7 +89,7 @@ async def analyze_invoice(
 ):
     """Run all detection engines and fuse into a risk score."""
     from backend.app.services.pipeline import pipeline
-    
+
     # Run the analysis job synchronously for now (can be async task)
     result = await pipeline.analyze_invoice(invoice_id, db)
     return result
