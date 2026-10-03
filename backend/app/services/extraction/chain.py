@@ -12,25 +12,13 @@ from typing import Any, Dict, Optional
 from backend.app.config import settings
 from backend.app.schemas.contracts import ExtractionResponse, InvoiceData, Token
 from backend.app.services.extraction.heuristic import heuristic_extractor
+from backend.app.services.extraction.layoutlm import LayoutLMv3Extractor
 
 
 class BaseExtractor(ABC):
     @abstractmethod
     def extract(self, tokens: list[Token], doc_context: Optional[dict[str, Any]] = None) -> InvoiceData:
         pass
-
-
-class LayoutLMv3Extractor(BaseExtractor):
-    """Optional LayoutLMv3 Token Classification Extractor using fine-tuned Hugging Face weights."""
-
-    def __init__(self, model_id: Optional[str] = None):
-        self.model_id = model_id or settings.LAYOUTLM_MODEL_ID
-        self.is_available = bool(self.model_id)
-
-    def extract(self, tokens: list[Token], doc_context: Optional[dict[str, Any]] = None) -> InvoiceData:
-        # Stub: If weights are configured, loads model and infers NER tags
-        # Falls back gracefully to heuristic if weights are not provided
-        return InvoiceData()
 
 
 class LLMExtractor(BaseExtractor):
@@ -58,9 +46,10 @@ class ExtractorChain:
         # 1. Primary: Run Heuristic extractor
         invoice_data = self.heuristic.extract(tokens)
 
-        # 2. Secondary: If LayoutLMv3 is enabled and weights exist, fill/override low-confidence fields
+        # 2. Secondary: If LayoutLMv3 is enabled and model loaded, fill/override fields by confidence
         if self.layoutlm.is_available:
-            pass  # Plug in LayoutLMv3 predictions
+            layoutlm_results = self.layoutlm.extract(tokens)
+            invoice_data = self.layoutlm.merge_into_invoice_data(invoice_data, layoutlm_results)
 
         # 3. Compute per-field confidence report and audit critical fields
         confidences: Dict[str, float] = {}
