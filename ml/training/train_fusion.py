@@ -287,7 +287,6 @@ def main() -> None:
         reg_lambda=1.0,
         monotone_constraints=monotone,
         eval_metric="auc",
-        use_label_encoder=False,
         random_state=42,
         n_jobs=-1,
     )
@@ -337,7 +336,7 @@ def main() -> None:
         "feature_names": feature_cols,
         "metrics": metrics,
     }
-    joblib.dump(artifact, out_path, compress=("lz4", 3))
+    joblib.dump(artifact, out_path, compress=3)
 
     # Check size
     size_mb = out_path.stat().st_size / 1_048_576
