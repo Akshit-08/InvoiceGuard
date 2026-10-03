@@ -1,0 +1,392 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   InvoiceGuard Design System — Design Tokens
+   Theme: "Security-ops meets fintech" — precise, restrained,
+   confident. Dark default. One accent. Four risk levels.
+   ───────────────────────────────────────────────────────────── */
+
+@theme {
+  /* — Fonts — */
+  --font-sans: "InterVariable", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains MonoVariable", "JetBrains Mono", "Fira Code", monospace;
+
+  /* — Radius — */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* — Motion durations — */
+  --duration-instant: 80ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-hero: 700ms;
+
+  /* — Easing — */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CSS Variables — dark theme (default)
+   ───────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: dark;
+
+  /* — Base surfaces — */
+  --bg-base:       hsl(220 15% 7%);
+  --bg-surface:    hsl(220 14% 10%);
+  --bg-elevated:   hsl(220 13% 13%);
+  --bg-overlay:    hsl(220 12% 16%);
+  --bg-subtle:     hsl(220 11% 19%);
+
+  /* — Borders — */
+  --border-hairline: hsl(220 10% 22%);
+  --border-default:  hsl(220 10% 26%);
+  --border-strong:   hsl(220 10% 34%);
+
+  /* — Text — */
+  --text-primary:   hsl(220 10% 92%);
+  --text-secondary: hsl(220 8% 60%);
+  --text-tertiary:  hsl(220 6% 42%);
+  --text-disabled:  hsl(220 4% 32%);
+  --text-inverse:   hsl(220 15% 7%);
+
+  /* — Accent (indigo → violet) — used sparingly — */
+  --accent:         hsl(248 80% 60%);
+  --accent-hover:   hsl(248 80% 65%);
+  --accent-muted:   hsl(248 40% 18%);
+  --accent-border:  hsl(248 50% 35%);
+
+  /* — Risk palette — */
+  --risk-low:           hsl(152 55% 40%);
+  --risk-low-bg:        hsl(152 40% 11%);
+  --risk-low-border:    hsl(152 40% 22%);
+  --risk-low-text:      hsl(152 55% 62%);
+
+  --risk-medium:        hsl(40 90% 48%);
+  --risk-medium-bg:     hsl(40 60% 10%);
+  --risk-medium-border: hsl(40 55% 24%);
+  --risk-medium-text:   hsl(40 90% 64%);
+
+  --risk-high:          hsl(22 90% 52%);
+  --risk-high-bg:       hsl(22 60% 10%);
+  --risk-high-border:   hsl(22 55% 24%);
+  --risk-high-text:     hsl(22 90% 66%);
+
+  --risk-critical:      hsl(348 80% 54%);
+  --risk-critical-bg:   hsl(348 50% 10%);
+  --risk-critical-border: hsl(348 50% 26%);
+  --risk-critical-text: hsl(348 80% 68%);
+
+  --risk-info:          hsl(220 10% 58%);
+  --risk-info-bg:       hsl(220 10% 13%);
+  --risk-info-border:   hsl(220 10% 26%);
+  --risk-info-text:     hsl(220 10% 72%);
+
+  /* — Semantic — */
+  --success:      hsl(152 55% 40%);
+  --warning:      hsl(40 90% 48%);
+  --error:        hsl(348 80% 54%);
+
+  /* — Glass effect — */
+  --glass-bg:     hsl(220 15% 8% / 0.72);
+  --glass-border: hsl(220 10% 25% / 0.5);
+
+  /* — Shadows — */
+  --shadow-sm:  0 1px 3px hsl(220 15% 3% / 0.4), 0 1px 2px hsl(220 15% 3% / 0.6);
+  --shadow-md:  0 4px 12px hsl(220 15% 3% / 0.45), 0 2px 4px hsl(220 15% 3% / 0.5);
+  --shadow-lg:  0 8px 28px hsl(220 15% 3% / 0.5), 0 4px 8px hsl(220 15% 3% / 0.4);
+  --shadow-xl:  0 16px 48px hsl(220 15% 3% / 0.55), 0 8px 16px hsl(220 15% 3% / 0.4);
+  --shadow-glow-accent: 0 0 24px hsl(248 80% 60% / 0.18);
+  --shadow-glow-critical: 0 0 24px hsl(348 80% 54% / 0.2);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CSS Variables — light theme
+   ───────────────────────────────────────────────────────────── */
+.light {
+  color-scheme: light;
+
+  --bg-base:       hsl(220 20% 97%);
+  --bg-surface:    hsl(220 16% 99%);
+  --bg-elevated:   hsl(220 14% 100%);
+  --bg-overlay:    hsl(220 12% 96%);
+  --bg-subtle:     hsl(220 10% 93%);
+
+  --border-hairline: hsl(220 10% 88%);
+  --border-default:  hsl(220 10% 82%);
+  --border-strong:   hsl(220 10% 68%);
+
+  --text-primary:   hsl(220 20% 12%);
+  --text-secondary: hsl(220 12% 36%);
+  --text-tertiary:  hsl(220 10% 52%);
+  --text-disabled:  hsl(220 8% 66%);
+  --text-inverse:   hsl(220 20% 97%);
+
+  --accent:         hsl(248 80% 54%);
+  --accent-hover:   hsl(248 80% 48%);
+  --accent-muted:   hsl(248 60% 94%);
+  --accent-border:  hsl(248 50% 78%);
+
+  --risk-low:           hsl(152 50% 32%);
+  --risk-low-bg:        hsl(152 50% 94%);
+  --risk-low-border:    hsl(152 40% 80%);
+  --risk-low-text:      hsl(152 50% 28%);
+
+  --risk-medium:        hsl(40 85% 38%);
+  --risk-medium-bg:     hsl(40 80% 94%);
+  --risk-medium-border: hsl(40 70% 76%);
+  --risk-medium-text:   hsl(40 85% 32%);
+
+  --risk-high:          hsl(22 85% 42%);
+  --risk-high-bg:       hsl(22 80% 94%);
+  --risk-high-border:   hsl(22 70% 78%);
+  --risk-high-text:     hsl(22 85% 36%);
+
+  --risk-critical:      hsl(348 75% 42%);
+  --risk-critical-bg:   hsl(348 70% 94%);
+  --risk-critical-border: hsl(348 60% 78%);
+  --risk-critical-text: hsl(348 75% 36%);
+
+  --risk-info:          hsl(220 15% 50%);
+  --risk-info-bg:       hsl(220 15% 93%);
+  --risk-info-border:   hsl(220 12% 78%);
+  --risk-info-text:     hsl(220 15% 38%);
+
+  --success:      hsl(152 50% 32%);
+  --warning:      hsl(40 85% 38%);
+  --error:        hsl(348 75% 42%);
+
+  --glass-bg:     hsl(220 20% 98% / 0.80);
+  --glass-border: hsl(220 10% 82% / 0.7);
+
+  --shadow-sm:  0 1px 3px hsl(220 15% 20% / 0.08), 0 1px 2px hsl(220 15% 20% / 0.06);
+  --shadow-md:  0 4px 12px hsl(220 15% 20% / 0.10), 0 2px 4px hsl(220 15% 20% / 0.06);
+  --shadow-lg:  0 8px 28px hsl(220 15% 20% / 0.12), 0 4px 8px hsl(220 15% 20% / 0.06);
+  --shadow-xl:  0 16px 48px hsl(220 15% 20% / 0.15), 0 8px 16px hsl(220 15% 20% / 0.08);
+  --shadow-glow-accent: 0 0 24px hsl(248 80% 54% / 0.15);
+  --shadow-glow-critical: 0 0 24px hsl(348 75% 42% / 0.15);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Base styles
+   ───────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-optical-sizing: auto;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100svh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 300ms var(--ease-out), color 300ms var(--ease-out);
+}
+
+/* Noise + grid background texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    /* Subtle dot grid */
+    radial-gradient(circle, hsl(220 10% 35% / 0.15) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+.light body::before {
+  background-image: radial-gradient(circle, hsl(220 10% 60% / 0.08) 1px, transparent 1px);
+}
+
+/* Scrollbar — thin and themed */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+/* Focus visible ring */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Selection */
+::selection {
+  background: hsl(248 80% 60% / 0.3);
+  color: var(--text-primary);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Typography utilities
+   ───────────────────────────────────────────────────────────── */
+.font-mono { font-family: var(--font-mono); }
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+/* ─────────────────────────────────────────────────────────────
+   Component utilities
+   ───────────────────────────────────────────────────────────── */
+
+/* Glass topbar */
+.glass {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+}
+
+/* Card / surface */
+.surface {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.surface-elevated {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* Risk colour helpers */
+.risk-low      { color: var(--risk-low-text); }
+.risk-medium   { color: var(--risk-medium-text); }
+.risk-high     { color: var(--risk-high-text); }
+.risk-critical { color: var(--risk-critical-text); }
+.risk-info     { color: var(--risk-info-text); }
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-subtle) 25%,
+    var(--bg-overlay) 50%,
+    var(--bg-subtle) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* Scan beam animation */
+@keyframes scan-beam {
+  0%   { top: 0%; opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.scan-beam {
+  animation: scan-beam 2.4s var(--ease-in-out) infinite;
+}
+
+/* Bounding box draw-in */
+@keyframes box-draw {
+  0%   { clip-path: inset(0 100% 100% 0); opacity: 0; }
+  40%  { opacity: 1; }
+  100% { clip-path: inset(0 0% 0% 0); opacity: 1; }
+}
+
+.bbox-draw {
+  animation: box-draw 0.5s var(--ease-out) forwards;
+}
+
+/* Glow pulse */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; }
+  50%       { box-shadow: 0 0 0 4px transparent; }
+}
+
+/* Count-up flash */
+@keyframes count-flash {
+  0%   { opacity: 0.4; }
+  50%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* Sidebar transition */
+.sidebar-collapsed { width: 64px; }
+.sidebar-expanded  { width: 240px; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .scan-beam { display: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Tailwind inline utilities we use as custom components
+   ───────────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  background: var(--accent);
+  color: white;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow-accent);
+}
+.btn-primary:active { transform: translateY(0); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+.btn-ghost:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}

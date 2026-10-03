@@ -42,6 +42,9 @@ yarn-error.log*
 .pnpm-debug.log*
 frontend/dist/
 frontend/.vite/
+*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
 
 # Database
 data/invoiceguard.db
