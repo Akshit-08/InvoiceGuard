@@ -33,3 +33,31 @@
   - Benchmark script `ml/evaluation/extraction_eval.py` assessing precision, recall, and F1 on held-out synthetic test set.
   - 25/25 unit and integration tests passing (`pytest backend/tests -v`).
   - Zero lint/formatting errors (`ruff check .` clean).
+
+## Day 2 — Detection Engines, Multimodal Risk Fusion, and Backend Completion (Sat 3 Oct 2026)
+
+### Goals
+- [x] Engine Framework: BaseEngine abstract class, shared AnalysisContext, uniform SignalResult and Finding schema compliance.
+- [x] Settings Service: Hierarchical YAML configuration with database overrides, engine toggles, tolerances, and date-aware statutory GST slab verification (ADR 005).
+- [x] Financial Rules Engine: Mathematical line totals, subtotal verification, grand total decomposition, amount-in-words translation, and round-off anomaly checks.
+- [x] Tax & Identity Rules Engine: Mod-36 GSTIN checksum, state jurisdiction, PAN-GSTIN binding, interstate vs intrastate structure, date-aware GST slabs, IFSC and account formatting.
+- [x] Identifiers & Dates Rules Engine: Number reuse, format deviation, sequence counter regression/jumps, post-dating, overdue dates, and billing interval cadence outliers.
+- [ ] Statistical & ML Engines: Duplicate engine, vendor behavior with Isolation Forest, bank change engine, and visual forensics.
+- [ ] Multimodal Risk Fusion: Explainable 0-100 score with baseline noisy-OR, calibrated ML model, and escalation rules.
+- [ ] Complete Backend API, evaluation report generation, and demo seed data loading.
+
+### Progress Updates
+- **Engine Framework (`backend/app/services/engines/base.py`):**
+  - Created `AnalysisContext` carrying `InvoiceData`, extracted tokens, page images, original PDF path, vendor history, settings, and indices.
+  - Implemented `BaseEngine` with standardized `create_finding()` enforcing normalized `[0, 1]` bounding boxes, explicit `expected`/`found`/`difference` evidence contracts, and actionable reviewer recommendations.
+- **Settings Service (`backend/app/services/settings_service.py` & `config/*.yaml`):**
+  - Added default YAML configs: `config/settings.yaml`, `config/tax_slabs.yaml`, `config/pdf_editors.yaml`, `config/fusion.yaml`.
+  - Implemented date-aware GST slab validation incorporating statutory GST 2.0 reforms (CBIC, effective 22 Sept 2025: 0%, 5%, 18%, 40%) alongside legacy GST 1.0 slabs (0%, 5%, 12%, 18%, 28%). Documented in `docs/DECISIONS.md` under ADR 005.
+- **Rules Engines (`backend/app/services/engines/rules/`):**
+  - `FinancialRulesEngine`: Covers all 9 financial rules including `LINE_TOTAL_MISMATCH` (qty 2 × 15,000 shown as 40,000), `SUBTOTAL_MISMATCH`, `GRAND_TOTAL_MISMATCH`, `AMOUNT_WORDS_MISMATCH` ("Fifty Thousand" vs 45,000), `ROUNDING_ANOMALY`, `SUSPICIOUS_ROUND_TOTAL`, `DUPLICATE_LINE_ITEMS`, `NEGATIVE_OR_ZERO_VALUES`, and `CURRENCY_INCONSISTENT`.
+  - `TaxIdentityRulesEngine`: Covers statutory GSTIN format, Mod-36 check digit, jurisdiction state codes, PAN matching, `TAX_AMOUNT_MISMATCH` (18% on 10,000 shown as 2,800), intrastate (CGST+SGST) vs interstate (IGST), date-aware slab conformance, IFSC pattern, and bank account structure.
+  - `IdentifiersRulesEngine`: Covers reused invoice numbers against vendor history, format deviations, sequence counter regressions and jumps, future date sanity, due date preceding invoice date, stale invoice limits, and submission cadence outliers.
+- **Testing & Quality Assurance:**
+  - 46/46 unit tests passing across all engines and settings (`pytest backend/tests -v`).
+  - Zero lint/formatting errors (`ruff check .` clean).
+
