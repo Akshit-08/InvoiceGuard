@@ -33,8 +33,9 @@ def test_hero_critical_and_clean_end_to_end_scoring():
     from backend.app.main import app
 
     client = TestClient(app)
-    # Reset DB to ensure fresh state without stale duplicates from previous runs
+    # Reset and seed DB to ensure clean baseline with demo vendor profiles
     client.post("/api/v1/demo/reset")
+    client.post("/api/v1/demo/seed")
 
     # 1. Upload and analyze Hero Critical Sample
     hero_pdf = Path("data/samples/03_hero_critical.pdf")

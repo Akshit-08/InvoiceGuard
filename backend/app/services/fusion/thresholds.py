@@ -84,6 +84,17 @@ def apply_escalations(
                 )
                 break  # one message per signal is enough
 
+    # Rule 3: severe single-engine anomaly (score >= severe_single_threshold) guarantees High band
+    severe_threshold = float(e.get("severe_single_threshold", 90.0))
+    severe_floor = float(e.get("severe_single_floor", 60.0))
+    severe_sigs = [s for s in signals if s.score >= severe_threshold]
+    if severe_sigs and final < severe_floor:
+        final = severe_floor
+        escalations.append(
+            f"Severe anomaly in '{severe_sigs[0].name}' ({severe_sigs[0].score:.0f}) "
+            f"— risk floor raised to {severe_floor:.0f}."
+        )
+
     return round(final, 1), escalations
 
 

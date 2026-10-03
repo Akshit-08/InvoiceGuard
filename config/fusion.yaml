@@ -29,6 +29,9 @@ escalations:
     - MODIFIED_DUPLICATE
     - EXACT_FILE_DUPLICATE
   critical_anomaly_floor: 75.0
+  # Severe single engine anomaly (score >= 90.0) guarantees High risk tier floor
+  severe_single_threshold: 90.0
+  severe_single_floor: 60.0
 
 # ── Risk level thresholds (upper-inclusive) ──────────────────────────────────
 level_thresholds:

@@ -65,6 +65,9 @@ class VendorEngine(BaseEngine):
             if curr_vendor_id and v.get("id") == curr_vendor_id:
                 continue
             v_name = v.get("name", "").strip()
+            # If vendor name matches exactly, it is the same entity
+            if curr_vendor_name and v_name and curr_vendor_name.lower() == v_name.lower():
+                continue
             if curr_vendor_name and v_name:
                 ratio = fuzz.ratio(curr_vendor_name.lower(), v_name.lower())
                 if 88 <= ratio < 100:
