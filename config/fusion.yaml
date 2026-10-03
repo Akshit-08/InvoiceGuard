@@ -1,0 +1,18 @@
+# Risk Fusion Configuration per Blueprint Section 9
+weights:
+  financial: 0.85
+  tax_identity: 0.60
+  duplicate: 0.80
+  vendor: 0.60
+  bank: 0.80
+  identifiers: 0.40
+  visual: 0.50
+
+combination_ratio:
+  baseline: 0.50
+  ml: 0.50
+
+escalations:
+  multi_signal_threshold: 70.0
+  multi_signal_floor: 65.0
+  critical_anomaly_floor: 75.0

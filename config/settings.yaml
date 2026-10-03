@@ -1,0 +1,30 @@
+# InvoiceGuard Global Settings & Tolerances
+engine_toggles:
+  financial: true
+  tax_identity: true
+  identifiers: true
+  duplicate: true
+  vendor: true
+  bank: true
+  visual: true
+
+tolerances:
+  line_total_abs: 1.0 # ₹1
+  line_total_pct: 0.5 # 0.5%
+  subtotal_abs: 1.0
+  subtotal_pct: 0.5
+  grand_total_abs: 1.0
+  grand_total_pct: 0.5
+  tax_amount_abs: 1.0
+  tax_amount_pct: 0.5
+  rounding_max_abs: 1.0
+
+thresholds:
+  low: 30.0
+  medium: 60.0
+  high: 80.0
+
+identifiers:
+  max_invoice_age_days: 365
+  future_date_buffer_days: 1
+  unusual_interval_z_score: 3.0

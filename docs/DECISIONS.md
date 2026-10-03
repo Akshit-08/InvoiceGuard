@@ -19,3 +19,10 @@
 - **Context:** Responsive UI rendering with pan/zoom and dynamic resolutions requires coordinates that do not depend on fixed pixel or point DPI.
 - **Decision:** All extracted tokens and field bounding boxes are normalized to [0.0, 1.0] relative to page width and height (`x0, y0, x1, y1`).
 - **Status:** Accepted.
+
+## ADR 005: Date-Aware Indian GST Slab Structure & CBIC Source Reference
+- **Context:** GST rates in India are statutory and temporal. In September 2025, the GST Council / Central Board of Indirect Taxes and Customs (CBIC) implemented GST 2.0 reforms (effective 22 September 2025), consolidating standard slabs from 0%, 5%, 12%, 18%, 28% into 0%, 5%, 18%, and a consolidated 40% demerit/luxury rate (with special rates 0.25% and 3.0% for diamonds and precious metals). Invoices issued prior to this date legitimately carry 12% and 28% tax rates. Hardcoding static slabs would result in severe false positives on historical invoices or false negatives on post-reform invoices.
+- **Source Verification:** Official notifications from the Central Board of Indirect Taxes and Customs (CBIC, https://www.cbic.gov.in/) and GST Council Gazette notifications on GST 2.0 rate rationalization.
+- **Decision:** Maintain a date-aware slab lookup in `config/tax_slabs.yaml` backed by the `SettingsService`. Invoices dated before 2025-09-22 validate against legacy GST 1.0 slabs, while invoices dated on or after 2025-09-22 validate against GST 2.0 slabs. Undated or ambiguous invoices permit both slabs with a warning indicator.
+- **Status:** Accepted.
+
