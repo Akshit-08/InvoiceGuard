@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-10-04
+
+### Fixed
+- **Model Quality & Genuine Invoice Discrimination (ADR 006 & ADR 009)**:
+  - Eliminated false positive grand total calculation errors on genuine synthetic invoices by correcting `tax_rate` normalization in `ml/common.py`.
+  - Fixed Indian amount words parser in `financial.py` to properly partition rupees and paise tokens.
+  - Resolved premature bank account recording in `pipeline.py`, ensuring new remittances trigger `BANK_ACCOUNT_CHANGED` correctly during analysis.
+  - Linked `pdf_path` and `page_images` in `AnalysisContext` so `VisualEngine` runs forensic structure checks on uploaded invoices.
+  - Fixed PyMuPDF structural redaction in `apply_pdf_edit_structural` without in-memory incremental write crashes.
+  - Normalized string casing across `DuplicateEngine` exact field checks.
+  - Introduced informational findings tier in `fusion.yaml` and `fusion.py` to decouple cold-start baseline notices from risk scores.
+- **Model Retraining & Evaluation Realism**:
+  - Scaled dataset to 4,400 synthetic documents across 45 business entities and 5 templates.
+  - Retrained monotonically constrained XGBoost fusion model with 5-fold isotonic calibration and hyperparameter cross-validation search.
+  - Achieved **0.8772 ROC-AUC** and **0.8924 PR-AUC** on the held-out test split, reducing genuine FPR from 1.000 to **0.1273** (meets target <= 0.15).
+  - All 8 canonical hero demo samples verified passing within their exact expected risk bands via `scripts/verify_e2e.py`.
+
 ## [0.3.0] - 2026-10-03
 
 ### Added

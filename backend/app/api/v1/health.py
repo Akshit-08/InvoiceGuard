@@ -32,8 +32,11 @@ def check_optional_models() -> dict[str, bool]:
         pass
 
     try:
-        import xgboost  # noqa: F401
-        available["xgboost"] = True
+        from backend.app.services.fusion.xgb_model import xgb_model
+        available["xgboost"] = xgb_model.is_available
+        if not xgb_model.is_available:
+            from backend.app.logging import logger
+            logger.warning("HEALTH_WARNING: XGBoost fusion model artifact is not loaded. Operating in baseline mode.")
     except ImportError:
         pass
 

@@ -19,8 +19,8 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# Default path relative to the repo root
-MODEL_PATH = Path("ml/artifacts/fusion_xgb.joblib")
+REPO_ROOT = Path(__file__).resolve().parents[4]
+MODEL_PATH = REPO_ROOT / "ml" / "artifacts" / "fusion_xgb.joblib"
 
 
 class XGBFusionModel:
@@ -32,6 +32,7 @@ class XGBFusionModel:
         self._model_path = model_path
         self._loaded = False
         self._load_attempted = False
+        self.health_warning: str | None = None
 
     # ── Lazy load ─────────────────────────────────────────────────────────────
     def _try_load(self) -> None:
@@ -44,18 +45,21 @@ class XGBFusionModel:
             logger.info("FUSION_MODE=baseline — XGBoost model skipped.")
             return
 
-        if not self._model_path.exists():
-            logger.warning(
-                "XGBoost fusion model not found at %s. "
-                "Run `python ml/training/train_fusion.py` to train it.",
-                self._model_path,
-            )
+        resolved_path = self._model_path
+        if not resolved_path.exists():
+            resolved_path = REPO_ROOT / self._model_path
+        if not resolved_path.exists():
+            resolved_path = Path("ml/artifacts/fusion_xgb.joblib")
+
+        if not resolved_path.exists():
+            self.health_warning = f"MODEL_HEALTH_WARNING: XGBoost artifact not found at {self._model_path}. Running in baseline fallback mode."
+            logger.warning(self.health_warning)
             return
 
         try:
             import joblib  # type: ignore[import]
 
-            artifact = joblib.load(self._model_path)
+            artifact = joblib.load(resolved_path)
             self._pipeline = artifact["pipeline"]
             self._feature_names = artifact.get("feature_names")
             self._loaded = True

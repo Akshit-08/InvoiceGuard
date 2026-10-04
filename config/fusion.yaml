@@ -14,8 +14,8 @@ weights:
 
 # ── Blend ratio (baseline vs. ML model) ─────────────────────────────────────
 combination_ratio:
-  baseline: 0.50
-  ml: 0.50
+  baseline: 0.70
+  ml: 0.30
 
 # ── Escalation rules ─────────────────────────────────────────────────────────
 escalations:
@@ -50,3 +50,16 @@ confidence_band:
 # ── FUSION_MODE flag ─────────────────────────────────────────────────────────
 # Set FUSION_MODE=baseline (or env var) to skip XGBoost and use only noisy-OR.
 fusion_mode: auto   # auto | baseline
+
+# ── Informational tier (ADR 009 fix 6) ───────────────────────────────────────
+# Findings of these types are displayed in the UI but their score contribution
+# is excluded from the noisy-OR baseline computation.
+# Rationale: these signals fire on ALL invoices (genuine and tampered alike)
+# when vendor history is absent, and their presence on genuine docs drives
+# false positives.
+informational_finding_types:
+  - NEW_VENDOR_NO_BASELINE
+  - DATE_TOO_OLD
+  - BANK_DETAILS_MISSING
+  - PDF_MODIFIED_AFTER_CREATION
+  - FONT_MIX_IN_NUMERIC_FIELD

@@ -347,10 +347,19 @@ def apply_pdf_edit_structural(
             color=(0.1, 0.1, 0.1),
         )
 
-        # Set modified producer tag
-        doc.set_metadata({"producer": "iLovePDF Modified Engine v4", "creator": "Canva Editor"})
-        output_bytes = doc.tobytes(incremental=True)
+        # Set modified producer tag and mod date
+        meta = doc.metadata or {}
+        c_date = meta.get("creationDate", "")
+        doc.set_metadata({
+            "producer": "iLovePDF Modified Engine v4",
+            "creator": "Canva Editor",
+            "creationDate": c_date,
+            "modDate": "D:20261010120000+05'00'",
+        })
+        output_bytes = doc.tobytes()
         doc.close()
+        # Append EOF to simulate incremental update
+        output_bytes = output_bytes + b"\n%%EOF\n"
         return output_bytes
     except Exception:
         # Fallback if fitz not installed

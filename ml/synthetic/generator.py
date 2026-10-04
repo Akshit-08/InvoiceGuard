@@ -207,17 +207,27 @@ class InvoiceDatasetGenerator:
         tampered_count: int = 300,
         visual_pairs_count: int = 200,
     ) -> pd.DataFrame:
-        """Generate full synthetic benchmark dataset with manifest."""
+        """Generate full synthetic benchmark dataset with manifest.
+
+        ADR 009 change: vendor context (history summary) is now written into
+        each GT JSON so the evaluation harness can provide realistic prior-invoice
+        context to every engine (bank, identifiers, vendor, duplicate).
+        """
         manifest_rows = []
         op_keys = list(TAMPER_OPERATORS.keys())
 
-        # Vendor split to prevent data leakage in ML evaluation:
-        # First 32 vendors for train, 6 for val, 7 for test
-        train_vendors = self.vendors[:32]
-        val_vendors = self.vendors[32:38]
-        test_vendors = self.vendors[38:]
+        # ── Vendor split: 75% train, 12.5% val, 12.5% test ──────────────────
+        # With 45 vendors: 34 train, 6 val, 5 test (approx.)
+        n_vendors = len(self.vendors)
+        n_val = max(4, int(n_vendors * 0.125))
+        n_test = max(4, int(n_vendors * 0.125))
+        n_train = n_vendors - n_val - n_test
 
-        vendor_split_map = {}
+        train_vendors = self.vendors[:n_train]
+        val_vendors = self.vendors[n_train:n_train + n_val]
+        test_vendors = self.vendors[n_train + n_val:]
+
+        vendor_split_map: dict[str, str] = {}
         for v in train_vendors:
             vendor_split_map[v.id] = "train"
         for v in val_vendors:
@@ -227,7 +237,32 @@ class InvoiceDatasetGenerator:
 
         now = datetime.now(timezone.utc)
 
-        # 1. Generate Genuine Invoices
+        # ── Build per-vendor simulated prior history ──────────────────────────
+        # Each vendor gets 8–20 synthetic prior invoices spanning 18 months.
+        # These are NOT rendered as PDFs; they are lightweight spec summaries
+        # stored in the GT JSON as vendor_history so engines can profile the vendor.
+        vendor_history_pool: dict[str, list[dict]] = {}
+        for vendor in self.vendors:
+            history_entries = []
+            n_prior = random.randint(8, 20)
+            for h_idx in range(n_prior):
+                h_date = now - timedelta(days=random.randint(30, 540))
+                h_spec = self._generate_spec(vendor, h_idx, h_date, TEMPLATES[h_idx % len(TEMPLATES)])
+                history_entries.append({
+                    "id": f"HIST_{vendor.id}_{h_idx:03d}",
+                    "invoice_id": f"HIST_{vendor.id}_{h_idx:03d}",
+                    "invoice_number": h_spec.invoice_number,
+                    "invoice_date": h_spec.invoice_date,
+                    "grand_total": {
+                        "value": float(h_spec.grand_total),
+                        "raw": str(h_spec.grand_total),
+                        "conf": 1.0,
+                    },
+                    "label": "genuine",
+                })
+            vendor_history_pool[vendor.id] = history_entries
+
+        # ── 1. Generate Genuine Invoices ────────────────────────────────────
         for i in range(genuine_count):
             doc_id = f"GEN_{i+1:05d}"
             vendor = self.vendors[i % len(self.vendors)]
@@ -238,7 +273,7 @@ class InvoiceDatasetGenerator:
             spec = self._generate_spec(vendor, i + 1, inv_date, template_id)
             pdf_path, png_path, gt = self._render_and_save(doc_id, spec, is_scanned=is_scanned)
 
-            # Save GT JSON
+            # Save GT JSON (now includes vendor context)
             gt_payload = {
                 "id": doc_id,
                 "label": "genuine",
@@ -247,6 +282,22 @@ class InvoiceDatasetGenerator:
                 "is_scanned": is_scanned,
                 "spec": spec.__dict__,
                 "ground_truth": gt,
+                # ── Context for the evaluation harness (ADR 009) ──────────
+                "vendor_id": vendor.id,
+                "vendor_history": vendor_history_pool.get(vendor.id, []),
+                "vendor_accounts": [
+                    {
+                        "account_hash": None,  # filled by ml/common.py using hashlib
+                        "last4": str(vendor.account_number)[-4:],
+                        "ifsc": vendor.ifsc,
+                        "vendor_id": vendor.id,
+                        "vendor_name": vendor.name,
+                    }
+                ],
+                "all_vendors": [
+                    {"id": v.id, "name": v.name, "gstin": v.gstin}
+                    for v in self.vendors
+                ],
             }
             with open(self.gt_dir / f"{doc_id}.json", "w") as f:
                 json.dump(gt_payload, f, indent=2)
@@ -264,7 +315,7 @@ class InvoiceDatasetGenerator:
                 "grand_total": spec.grand_total,
             })
 
-        # 2. Generate Tampered Invoices
+        # ── 2. Generate Tampered Invoices ───────────────────────────────────
         for j in range(tampered_count):
             doc_id = f"TAM_{j+1:05d}"
             vendor = self.vendors[j % len(self.vendors)]
@@ -279,7 +330,7 @@ class InvoiceDatasetGenerator:
             op_func = TAMPER_OPERATORS[op_name]
             tamper_res = op_func(base_spec)
 
-            # Pick mode
+            # Pick mode (cycle: re-render, pixel-edit, pdf-edit, re-render, re-render)
             mode_choice = "re-render"
             if j % 5 == 1:
                 mode_choice = "pixel-edit"
@@ -292,8 +343,7 @@ class InvoiceDatasetGenerator:
             if mode_choice == "pixel-edit":
                 try:
                     img = Image.open(png_path)
-                    # Edit grand total field if present
-                    if "grand_total" in gt["fields"]:
+                    if "grand_total" in gt.get("fields", {}):
                         bbox = gt["fields"]["grand_total"]["bbox"]
                         img = apply_pixel_edit_to_image(img, bbox, format_inr(tamper_res.spec.grand_total))
                         img.save(png_path)
@@ -303,13 +353,64 @@ class InvoiceDatasetGenerator:
                 try:
                     with open(pdf_path, "rb") as pf:
                         pbytes = pf.read()
-                    if "grand_total" in gt["fields"]:
+                    if "grand_total" in gt.get("fields", {}):
                         bbox = gt["fields"]["grand_total"]["bbox"]
                         edited_bytes = apply_pdf_edit_structural(pbytes, bbox, format_inr(tamper_res.spec.grand_total))
                         with open(pdf_path, "wb") as pf:
                             pf.write(edited_bytes)
                 except Exception:
                     pass
+
+            # For bank_swap / shared_bank operators: add OLD account to vendor history
+            # so the engine can detect the account change correctly
+            augmented_history = list(vendor_history_pool.get(vendor.id, []))
+            if op_name in ("bank_swap", "shared_bank_across_vendors"):
+                # Inject the *original* account into vendor_accounts so the engine
+                # sees a changed account on the tampered doc
+                base_acct = base_spec.account_number
+                augmented_acct = [
+                    {
+                        "account_hash": None,
+                        "last4": str(base_acct)[-4:],
+                        "ifsc": base_spec.ifsc,
+                        "vendor_id": vendor.id,
+                        "vendor_name": vendor.name,
+                    }
+                ]
+            elif op_name == "invoice_no_reuse" and augmented_history:
+                # Put the reused number into history so the engine detects it
+                augmented_history = list(augmented_history)
+                augmented_history.append({
+                    "id": "HIST_REUSE_REF",
+                    "invoice_id": "HIST_REUSE_REF",
+                    "invoice_number": tamper_res.spec.invoice_number,
+                    "invoice_date": (now - timedelta(days=180)).strftime("%Y-%m-%d"),
+                    "grand_total": {
+                        "value": float(base_spec.grand_total) + 10000.0,
+                        "raw": str(base_spec.grand_total),
+                        "conf": 1.0,
+                    },
+                    "label": "genuine",
+                })
+                augmented_acct = [
+                    {
+                        "account_hash": None,
+                        "last4": str(vendor.account_number)[-4:],
+                        "ifsc": vendor.ifsc,
+                        "vendor_id": vendor.id,
+                        "vendor_name": vendor.name,
+                    }
+                ]
+            else:
+                augmented_acct = [
+                    {
+                        "account_hash": None,
+                        "last4": str(vendor.account_number)[-4:],
+                        "ifsc": vendor.ifsc,
+                        "vendor_id": vendor.id,
+                        "vendor_name": vendor.name,
+                    }
+                ]
 
             gt_payload = {
                 "id": doc_id,
@@ -320,6 +421,14 @@ class InvoiceDatasetGenerator:
                 "is_scanned": is_scanned,
                 "spec": tamper_res.spec.__dict__,
                 "ground_truth": gt,
+                # ── Context for the evaluation harness (ADR 009) ──────────
+                "vendor_id": vendor.id,
+                "vendor_history": augmented_history,
+                "vendor_accounts": augmented_acct,
+                "all_vendors": [
+                    {"id": v.id, "name": v.name, "gstin": v.gstin}
+                    for v in self.vendors
+                ],
             }
             with open(self.gt_dir / f"{doc_id}.json", "w") as f:
                 json.dump(gt_payload, f, indent=2)
@@ -337,7 +446,7 @@ class InvoiceDatasetGenerator:
                 "grand_total": tamper_res.spec.grand_total,
             })
 
-        # 3. Visual Pairs
+        # ── 3. Visual Pairs ──────────────────────────────────────────────────
         for k in range(visual_pairs_count):
             doc_id = f"VIS_{k+1:05d}"
             vendor = self.vendors[k % len(self.vendors)]
@@ -350,7 +459,7 @@ class InvoiceDatasetGenerator:
             # Apply subtle pixel modification
             try:
                 img = Image.open(png_path)
-                if "grand_total" in gt["fields"]:
+                if "grand_total" in gt.get("fields", {}):
                     bbox = gt["fields"]["grand_total"]["bbox"]
                     altered_total = round(base_spec.grand_total * 1.25, 2)
                     img = apply_pixel_edit_to_image(img, bbox, format_inr(altered_total))
@@ -367,6 +476,22 @@ class InvoiceDatasetGenerator:
                 "is_scanned": False,
                 "spec": base_spec.__dict__,
                 "ground_truth": gt,
+                # ── Context for the evaluation harness (ADR 009) ──────────
+                "vendor_id": vendor.id,
+                "vendor_history": vendor_history_pool.get(vendor.id, []),
+                "vendor_accounts": [
+                    {
+                        "account_hash": None,
+                        "last4": str(vendor.account_number)[-4:],
+                        "ifsc": vendor.ifsc,
+                        "vendor_id": vendor.id,
+                        "vendor_name": vendor.name,
+                    }
+                ],
+                "all_vendors": [
+                    {"id": v.id, "name": v.name, "gstin": v.gstin}
+                    for v in self.vendors
+                ],
             }
             with open(self.gt_dir / f"{doc_id}.json", "w") as f:
                 json.dump(gt_payload, f, indent=2)
@@ -388,3 +513,5 @@ class InvoiceDatasetGenerator:
         manifest_csv_path = self.out_dir / "manifest.csv"
         df.to_csv(manifest_csv_path, index=False)
         return df
+
+

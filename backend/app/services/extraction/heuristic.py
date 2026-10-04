@@ -456,6 +456,10 @@ class HeuristicExtractor:
             if any(k in t_upper for k in ["SUBTOTAL", "TOTAL:", "TAXABLE", "CGST", "SGST", "IGST", "GRAND TOTAL", "AMOUNT IN WORDS"]):
                 break
 
+            # Skip banking / payment lines that may be placed near table
+            if any(k in t_upper for k in ["IFSC", "A/C", "ACCOUNT NO", "BANK NAME", "BANK:", "IBAN", "SWIFT"]):
+                continue
+
             # Search line for numbers
             # Usually line structure: [index] [Description] [qty] [rate] [total]
             numbers = re.findall(r"([0-9]+(?:,[0-9]+)*(?:\.[0-9]{1,2})?)", line.text)
@@ -465,56 +469,62 @@ class HeuristicExtractor:
                 if val is not None:
                     clean_nums.append(val)
 
-            if len(clean_nums) >= 2:
-                # Last number is line total, penultimate is rate or qty
+            if len(clean_nums) >= 3:
                 line_total = clean_nums[-1]
                 rate = clean_nums[-2]
-                qty = clean_nums[-3] if len(clean_nums) >= 3 else 1.0
+                qty = clean_nums[-3]
+            elif len(clean_nums) == 2:
+                # 2 numbers: [qty, line_total]
+                qty = clean_nums[0]
+                line_total = clean_nums[1]
+                rate = round(line_total / qty, 2) if qty > 0 else line_total
+            else:
+                continue
 
-                # Text before numbers is description
-                # Strip numeric tokens from end of text
-                desc = re.sub(r"([0-9,.-]+\s*)+$", "", line.text).strip()
-                # Strip leading row number if present
-                desc = re.sub(r"^[0-9]+[.\s]+", "", desc).strip()
-                if not desc:
-                    desc = f"Item {len(items)+1}"
+            # Text before numbers is description
+            # Strip numeric tokens from end of text
+            desc = re.sub(r"([0-9,.-]+\s*)+$", "", line.text).strip()
+            # Strip leading row number if present
+            desc = re.sub(r"^[0-9]+[.\s]+", "", desc).strip()
+            if not desc:
+                desc = f"Item {len(items)+1}"
 
-                items.append(
-                    LineItem(
-                        description=Field[str](
-                            value=desc,
-                            raw=desc,
-                            conf=0.90,
-                            source="heuristic",
-                            bbox=line.bbox,
-                            page=line.page,
-                        ),
-                        quantity=Field[float](
-                            value=qty,
-                            raw=str(qty),
-                            conf=0.88,
-                            source="heuristic",
-                            bbox=line.bbox,
-                            page=line.page,
-                        ),
-                        unit_price=Field[float](
-                            value=rate,
-                            raw=str(rate),
-                            conf=0.88,
-                            source="heuristic",
-                            bbox=line.bbox,
-                            page=line.page,
-                        ),
-                        line_total=Field[float](
-                            value=line_total,
-                            raw=str(line_total),
-                            conf=0.92,
-                            source="heuristic",
-                            bbox=line.bbox,
-                            page=line.page,
-                        ),
-                    )
+            items.append(
+                LineItem(
+                    description=Field[str](
+                        value=desc,
+                        raw=desc,
+                        conf=0.90,
+                        source="heuristic",
+                        bbox=line.bbox,
+                        page=line.page,
+                    ),
+                    quantity=Field[float](
+                        value=qty,
+                        raw=str(qty),
+                        conf=0.88,
+                        source="heuristic",
+                        bbox=line.bbox,
+                        page=line.page,
+                    ),
+                    unit_price=Field[float](
+                        value=rate,
+                        raw=str(rate),
+                        conf=0.88,
+                        source="heuristic",
+                        bbox=line.bbox,
+                        page=line.page,
+                    ),
+                    line_total=Field[float](
+                        value=line_total,
+                        raw=str(line_total),
+                        conf=0.92,
+                        source="heuristic",
+                        bbox=line.bbox,
+                        page=line.page,
+                    ),
                 )
+            )
 
         return items
 

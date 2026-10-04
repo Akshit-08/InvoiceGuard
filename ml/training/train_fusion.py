@@ -58,7 +58,12 @@ def _process_one(args: tuple) -> tuple[str, dict | None]:
 
     Returns (id, row_dict_or_None).
     """
-    row, pdf_dir, gt_dir = args
+    if len(args) == 4:
+        row, pdf_dir, gt_dir, vendor_registry = args
+    else:
+        row, pdf_dir, gt_dir = args
+        vendor_registry = None
+
     invoice_id = row["id"]
 
     # Label may be 'genuine'/'tampered' (strings) or 0/1 (integers)
@@ -98,7 +103,7 @@ def _process_one(args: tuple) -> tuple[str, dict | None]:
             gt = json.load(fh)
 
         data = invoice_data_from_gt(gt)
-        ctx = analysis_context_from_gt(invoice_id, gt, data, pdf_path)
+        ctx = analysis_context_from_gt(invoice_id, gt, data, pdf_path, vendor_registry=vendor_registry)
 
         engines = [
             FinancialRulesEngine(),
@@ -191,8 +196,13 @@ def main() -> None:
     logger.info("%d documents need feature extraction.", len(uncached_rows))
 
     if uncached_rows:
+        from ml.common import build_vendor_registry
+
+        logger.info("Pre-building vendor registry from full manifest (%d rows)...", len(df_manifest))
+        vendor_registry = build_vendor_registry(df_manifest.to_dict("records"), args.gt_dir)
+
         worker_args = [
-            (row, args.pdf_dir, args.gt_dir)
+            (row, args.pdf_dir, args.gt_dir, vendor_registry)
             for row in uncached_rows
         ]
 
@@ -266,45 +276,92 @@ def main() -> None:
     _require("sklearn.calibration")
     _require("sklearn.metrics")
 
-    from sklearn.calibration import CalibratedClassifierCV
-    from sklearn.metrics import average_precision_score, classification_report, roc_auc_score
+    from sklearn.calibration import CalibratedClassifierCV, calibration_curve
+    from sklearn.metrics import (
+        average_precision_score,
+        brier_score_loss,
+        classification_report,
+        roc_auc_score,
+    )
+    from sklearn.model_selection import StratifiedKFold
     from xgboost import XGBClassifier
 
-    # ── Train XGBoost with monotone constraints ───────────────────────────────
+    # ── Train XGBoost with monotone constraints & hyperparameter search ───────
     # Monotone constraint = +1 (increasing) on every feature:
     # more signal risk → more fusion risk. This is a crucial explainability guarantee.
     monotone = tuple([1] * len(feature_cols))
 
-    xgb_clf = XGBClassifier(
-        n_estimators=400,
-        max_depth=4,
+    candidate_params = [
+        {"max_depth": 3, "min_child_weight": 3, "gamma": 0.5, "n_estimators": 300},
+        {"max_depth": 4, "min_child_weight": 5, "gamma": 1.0, "n_estimators": 400},
+        {"max_depth": 5, "min_child_weight": 5, "gamma": 1.0, "n_estimators": 400},
+        {"max_depth": 4, "min_child_weight": 8, "gamma": 2.0, "n_estimators": 500},
+    ]
+
+    logger.info("Running hyperparameter CV search over %d configurations on TRAIN split...", len(candidate_params))
+    skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+    best_params = candidate_params[1]
+    best_cv_auc = -1.0
+
+    for params in candidate_params:
+        fold_aucs = []
+        for train_idx, val_idx in skf.split(X_train, y_train):
+            clf = XGBClassifier(
+                learning_rate=0.05,
+                subsample=0.8,
+                colsample_bytree=0.8,
+                reg_alpha=0.1,
+                reg_lambda=1.0,
+                monotone_constraints=monotone,
+                eval_metric="auc",
+                random_state=42,
+                n_jobs=-1,
+                **params,
+            )
+            clf.fit(X_train[train_idx], y_train[train_idx])
+            val_probs = clf.predict_proba(X_train[val_idx])[:, 1]
+            fold_aucs.append(roc_auc_score(y_train[val_idx], val_probs))
+        mean_auc = float(np.mean(fold_aucs))
+        logger.info("CV Params %s -> mean ROC-AUC: %.4f", params, mean_auc)
+        if mean_auc > best_cv_auc:
+            best_cv_auc = mean_auc
+            best_params = params
+
+    logger.info("Selected best hyperparams: %s (CV ROC-AUC: %.4f)", best_params, best_cv_auc)
+
+    best_xgb = XGBClassifier(
         learning_rate=0.05,
         subsample=0.8,
         colsample_bytree=0.8,
-        min_child_weight=5,
-        gamma=1.0,
         reg_alpha=0.1,
         reg_lambda=1.0,
         monotone_constraints=monotone,
         eval_metric="auc",
         random_state=42,
         n_jobs=-1,
+        **best_params,
     )
+    best_xgb.fit(X_train, y_train)
 
-    logger.info(
-        "Training XGBoost (n_estimators=400, monotone_constraints on %d features) …",
-        len(feature_cols),
-    )
-    xgb_clf.fit(X_train, y_train)
-
-    # ── Isotonic calibration ──────────────────────────────────────────────────
+    # ── Isotonic calibration & reliability curve check ────────────────────────
     logger.info("Calibrating with isotonic regression (5-fold) …")
-    calibrated = CalibratedClassifierCV(
-        xgb_clf,
+    calibrated_iso = CalibratedClassifierCV(
+        best_xgb,
         method="isotonic",
         cv=5,
     )
-    calibrated.fit(X_train, y_train)
+    calibrated_iso.fit(X_train, y_train)
+
+    calibrated_platt = CalibratedClassifierCV(
+        best_xgb,
+        method="sigmoid",
+        cv=5,
+    )
+    calibrated_platt.fit(X_train, y_train)
+
+    # Evaluate reliability on test
+    calibrated = calibrated_iso
+    calibration_method = "isotonic_5fold"
 
     # ── Evaluate ──────────────────────────────────────────────────────────────
     if len(y_test) > 0 and len(np.unique(y_test)) > 1:
@@ -312,12 +369,17 @@ def main() -> None:
         y_pred = (y_prob >= 0.5).astype(int)
         roc = roc_auc_score(y_test, y_prob)
         pr = average_precision_score(y_test, y_prob)
-        logger.info("Test ROC-AUC: %.4f | PR-AUC: %.4f", roc, pr)
+        brier = brier_score_loss(y_test, y_prob)
+        prob_true, prob_pred = calibration_curve(y_test, y_prob, n_bins=5)
+        logger.info("Test ROC-AUC: %.4f | PR-AUC: %.4f | Brier: %.4f", roc, pr, brier)
         logger.info("\n%s", classification_report(y_test, y_pred))
 
         metrics = {
             "roc_auc": round(roc, 4),
             "pr_auc": round(pr, 4),
+            "brier_score": round(brier, 4),
+            "calibration": calibration_method,
+            "best_hyperparams": best_params,
             "n_train": int(len(y_train)),
             "n_test": int(len(y_test)),
             "n_pos_train": int(y_train.sum()),

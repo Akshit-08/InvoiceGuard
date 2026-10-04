@@ -59,8 +59,36 @@ class DocumentPipeline:
 
         # Stage 4: Store in Database
         data = extraction_res.data
+
+        # Vendor linking
+        vendor_name = data.vendor.name.value
+        vendor_gstin = data.vendor.gstin.value
+        vendor_record = None
+
+        if vendor_name or vendor_gstin:
+
+            from backend.app.models.entities import Vendor
+
+            if vendor_gstin:
+                vendor_record = db.query(Vendor).filter(Vendor.gstin == vendor_gstin).first()
+            if not vendor_record and vendor_name:
+                vendor_record = db.query(Vendor).filter(Vendor.name == vendor_name).first()
+
+            if not vendor_record:
+                vendor_record = Vendor(
+                    name=vendor_name or "Unknown Vendor",
+                    gstin=vendor_gstin,
+                    pan=data.vendor.pan.value if data.vendor.pan else None,
+                    address=data.vendor.address.value if data.vendor.address else None,
+                    email=data.vendor.email.value if data.vendor.email else None,
+                    phone=data.vendor.phone.value if data.vendor.phone else None,
+                )
+                db.add(vendor_record)
+                db.flush()
+
         inv_record = Invoice(
             id=inv_id,
+            vendor_id=vendor_record.id if vendor_record else None,
             original_filename=ingest_res.original_filename,
             file_path=ingest_res.file_path,
             content_hash=ingest_res.content_hash,
@@ -149,6 +177,19 @@ class DocumentPipeline:
         if not inv or not inv.raw_extracted_json:
             raise ValueError(f"Invoice {invoice_id} not found or not extracted.")
 
+        if inv.status == "analyzed":
+            # Idempotency: skip if already analyzed
+            risk_rec = db.query(RiskScoreRecord).filter(RiskScoreRecord.invoice_id == invoice_id).first()
+            if risk_rec:
+                await event_bus.emit(
+                    invoice_id=invoice_id,
+                    stage="analyze",
+                    status="completed",
+                    message="Analysis complete.",
+                    progress=1.0,
+                )
+                return {"invoice_id": invoice_id, "status": "analyzed"}
+
         data = InvoiceData.model_validate(inv.raw_extracted_json)
 
         # Load tokens if available (optional for rules)
@@ -214,10 +255,14 @@ class DocumentPipeline:
             "embeddings": embeddings,
         }
 
+        page_images = [d.image_path for d in inv.documents if d.image_path]
+
         ctx = AnalysisContext(
             invoice_id=invoice_id,
             data=data,
             tokens=tokens,
+            pdf_path=inv.file_path,
+            page_images=page_images,
             vendor_history=vendor_history,
             indices=indices,
             all_vendors=all_vendors,
@@ -284,6 +329,7 @@ class DocumentPipeline:
             confidence=risk_result.confidence,
             baseline_score=risk_result.baseline_score,
             ml_score=risk_result.ml_score,
+            fusion_mode=risk_result.fusion_mode,
             signals_json=risk_result.signals,
             shap_json=risk_result.shap_top,
             escalations_json=risk_result.escalations,
@@ -298,6 +344,35 @@ class DocumentPipeline:
         # Determine review status
         if risk_result.level in ("HIGH", "CRITICAL"):
             inv.review_status = "needs_review"
+
+        # Record vendor account for subsequent invoices if verified / not anomalous
+        bank_anomalies = [
+            f for sig in signals if sig.name == "bank_change"
+            for f in sig.findings if f.severity in ("high", "critical")
+        ]
+        if not bank_anomalies and inv.vendor_id and data.payment and data.payment.account_number and data.payment.account_number.value:
+            import hashlib
+            from datetime import datetime, timezone
+            acct_num = str(data.payment.account_number.value).replace(" ", "")
+            if acct_num:
+                account_hash = hashlib.sha256(acct_num.encode()).hexdigest()
+                last4 = acct_num[-4:] if len(acct_num) >= 4 else acct_num
+                acct_record = db.query(VendorAccount).filter(
+                    VendorAccount.vendor_id == inv.vendor_id,
+                    VendorAccount.account_hash == account_hash
+                ).first()
+                if not acct_record:
+                    acct_record = VendorAccount(
+                        vendor_id=inv.vendor_id,
+                        account_hash=account_hash,
+                        last4=last4,
+                        bank_name=data.payment.bank_name.value if data.payment.bank_name else None,
+                        ifsc=data.payment.ifsc.value if data.payment.ifsc else None,
+                    )
+                    db.add(acct_record)
+                else:
+                    acct_record.last_seen = datetime.now(timezone.utc)
+                    acct_record.invoice_count += 1
 
         db.commit()
 

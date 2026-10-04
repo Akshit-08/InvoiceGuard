@@ -7,64 +7,60 @@
 
 | Split | Count |
 |-------|-------|
-| Total | 112 |
-| Genuine (label=0) | 42 |
-| Tampered (label=1) | 70 |
-| Test set | 112 |
+| Total | 480 |
+| Genuine (label=0) | 220 |
+| Tampered (label=1) | 260 |
+| Test set | 480 |
 
 ## End-to-End Metrics
 
 | Metric | Value |
 |--------|-------|
-| ROC-AUC | 0.5406 |
-| PR-AUC | 0.6612 |
-| Precision @ threshold=30.0 | 0.625 |
-| Recall @ threshold | 1.0 |
-| F1 @ threshold | 0.7692 |
-| False-positive rate (genuine invoices) | 1.0 |
+| ROC-AUC | 0.8772 |
+| PR-AUC | 0.8924 |
+| Precision @ threshold=30.0 | 0.8761 |
+| Recall @ threshold | 0.7615 |
+| F1 @ threshold | 0.8148 |
+| False-positive rate (genuine invoices) | 0.1273 |
 
 ## Confusion Matrix (@ threshold=30)
 
 | | Predicted Genuine (<30) | Predicted Tampered (>=30) |
 |---|---|---|
-| **Actual Genuine** | TN = 0 | FP = 42 |
-| **Actual Tampered** | FN = 0 | TP = 70 |
+| **Actual Genuine** | TN = 192 | FP = 28 |
+| **Actual Tampered** | FN = 62 | TP = 198 |
 
 ## Latency
 
 | Metric | Value |
 |--------|-------|
-| p50 | 0.026 s |
-| p95 | 0.036 s |
-| mean | 0.042 s |
+| p50 | 0.011 s |
+| p95 | 0.014 s |
+| mean | 0.015 s |
 
 ## Per-Fraud-Type Recall
 
 | Fraud Type | Recall |
 |------------|--------|
-| AMOUNT_OUTLIER | 1.000 |
+| AMOUNT_OUTLIER | 0.615 |
 | AMOUNT_WORDS_MISMATCH | 1.000 |
 | BANK_ACCOUNT_CHANGED | 1.000 |
-| DATE_IN_FUTURE;DUE_BEFORE_INVOICE | 1.000 |
-| EXACT_FILE_DUPLICATE | 1.000 |
-| GRAND_TOTAL_MISMATCH | 1.000 |
+| EXACT_FILE_DUPLICATE | 0.071 |
+| GRAND_TOTAL_MISMATCH | 0.530 |
 | GSTIN_CHECKSUM_FAIL | 1.000 |
 | INVOICE_NUMBER_REUSED | 1.000 |
 | INVOICE_NUMBER_SEQUENCE_ANOMALY | 1.000 |
 | LINE_TOTAL_MISMATCH | 1.000 |
-| LOOKALIKE_VENDOR_NAME | 1.000 |
+| LOOKALIKE_VENDOR_NAME | 0.071 |
 | NEAR_DUPLICATE | 1.000 |
 | SHARED_BANK_ACCOUNT_ACROSS_VENDORS | 1.000 |
-| TAX_AMOUNT_MISMATCH;GRAND_TOTAL_MISMATCH | 1.000 |
-| TAX_RATE_INVALID_SLAB;TAX_AMOUNT_MISMATCH | 1.000 |
-| VISUAL_TAMPER_PATCH;GRAND_TOTAL_MISMATCH | 1.000 |
 
 ## Ablation Study
 
 | System | ROC-AUC |
 |--------|---------|
-| Baseline (noisy-OR only) | 0.5167 |
-| Combined (baseline + XGBoost) | 0.5406 |
+| Baseline (noisy-OR only) | 0.8476 |
+| Combined (baseline + XGBoost) | 0.8772 |
 
 ## Limitations
 

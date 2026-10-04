@@ -97,7 +97,7 @@ class BankEngine(BaseEngine):
                 findings.append(self.create_finding(
                     finding_type="BANK_ACCOUNT_CHANGED",
                     severity="high",
-                    score=85.0,
+                    score=75.0,
                     confidence=0.9,
                     title="New Bank Account Detected",
                     summary=f"Bank account {display_acc} has never been used by this vendor before.",
