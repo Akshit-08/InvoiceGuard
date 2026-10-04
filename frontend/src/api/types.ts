@@ -205,6 +205,8 @@ export interface UploadResponse {
   message?: string
 }
 
+export type DateRange = '7d' | '30d' | '90d'
+
 export interface DashboardStats {
   kpis: {
     total_invoices: number
@@ -212,10 +214,24 @@ export interface DashboardStats {
     needs_review_count: number
     high_critical_count: number
     duplicate_alerts: number
+    /** Sum of grand_total for HIGH+CRITICAL invoices (INR) */
+    value_at_risk?: number
     total_volume?: number
     total_analyzed?: number
     needs_review?: number
     high_critical?: number
+    sparklines?: {
+      analyzed?:      number[]
+      needs_review?:  number[]
+      high_critical?: number[]
+      value_at_risk?: number[]
+    }
+    deltas?: {
+      analyzed?:      number
+      needs_review?:  number
+      high_critical?: number
+      value_at_risk?: number
+    }
   }
   risk_distribution: {
     low: number
@@ -224,10 +240,39 @@ export interface DashboardStats {
     critical: number
   }
   anomaly_categories?: Record<string, number>
-  recent_analyses?: InvoiceListItem[]
-  trend?: Array<{ date: string; count: number; high_risk: number }>
-  top_vendors?: Array<{ id: string; name: string; invoice_count: number; avg_risk_score: number }>
   categories?: Record<string, number>
+  recent_analyses?: InvoiceListItem[]
+  /** Per-day stacked breakdown by risk level */
+  trend?: Array<{
+    date: string
+    low: number
+    medium: number
+    high: number
+    critical: number
+    /** legacy fields */
+    count?: number
+    high_risk?: number
+  }>
+  top_vendors?: Array<{
+    id: string
+    name: string
+    invoice_count: number
+    avg_risk_score?: number
+    flagged_count?: number
+    /** alias */
+    avg_score?: number
+  }>
+  needs_review_queue?: InvoiceListItem[]
+  system_status?: {
+    model_loaded: boolean
+    fusion_mode: string
+    roc_auc?: number
+    pr_auc?: number
+    engines_enabled?: string[]
+    last_evaluated_at?: string
+  }
+  last_updated_at?: string
+  date_range?: DateRange
 }
 
 export interface VendorProfile {
