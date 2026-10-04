@@ -174,9 +174,10 @@ export const invoiceApi = {
 
 // ── Dashboard ─────────────────────────────────────────────────
 export const dashboardApi = {
-  stats: async (): Promise<DashboardStats> => {
+  stats: async (dateRange?: import('./types').DateRange): Promise<DashboardStats> => {
     if (USE_MOCKS) return loadMock('dashboard_stats.json')
-    return apiFetch<DashboardStats>('/dashboard/stats')
+    const qs = dateRange ? `?date_range=${dateRange}` : ''
+    return apiFetch<DashboardStats>(`/dashboard/stats${qs}`)
   },
 }
 
