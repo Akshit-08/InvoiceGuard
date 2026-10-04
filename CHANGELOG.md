@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-10-04
+
+### Added
+- **Landing scroll storytelling** (`src/pages/LandingPage.tsx`):
+  - "How It Works" replaced with a 4-step sticky-scroll section (desktop) and stacked inView cards (mobile).
+  - Desktop: `height: calc(4 * 100vh)` scroll container, `100svh` sticky inner frame, two-column layout (steps + stage).
+  - Vertical progress line fills discretely to the active step.
+  - **StageUpload**: dashed dropzone, spring-animated file chip, invoice thumbnail fade-in, success badge.
+  - **StageExtract**: scan beam sweeps, bounding boxes draw in with `scaleX` animation, field confidence chips slide in.
+  - **StageAnalyse**: 7 engine tiles stagger in with score bars and `useCountUp` values; XGBoost fusion result.
+  - **StageExplain**: SVG arc gauge (animated `strokeDashoffset`), 2 finding cards stacking in.
+  - `ViewportGate` wrapper: lazily mounts heavy stage SVGs only when they enter the viewport.
+  - `AnimatePresence mode="wait"` cross-fades between stages on step change.
+  - `prefers-reduced-motion`: all stage animations disabled; static final states shown; desktop sticky scroll replaced with mobile stacked layout.
+  - Smooth anchor navigation links in navbar (`#how-it-works`, `#engines`).
+- **"Why InvoiceGuard is different"** section: 3 stat cards (7 engines / 100% evidence / 0 verdicts) with `useCountUp` animated on first inView.
+- **CTA section**: accent radial glow + dot-grid background, trust micro-signals.
+
+### Changed
+- **7-signal grid**: `whileHover={{ y: -3 }}` lift + icon `scale: 1.12` on each card.
+- **Navbar**: `Shield` icon → `Logo variant="full" size={22}` (new brand component).
+- **Footer**: `Shield` icon → `Logo variant="mark" size={20}`; version `v0.4.1`.
+- **Hero animation**: preserved exactly; only `Shield` eyebrow icon updated to `ShieldCheck`.
+
 ## [0.4.0] - 2026-10-04
 
 ### Added

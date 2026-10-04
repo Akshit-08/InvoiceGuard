@@ -295,3 +295,64 @@ Initial evaluation showed end-to-end ROC-AUC of 0.54, PR-AUC of 0.66, precision 
 - **oxlint**: ✅ 0 errors, 10 pre-existing warnings (unrelated to this change).
 - **WCAG AA**: all primary text/token pairs verified (see `docs/assets/design-v2/README.md`).
 
+---
+
+## Day 4 Block E — Landing Scroll Storytelling (feat/landing-scroll) — Completed
+
+### Goals
+- Keep hero animation (InvoiceMockScan) exactly as designed.
+- Replace flat 3-card "How it works" with sticky-scroll storytelling (4 steps, desktop) + stacked cards (mobile).
+- Upgrade 7-signal grid with hover lift + icon scale.
+- Add "Why InvoiceGuard is different" section with animated stat counters.
+- Polished CTA section with accent glow background.
+- No scroll hijacking; honour prefers-reduced-motion.
+
+### Completed
+
+**Branch**: `feat/landing-scroll` (from `feat/design-v2`) → tag `v0.4.1-landing`
+
+#### How It Works — sticky scroll (desktop)
+- Outer section: `height: calc(4 * 100vh)` providing natural scroll travel through 4 steps.
+- Inner sticky frame: `height: 100svh; position: sticky; top: 0`. Two-column grid.
+- Left column: section heading, vertical progress line (discrete step fill animated via Framer Motion), 4 step rows with accent dot indicators and `opacity` dim on inactive steps.
+- Right column: `AnimatePresence mode="wait"` swaps between 4 stage illustrations on `activeStep` change (cross-fade, no layout shift).
+- Active step derived from `useScroll` + `useTransform` + `useMotionValueEvent` — JS-driven, no scroll-position manipulation.
+- Smooth anchor links in navbar (`scrollIntoView({ behavior: 'smooth' })`).
+- Mobile (`< lg`): stacked surface cards, each with inline stage illustration gated by `ViewportGate` (only mounts when entering viewport).
+- `prefers-reduced-motion`: stage animations skipped; desktop sticky layout hidden; mobile stacked layout shown.
+
+#### Stage Illustrations
+- **StageUpload**: dashed dropzone, file chip drop animation (spring bounce), invoice thumbnail fade-in, "Ready to analyse" badge.
+- **StageExtract**: mini invoice doc, animated scan beam, bounding box draw-in (`scaleX` from 0→1, `originX: 0`), field chips sliding in from right with confidence badges.
+- **StageAnalyse**: 7 engine tiles stagger in with opacity+scale; each has a score bar animating to final width; `EngineScore` uses `useCountUp`; fusion result slides in.
+- **StageExplain**: SVG arc gauge (upper semicircle, animated `strokeDashoffset`), score at 88.5, 2 finding cards stack in.
+
+#### 7-Signal Grid enhancements
+- `whileHover={{ y: -3 }}` hover lift on each card.
+- Icon container: `whileHover={{ scale: 1.12 }}` on the accent icon box.
+- Stagger delay preserved (0.07s per item).
+
+#### Why Different — stat counters
+- 3 stat cards: 7 engines / 100% evidence / 0 verdicts.
+- `StatCard` uses `useCountUp(active ? stat : 0, 1400)` — animates from 0 on first inView.
+- `active` flag driven by `useInView` on the container ref.
+
+#### CTA section
+- Radial accent glow (`var(--accent-muted)`) with `opacity` fade-in on inView.
+- Faint dot-grid overlay using CSS background-image (matches body texture).
+- Trust micro-signals row below buttons.
+
+#### Navbar update
+- `Shield` icon replaced with `Logo variant="full" size={22}`.
+- Smooth anchor scroll links: "How it works" → `#how-it-works`, "Engines" → `#engines`.
+
+#### Footer
+- `Logo variant="mark" size={20}` replaces old shield icon.
+- Version updated to `v0.4.1`.
+
+### Quality Gates
+- **Vite build**: ✅ clean (`built in 885ms`, zero errors).
+- **Vitest**: ✅ 12/12 tests passing.
+- **oxlint**: ✅ 0 errors, 0 warnings on `LandingPage.tsx`.
+- **Animation rules**: only `transform`+`opacity` animated; `will-change` managed by Framer Motion; lazy-mount via `ViewportGate`; `prefers-reduced-motion` honoured.
+
