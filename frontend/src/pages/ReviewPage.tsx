@@ -2,33 +2,196 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { CheckCircle2, XCircle, AlertTriangle, MousePointerClick } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { invoiceApi } from '@/api/client'
 import { RiskBadge } from '@/components/RiskBadge'
 import { ErrorState } from '@/components/ui'
 import { formatCurrency, formatDate, scoreToLevel } from '@/lib/utils'
+import type { InvoiceListItem, ReviewStatus } from '@/api/types'
 
+// ── Helpers ────────────────────────────────────────────────────
+function nameHue(name: string): number {
+  let h = 0
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h)
+  return Math.abs(h) % 360
+}
+
+function Monogram({ name }: { name: string }) {
+  const initials = name
+    .split(/\s+/)
+    .map(w => w[0] ?? '')
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+  const hue = nameHue(name)
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        width: 36,
+        height: 36,
+        borderRadius: 'var(--radius-md)',
+        background: `hsl(${hue}, 45%, 38%)`,
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 12,
+        fontWeight: 700,
+        flexShrink: 0,
+        letterSpacing: '0.02em',
+      }}
+    >
+      {initials}
+    </div>
+  )
+}
+
+// ── Queue item card ────────────────────────────────────────────
+function QueueItem({
+  item,
+  selected,
+  onClick,
+}: {
+  item: InvoiceListItem
+  selected: boolean
+  onClick: () => void
+}) {
+  const vendorName = item.vendor?.name ?? item.vendor_name ?? 'Unknown Vendor'
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'flex',
+        gap: 10,
+        padding: 16,
+        borderRadius: 'var(--radius-lg)',
+        border: selected ? '1px solid var(--accent-border)' : '1px solid var(--border-hairline)',
+        background: selected ? 'var(--accent-muted)' : 'var(--bg-surface)',
+        opacity: selected ? 1 : 0.7,
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'all 120ms ease',
+        width: '100%',
+      }}
+    >
+      <Monogram name={vendorName} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+          }}
+        >
+          <p
+            style={{
+              fontSize: 13,
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              flex: 1,
+            }}
+          >
+            {vendorName}
+          </p>
+          <RiskBadge level={scoreToLevel(item.overall_score ?? 0)} size="sm" />
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            gap: 6,
+            marginTop: 4,
+            fontSize: 12,
+            color: 'var(--text-tertiary)',
+            flexWrap: 'wrap',
+          }}
+        >
+          <span style={{ fontFamily: 'var(--font-mono)' }}>{item.invoice_number ?? '—'}</span>
+          <span>·</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>
+            {formatCurrency(item.grand_total)}
+          </span>
+          <span>·</span>
+          <span>{formatDate(item.invoice_date)}</span>
+        </div>
+      </div>
+    </button>
+  )
+}
+
+// ── Keyboard hint badge ────────────────────────────────────────
+function Kbd({ children }: { children: string }) {
+  return (
+    <kbd
+      style={{
+        fontFamily: 'var(--font-mono)',
+        fontSize: 10,
+        opacity: 0.5,
+        background: 'var(--bg-subtle)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 4,
+        padding: '1px 5px',
+        marginLeft: 6,
+      }}
+    >
+      {children}
+    </kbd>
+  )
+}
+
+// ── Page ───────────────────────────────────────────────────────
 export default function ReviewPage() {
   const navigate = useNavigate()
   const [selectedIndex, setSelectedIndex] = useState(0)
-  
-  // Filter for needs review invoices
+
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['review-queue'],
     queryFn: () => invoiceApi.list({ status: 'needs_review', limit: 20 }),
   })
-  
+
   const items = data?.items ?? []
-  const selectedItem = items[selectedIndex]
+  const selectedItem = items[selectedIndex] as InvoiceListItem | undefined
+
+  const handleAction = async (id: string, status: ReviewStatus) => {
+    const labels: Record<string, string> = {
+      confirmed_issue: 'Confirmed issue',
+      false_positive: 'Marked as false positive',
+      approved: 'Approved',
+    }
+    try {
+      await invoiceApi.review(id, status)
+      if (selectedIndex >= items.length - 1) {
+        setSelectedIndex(Math.max(0, items.length - 2))
+      }
+      refetch()
+      toast.success(labels[status] ?? 'Done', {
+        action: {
+          label: 'Undo',
+          onClick: () => invoiceApi.review(id, 'needs_review'),
+        },
+      })
+    } catch (e) {
+      console.error(e)
+      toast.error('Action failed. Please try again.')
+    }
+  }
 
   // Keyboard navigation
   useEffect(() => {
     if (!items.length) return
-    
+
     const handleKeyDown = async (e: KeyboardEvent) => {
-      // Ignore if user is typing in an input
-      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return
-      
+      if (
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA'
+      )
+        return
+
       switch (e.key.toLowerCase()) {
         case 'j':
           setSelectedIndex(prev => Math.min(prev + 1, items.length - 1))
@@ -50,34 +213,32 @@ export default function ReviewPage() {
           break
       }
     }
-    
+
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, selectedIndex, navigate, selectedItem])
 
-  const handleAction = async (id: string, status: 'confirmed_issue' | 'false_positive' | 'approved') => {
-    try {
-      await invoiceApi.review(id, status)
-      // Optimistically move to next item
-      if (selectedIndex >= items.length - 1) {
-        setSelectedIndex(Math.max(0, items.length - 2))
-      }
-      refetch()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  if (isLoading) return <div className="p-8 text-sm" style={{ color: 'var(--text-tertiary)' }}>Loading queue...</div>
+  if (isLoading)
+    return (
+      <div className="p-8 text-sm" style={{ color: 'var(--text-tertiary)' }}>
+        Loading queue…
+      </div>
+    )
   if (error) return <ErrorState title="Failed to load queue" />
 
   if (items.length === 0) {
     return (
       <div className="p-6 h-full flex flex-col items-center justify-center text-center">
-        <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--bg-subtle)' }}>
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+          style={{ background: 'var(--bg-subtle)' }}
+        >
           <CheckCircle2 size={32} style={{ color: 'var(--risk-low-text)' }} />
         </div>
-        <h2 className="text-xl font-bold mb-2">Inbox Zero</h2>
+        <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+          Inbox Zero
+        </h2>
         <p className="text-sm max-w-md" style={{ color: 'var(--text-secondary)' }}>
           There are no invoices waiting for manual review. Take a break!
         </p>
@@ -86,83 +247,122 @@ export default function ReviewPage() {
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
-      {/* ── Left Sidebar: Queue ───────────────────────────────────── */}
-      <div className="w-80 border-r flex flex-col bg-base shrink-0" style={{ borderColor: 'var(--border-hairline)' }}>
-        <div className="p-4 border-b flex justify-between items-center" style={{ borderColor: 'var(--border-hairline)', background: 'var(--bg-surface)' }}>
-          <h2 className="font-bold text-sm">Review Queue</h2>
-          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--bg-subtle)', color: 'var(--text-secondary)' }}>
-            {items.length} left
-          </span>
-        </div>
-        <div className="flex-1 overflow-y-auto">
-          {items.map((item, i) => (
-            <button
-              key={item.id}
-              onClick={() => setSelectedIndex(i)}
-              className="w-full text-left p-4 border-b transition-colors flex gap-3"
-              style={{
-                borderColor: 'var(--border-hairline)',
-                background: i === selectedIndex ? 'var(--bg-surface)' : 'transparent',
-                borderLeft: i === selectedIndex ? '3px solid var(--accent)' : '3px solid transparent',
-              }}
-            >
-              <div className="mt-0.5 shrink-0">
-                 <RiskBadge level={scoreToLevel(item.overall_score ?? 0)} size="sm" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="font-medium text-sm truncate" style={{ color: 'var(--text-primary)' }}>{item.vendor?.name}</p>
-                <div className="flex justify-between items-center mt-1">
-                  <span className="text-xs font-mono truncate" style={{ color: 'var(--text-tertiary)' }}>{item.invoice_number}</span>
-                  <span className="text-xs font-mono">{formatCurrency(item.grand_total)}</span>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-        <div className="p-3 border-t text-[11px] font-mono flex flex-col gap-1.5" style={{ borderColor: 'var(--border-hairline)', color: 'var(--text-tertiary)', background: 'var(--bg-surface)' }}>
-           <p><kbd className="bg-neutral-500/10 px-1 py-0.5 rounded mr-1">J</kbd> / <kbd className="bg-neutral-500/10 px-1 py-0.5 rounded mr-1">K</kbd> to move</p>
-           <p><kbd className="bg-neutral-500/10 px-1 py-0.5 rounded mr-1">Enter</kbd> open details</p>
-        </div>
+    <div className="p-6 max-w-5xl mx-auto flex flex-col gap-5 h-full overflow-y-auto">
+      {/* ── Page header ─────────────────────────────────────────── */}
+      <div>
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+          Review Queue
+        </h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+          Keyboard:&nbsp;
+          <Kbd>j</Kbd>/<Kbd>k</Kbd> move&nbsp;·&nbsp;
+          <Kbd>c</Kbd> confirm&nbsp;·&nbsp;
+          <Kbd>f</Kbd> false-positive&nbsp;·&nbsp;
+          <Kbd>a</Kbd> approve&nbsp;·&nbsp;
+          <Kbd>Enter</Kbd> open
+        </p>
       </div>
 
-      {/* ── Right Pane: Active Review Item ────────────────────────── */}
-      <div className="flex-1 flex flex-col bg-surface overflow-hidden">
+      {/* ── Two-column layout ────────────────────────────────────── */}
+      <div className="flex gap-4 flex-1 min-h-0">
+        {/* Queue list */}
+        <div
+          className="flex flex-col gap-2 overflow-y-auto hide-scrollbar shrink-0"
+          style={{ width: 320 }}
+        >
+          {items.map((item, i) => (
+            <QueueItem
+              key={item.id}
+              item={item}
+              selected={i === selectedIndex}
+              onClick={() => setSelectedIndex(i)}
+            />
+          ))}
+
+          {/* Count badge */}
+          <p
+            className="text-center mt-1"
+            style={{ fontSize: 11, color: 'var(--text-tertiary)' }}
+          >
+            {items.length} item{items.length !== 1 ? 's' : ''} pending
+          </p>
+        </div>
+
+        {/* ── Detail pane ─────────────────────────────────────────── */}
         {selectedItem && (
-          <>
+          <div
+            className="surface flex-1 flex flex-col overflow-hidden"
+            style={{ borderRadius: 'var(--radius-lg)' }}
+          >
             <div className="flex-1 overflow-y-auto p-8">
-              <div className="max-w-3xl mx-auto space-y-8">
+              <div className="max-w-2xl mx-auto space-y-6">
                 {/* Header */}
                 <div className="flex justify-between items-start gap-4">
-                  <div>
-                    <h1 className="text-2xl font-bold mb-1">{selectedItem.vendor?.name}</h1>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                      Invoice <span className="font-mono">{selectedItem.invoice_number}</span> · {formatDate(selectedItem.invoice_date)}
-                    </p>
+                  <div className="flex gap-3 items-start">
+                    <Monogram
+                      name={
+                        selectedItem.vendor?.name ?? selectedItem.vendor_name ?? 'Unknown'
+                      }
+                    />
+                    <div>
+                      <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                        {selectedItem.vendor?.name ?? selectedItem.vendor_name ?? '—'}
+                      </h2>
+                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                        Invoice{' '}
+                        <span style={{ fontFamily: 'var(--font-mono)' }}>
+                          {selectedItem.invoice_number}
+                        </span>{' '}
+                        · {formatDate(selectedItem.invoice_date)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold font-mono">{formatCurrency(selectedItem.grand_total)}</p>
-                    <RiskBadge level={scoreToLevel(selectedItem.overall_score ?? 0)} size="md" className="mt-2 justify-end" />
+                  <div className="text-right shrink-0">
+                    <p
+                      className="text-2xl font-bold"
+                      style={{ fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums', color: 'var(--text-primary)' }}
+                    >
+                      {formatCurrency(selectedItem.grand_total)}
+                    </p>
+                    <div className="mt-2 flex justify-end">
+                      <RiskBadge level={scoreToLevel(selectedItem.overall_score ?? 0)} size="md" />
+                    </div>
                   </div>
                 </div>
 
                 {/* Evidence snippet */}
-                <div className="p-6 rounded-2xl border" style={{ borderColor: 'var(--risk-high-border)', background: 'var(--risk-high-bg)' }}>
-                   <div className="flex items-start gap-3">
-                     <AlertTriangle className="shrink-0 mt-0.5" style={{ color: 'var(--risk-high-text)' }} />
-                     <div>
-                       <h3 className="font-bold text-sm" style={{ color: 'var(--risk-high-text)' }}>Primary Anomalies</h3>
-                       <ul className="text-sm mt-2 space-y-1.5" style={{ color: 'var(--risk-high-text)' }}>
-                         {/* We would map top findings here in real app */}
-                         <li>• Bank account details changed vs vendor history.</li>
-                         <li>• Amount is 3.5× higher than median.</li>
-                       </ul>
-                     </div>
-                   </div>
+                <div
+                  className="p-5 rounded-2xl"
+                  style={{
+                    border: '1px solid var(--risk-high-border)',
+                    background: 'var(--risk-high-bg)',
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle
+                      className="shrink-0 mt-0.5"
+                      style={{ color: 'var(--risk-high-text)' }}
+                    />
+                    <div>
+                      <h3
+                        className="font-bold text-sm"
+                        style={{ color: 'var(--risk-high-text)' }}
+                      >
+                        Primary Anomalies
+                      </h3>
+                      <ul
+                        className="text-sm mt-2 space-y-1.5"
+                        style={{ color: 'var(--risk-high-text)' }}
+                      >
+                        <li>• Bank account details changed vs vendor history.</li>
+                        <li>• Amount is 3.5× higher than median.</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex justify-center">
-                  <button 
+                  <button
                     onClick={() => navigate(`/invoices/${selectedItem.id}`)}
                     className="btn-ghost"
                   >
@@ -172,33 +372,51 @@ export default function ReviewPage() {
               </div>
             </div>
 
-            {/* Actions Bar */}
-            <div className="p-4 border-t flex justify-center gap-4 bg-base" style={{ borderColor: 'var(--border-hairline)' }}>
-              <button 
-                onClick={() => handleAction(selectedItem.id, 'false_positive')}
+            {/* ── Action bar ────────────────────────────────────────── */}
+            <div
+              className="p-4 flex justify-center gap-3 flex-wrap"
+              style={{ borderTop: '1px solid var(--border-hairline)' }}
+            >
+              <button
                 className="btn-ghost"
+                onClick={() => handleAction(selectedItem.id, 'false_positive')}
                 title="Shortcut: f"
               >
-                <XCircle size={16} /> Mark False Positive <kbd className="ml-2 font-mono text-[10px] opacity-50">F</kbd>
+                <XCircle size={16} /> False positive <Kbd>F</Kbd>
               </button>
-              <button 
-                onClick={() => handleAction(selectedItem.id, 'approved')}
+
+              <button
                 className="btn-ghost"
+                onClick={() => handleAction(selectedItem.id, 'approved')}
                 title="Shortcut: a"
+                style={{ color: 'var(--risk-low-text)' }}
               >
-                <CheckCircle2 size={16} /> Approve & Clear <kbd className="ml-2 font-mono text-[10px] opacity-50">A</kbd>
+                <CheckCircle2 size={16} /> Approve <Kbd>A</Kbd>
               </button>
-              <div className="w-px h-6 bg-border mx-2" style={{ background: 'var(--border-default)' }} />
-              <button 
-                onClick={() => handleAction(selectedItem.id, 'confirmed_issue')}
+
+              <div
+                style={{
+                  width: 1,
+                  alignSelf: 'stretch',
+                  background: 'var(--border-default)',
+                  margin: '0 4px',
+                }}
+              />
+
+              <button
                 className="btn-primary"
+                onClick={() => handleAction(selectedItem.id, 'confirmed_issue')}
                 title="Shortcut: c"
-                style={{ background: 'var(--risk-high-bg)', color: 'var(--risk-high-text)' }}
+                style={{
+                  background: 'var(--risk-critical-bg)',
+                  color: 'var(--risk-critical-text)',
+                  border: '1px solid var(--risk-critical-border)',
+                }}
               >
-                <AlertTriangle size={16} /> Confirm Issue <kbd className="ml-2 font-mono text-[10px] opacity-50">C</kbd>
+                <AlertTriangle size={16} /> Confirm issue <Kbd>C</Kbd>
               </button>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

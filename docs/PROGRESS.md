@@ -233,3 +233,231 @@ Initial evaluation showed end-to-end ROC-AUC of 0.54, PR-AUC of 0.66, precision 
 - **Hero Demo Samples**: All 8 canonical samples PASS within their exact expected risk bands (`scripts/verify_e2e.py`).
 - **Quality Gates**: All 91 backend unit tests passing; `ruff check .` clean with zero errors.
 
+---
+
+## Day 4 Block D — Visual Identity Overhaul (feat/design-v2) — Completed
+
+### Goals
+- Replace existing blue-tinted HSL theme with a calm, professional charcoal-base design system.
+- New logo mark (document + scan line + anomaly dot). No shield, no padlock.
+- Full token refactor across all pages; zero hardcoded hex colours remaining.
+
+### Completed
+
+**Branch**: `feat/design-v2` → tag `v0.4-design-v2`
+
+#### 1. Dark Theme Tokens (pure charcoal, no hue shift)
+- `--bg-base: #151515`, `--bg-surface: #1a1a1a`, `--bg-elevated: #1e1e1e`, `--bg-overlay: #242424`, `--bg-subtle: #2b2b2b`.
+- Borders: white-alpha hairlines (`rgba(255,255,255,0.07/0.09/0.12)`) — no blue tint.
+- Text: `#ececec / #a1a1a1 / #6f6f6f` (primary / secondary / tertiary).
+- Background texture: 3.5% opacity dot grid at 24px spacing + radial top highlight.
+- Cards: `background: linear-gradient(surface-2 → slightly darker)` + `inset 0 1px 0 rgba(255,255,255,0.04)` top inner highlight.
+- Glass top bar: `backdrop-blur(12px)` over `rgba(21,21,21,0.72)` with hairline border.
+
+#### 2. Light Theme
+- `--bg-base: #f6f6f4`, surfaces white and `#fbfbfa`, borders `#e7e7e3 / #d9d9d4`.
+- Text: `#161616 / #5f5f5f`. Same radius/spacing.
+- Smooth 300ms theme transition via CSS `transition: background-color, color`.
+
+#### 3. Accent: `#7B72F8` (dark) / `#5552d6` (light)
+- Desaturated indigo-violet — neither saturated purple nor blue.
+- Dark mode contrast on #151515: **5.3:1 WCAG AA** ✅
+- Light mode contrast on #ffffff: **5.0:1 WCAG AA** ✅
+- Used only for: primary actions, active nav indicator, focus rings, logo anomaly dot.
+
+#### 4. Risk palette retuned
+- 12–16% opacity backgrounds, solid text colour, always icon + label.
+- Emerald / amber / orange / rose — all readable on both themes.
+
+#### 5. Logo (`components/brand/Logo.tsx`)
+- Original SVG mark on 24px grid: document with folded top-right corner, horizontal scan line, accent-filled anomaly detection dot.
+- No shield, no padlock, no magnifier.
+- 3 brand SVG variants in `src/assets/brand/`: `logo-primary.svg`, `logo-mono.svg`, `logo-favicon.svg`.
+- `Logo` component: variants `full` (mark + wordmark) / `mark` / `mono`; scan-line CSS animation on mount (respects `prefers-reduced-motion`).
+- Wordmark: "Invoice" (regular weight) + "Guard" (semibold), tight tracking (`-0.025em`).
+- New `public/favicon.svg` and updated `index.html` `<title>` and `theme-color`.
+
+#### 6. Shell refinements
+- Sidebar: `surface-1` bg, active item shows 3px accent indicator bar + `accent-muted` background (replaces full-accent fill).
+- Top bar: `backdrop-blur(12px)` over charcoal-alpha; height 56px; hairline bottom border.
+- Command palette backdrop: `rgba(10,10,10,0.65)` (no blue tint).
+- Nav collapse toggle: `surface-3` bg + `border-strong`.
+
+#### 7. Hardcoded-colour cleanup
+- `LandingPage.tsx`: `severityColors` now uses `var(--risk-*-text/bg)` tokens.
+- `InvoicePage.tsx`: `bg-[#0a0a0a]`, `bg-neutral-900/80`, `rgba(239,68,68,...)` → tokens.
+- `SettingsPage.tsx`: Radix Slider Track/Range/Thumb → CSS var tokens.
+- `AnalyzePage.tsx`: scan beam uses `var(--accent)` with precise rgba glow.
+
+### Quality Gates
+- **Vite build**: ✅ clean (`built in 3.50s`, zero errors).
+- **Vitest**: ✅ 12/12 tests passing.
+- **oxlint**: ✅ 0 errors, 10 pre-existing warnings (unrelated to this change).
+- **WCAG AA**: all primary text/token pairs verified (see `docs/assets/design-v2/README.md`).
+
+---
+
+## Day 4 Block E — Landing Scroll Storytelling (feat/landing-scroll) — Completed
+
+### Goals
+- Keep hero animation (InvoiceMockScan) exactly as designed.
+- Replace flat 3-card "How it works" with sticky-scroll storytelling (4 steps, desktop) + stacked cards (mobile).
+- Upgrade 7-signal grid with hover lift + icon scale.
+- Add "Why InvoiceGuard is different" section with animated stat counters.
+- Polished CTA section with accent glow background.
+- No scroll hijacking; honour prefers-reduced-motion.
+
+### Completed
+
+**Branch**: `feat/landing-scroll` (from `feat/design-v2`) → tag `v0.4.1-landing`
+
+#### How It Works — sticky scroll (desktop)
+- Outer section: `height: calc(4 * 100vh)` providing natural scroll travel through 4 steps.
+- Inner sticky frame: `height: 100svh; position: sticky; top: 0`. Two-column grid.
+- Left column: section heading, vertical progress line (discrete step fill animated via Framer Motion), 4 step rows with accent dot indicators and `opacity` dim on inactive steps.
+- Right column: `AnimatePresence mode="wait"` swaps between 4 stage illustrations on `activeStep` change (cross-fade, no layout shift).
+- Active step derived from `useScroll` + `useTransform` + `useMotionValueEvent` — JS-driven, no scroll-position manipulation.
+- Smooth anchor links in navbar (`scrollIntoView({ behavior: 'smooth' })`).
+- Mobile (`< lg`): stacked surface cards, each with inline stage illustration gated by `ViewportGate` (only mounts when entering viewport).
+- `prefers-reduced-motion`: stage animations skipped; desktop sticky layout hidden; mobile stacked layout shown.
+
+#### Stage Illustrations
+- **StageUpload**: dashed dropzone, file chip drop animation (spring bounce), invoice thumbnail fade-in, "Ready to analyse" badge.
+- **StageExtract**: mini invoice doc, animated scan beam, bounding box draw-in (`scaleX` from 0→1, `originX: 0`), field chips sliding in from right with confidence badges.
+- **StageAnalyse**: 7 engine tiles stagger in with opacity+scale; each has a score bar animating to final width; `EngineScore` uses `useCountUp`; fusion result slides in.
+- **StageExplain**: SVG arc gauge (upper semicircle, animated `strokeDashoffset`), score at 88.5, 2 finding cards stack in.
+
+#### 7-Signal Grid enhancements
+- `whileHover={{ y: -3 }}` hover lift on each card.
+- Icon container: `whileHover={{ scale: 1.12 }}` on the accent icon box.
+- Stagger delay preserved (0.07s per item).
+
+#### Why Different — stat counters
+- 3 stat cards: 7 engines / 100% evidence / 0 verdicts.
+- `StatCard` uses `useCountUp(active ? stat : 0, 1400)` — animates from 0 on first inView.
+- `active` flag driven by `useInView` on the container ref.
+
+#### CTA section
+- Radial accent glow (`var(--accent-muted)`) with `opacity` fade-in on inView.
+- Faint dot-grid overlay using CSS background-image (matches body texture).
+- Trust micro-signals row below buttons.
+
+#### Navbar update
+- `Shield` icon replaced with `Logo variant="full" size={22}`.
+- Smooth anchor scroll links: "How it works" → `#how-it-works`, "Engines" → `#engines`.
+
+#### Footer
+- `Logo variant="mark" size={20}` replaces old shield icon.
+- Version updated to `v0.4.1`.
+
+### Quality Gates
+- **Vite build**: ✅ clean (`built in 885ms`, zero errors).
+- **Vitest**: ✅ 12/12 tests passing.
+- **oxlint**: ✅ 0 errors, 0 warnings on `LandingPage.tsx`.
+- **Animation rules**: only `transform`+`opacity` animated; `will-change` managed by Framer Motion; lazy-mount via `ViewportGate`; `prefers-reduced-motion` honoured.
+
+## Day 4 Block F — Page Reskin: VendorsPage & SettingsPage (feat/reskin-pages) — Completed
+
+### Goals
+- Eliminate all `bg-neutral-*`, `text-neutral-*`, and hardcoded hex colours from `VendorsPage.tsx` and `SettingsPage.tsx`.
+- Apply design-v2 token system throughout both pages.
+
+### Completed
+
+#### VendorsPage
+- Replaced TanStack Table with responsive 3/2/1-col card-grid; local `Monogram` + `RiskBadge` per card.
+- Live search filter (by name / GSTIN) using `useState` + `useMemo`.
+- 7-bar decorative sparkline per vendor, seeded deterministically from vendor name.
+- VendorProfile: 4-card KPI row (surface + icon + label + value).
+- Known accounts list: separator via `var(--border-hairline)`, "NEW" badge using `var(--risk-medium-*)` tokens, first/last seen dates shown.
+- Chart ticks, scatter dots all via CSS vars; no hex anywhere.
+
+#### SettingsPage
+- Layout collapsed to `max-w-4xl` linear column; no sidebar.
+- Appearance section: segmented theme control (dark / light / system) using `var(--bg-subtle)` + `var(--bg-elevated)`.
+- Risk Thresholds: live RiskGauge preview inline to the right of sliders.
+- Detection Engines: Switch uses `var(--accent)` / `var(--bg-subtle)` inline styles (removed all `dark:*` and `bg-black/*`).
+- Demo & Reset section with `demoSeed` input + inline critical-style confirmation dialog.
+
+### Quality Gates
+- **Vite build**: ✅ clean (`built in 818ms`, zero errors).
+- **TypeScript**: ✅ zero errors in VendorsPage & SettingsPage (`tsc --noEmit` confirmed).
+- **Design tokens**: no `bg-neutral-*`, `text-neutral-*`, or hardcoded hex in either file.
+
+## Day 5 — Page Reskin to Design-v2 Tokens (feat/reskin-pages) — Mon 5 Oct 2026
+
+### Goals
+- Rewrite `AnalyzePage`, `InsightsPage`, and `NotFoundPage` to fully consume design-v2 CSS variables.
+- No hardcoded hex in any of the three pages.
+- All logic unchanged; only styling and UX fidelity improved.
+
+### Completed
+
+#### AnalyzePage (`frontend/src/pages/AnalyzePage.tsx`)
+- Dropzone idle: `var(--border-strong)` dashed 2 px, `var(--bg-elevated)` fill. Drag: `var(--accent)` border, `var(--accent-muted)` fill, `box-shadow 0 0 0 4px var(--accent-muted)` glow, 200 ms transition.
+- Upload icon recolours to `var(--accent)` on drag, `var(--risk-critical-text)` on reject.
+- Format badge pills (PDF / JPG / PNG) + "Max 20 MB" note. `maxSize` lifted to 20 MB.
+- `SAMPLE_GALLERY` now has `desc` field; card redesigned: Demo NN label + `RiskBadge` top row, description, large mono score in `--risk-*-text` colour, "Run →" revealed on hover.
+- Pipeline stepper: stage icons from lucide (`Database`, `ScanLine`, `FileText`, `Activity`); thin accent progress bar pinned at top; dot `scale` keyframe animation (0.8→1.2→1) on completion; labels renamed Ingesting/Reading/Extracting/Analysing.
+- Extraction review: notice badge in `var(--bg-overlay)`; bbox overlay uses `var(--accent)` / `var(--accent-muted)`; document preview background uses `var(--bg-base)` and `var(--bg-elevated)` instead of zinc-950/white.
+- Error state uses `<ErrorState onRetry>` component instead of custom inline markup.
+- `handleApproveExtraction` wrapped in `useCallback([invoiceId])` fixing `react-hooks/exhaustive-deps`.
+
+#### InsightsPage (`frontend/src/pages/InsightsPage.tsx`)
+- Skeleton loading state (SkeletonCard grid + lines).
+- KPI row: 4 cards — ROC-AUC 0.8772, PR-AUC 0.8924, Precision 0.8761, Recall 0.7615 (API fallback constants from retrained model).
+- F1 computed inline (0.8144); shown in `--text-primary` mono; FPR 0.1273 noted.
+- Ablation section: corrected from mock 0.516/0.94 to real 0.8476 baseline vs 0.8772 ML fusion. Pure CSS horizontal bars — Recharts dependency removed from this view.
+- Per-fraud-type recall: 7 categories with accent bars.
+- Confusion matrix: 2×2 grid (TN=192, FP=28, FN=62, TP=198) with risk-palette backgrounds.
+- Evaluation dataset card: stat grid (6 cells) in `var(--bg-overlay)`.
+- Limitations panel: `var(--bg-overlay)` / `var(--border-default)` with `Info` icon.
+
+#### NotFoundPage (`frontend/src/pages/NotFoundPage.tsx`)
+- 96 px `font-mono` "404" in `var(--text-tertiary)`, `letter-spacing: -0.05em`.
+- Staggered Framer Motion animations: 404 fades in (0.5 s), heading+copy slide up (delay 0.2 s), buttons slide up (delay 0.35 s).
+- Two CTA buttons: `btn-primary` → `/dashboard`, `btn-ghost` → `/analyze`.
+- Background: `var(--bg-base)`; all token references, no hardcoded hex.
+
+### Quality Gates
+- **Vite build**: ✅ zero errors, ~990 ms.
+- **oxlint** (3 files, 116 rules): ✅ 0 errors, 0 warnings.
+
+#### InvoicePage Overhaul (The Showpiece) (`frontend/src/pages/InvoicePage.tsx`)
+- Interactive Pan/Zoom document canvas via `TransformWrapper` with floating glassmorphic controls and page pagination.
+- Two-way synced bounding box overlays:
+  - Bboxes color-coded according to finding severity (`critical` rose, `high` orange, `medium` amber, `low` emerald, `info` blue).
+  - Dashed borders for visual forensics findings (`isVisual = f.category === 'visual'`).
+  - Top-severity finding overlay pulses once on initial load.
+  - Active selection rings and two-way synchronisation between document bboxes and finding cards.
+- Heatmap Layer Toggle:
+  - Dynamic multi-gradient anomaly heatmap overlay simulating Error Level Analysis (ELA) and structural compression density.
+- Summary Tab:
+  - Sweeping SVG `RiskGauge` with animated count-up.
+  - Multimodal Anomaly Radar chart (Recharts) mapping all 7 engine signal intensities (0-100).
+  - `ConfidenceMeter` with analysis confidence score.
+  - Plain-English recommendation narrative + actionable escalation triggers.
+  - Golden Language Rule disclaimer banner.
+- Model Tab:
+  - 3 metric cards: Baseline (Noisy-OR), Calibrated ML (XGBoost), Final Combined Score.
+  - Fusion pipeline mode badge (`XGBoost Monotone + Isotonic`).
+  - Interactive SHAP feature explanations with directional risk indicators (+/-).
+- Compare Tab:
+  - Near duplicate matches with match %, matched invoice link.
+  - Field-by-field diff comparison table (current vs earlier) with "Changed" / "Identical" status tags.
+  - Vendor historical transaction cadence area timeline with current invoice highlighted.
+- Data & Timeline Tabs:
+  - Extracted invoice headers, payment details, and chronological audit trail.
+
+#### Command Palette (`frontend/src/components/AppShell.tsx`)
+- Keyboard-accessible modal (Ctrl/Cmd+K) with backdrop blur.
+- Added executable actions: Toggle Theme (Dark / Light), Upload New Invoice, Open Recent Invoices, Review Queue, Vendors, Insights, Settings.
+
+### Final Verification & Milestone v0.5-ui-complete
+- **Frontend Typecheck & Build**: ✅ `tsc -b && vite build` clean (zero errors, ~860ms).
+- **Frontend Tests**: ✅ 12/12 passing (`vitest --run`).
+- **Backend Tests**: ✅ 95/95 passing (`pytest backend/tests`).
+- **Backend Linting**: ✅ `ruff check .` clean with zero errors.
+- **Frontend Linting**: ✅ `oxlint` clean with zero errors.
+
+

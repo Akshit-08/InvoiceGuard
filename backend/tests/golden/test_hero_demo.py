@@ -35,7 +35,7 @@ def test_hero_critical_and_clean_end_to_end_scoring():
     client = TestClient(app)
     # Reset and seed DB to ensure clean baseline with demo vendor profiles
     client.post("/api/v1/demo/reset")
-    client.post("/api/v1/demo/seed")
+    client.post("/api/v1/demo/seed?seed_invoices=false")
 
     # 1. Upload and analyze Hero Critical Sample
     hero_pdf = Path("data/samples/03_hero_critical.pdf")
