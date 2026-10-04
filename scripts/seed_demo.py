@@ -221,15 +221,15 @@ def build_hero_demo_samples(out_dir: str = "data/samples") -> dict[str, Any]:
         buyer_state_code="27",
         currency="INR",
         items=[
-            {"description": "Cloud Hosting Standard (AWS)", "hsn_sac": "998313", "quantity": 1.0, "unit": "Month", "unit_price": 25000.0, "line_total": 25000.0},
+            {"description": "Cloud Hosting Standard (AWS)", "hsn_sac": "998313", "quantity": 1.0, "unit": "Month", "unit_price": 30000.0, "line_total": 30000.0},
             {"description": "Database Backup Storage", "hsn_sac": "998313", "quantity": 2.0, "unit": "TB", "unit_price": 3000.0, "line_total": 6000.0},
         ],
-        subtotal=31000.0,
+        subtotal=36000.0,
         tax_rate=0.18,
         discount=0.0,
         shipping=0.0,
-        grand_total=42500.0,  # Total changed
-        amount_in_words=amount_to_words_inr(42500.0),
+        grand_total=42480.0,  # Modified amount transaction reusing previous invoice number
+        amount_in_words=amount_to_words_inr(42480.0),
         bank_name=v1.bank_name,
         account_number=v1.account_number,
         ifsc=v1.ifsc,

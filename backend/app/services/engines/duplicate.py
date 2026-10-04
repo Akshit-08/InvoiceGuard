@@ -132,9 +132,9 @@ class DuplicateEngine(BaseEngine):
                         break
 
         # 3. EXACT FIELDS
-        curr_vendor = curr_dict["vendor_name"]
-        curr_inv = curr_dict["invoice_number"]
-        curr_date = curr_dict["invoice_date"]
+        curr_vendor = str(curr_dict["vendor_name"] or "").strip().lower()
+        curr_inv = str(curr_dict["invoice_number"] or "").strip().lower()
+        curr_date = str(curr_dict["invoice_date"] or "").strip().lower()
         curr_total = curr_dict["grand_total"]
 
         for hist in history:
@@ -150,8 +150,8 @@ class DuplicateEngine(BaseEngine):
                 if curr_total != h_total:
                     findings.append(self.create_finding(
                         finding_type="MODIFIED_DUPLICATE",
-                        severity="critical",
-                        score=95.0,
+                        severity="high",
+                        score=70.0,
                         confidence=0.95,
                         title="Modified Duplicate (Same Vendor & Number)",
                         summary=f"Invoice number '{curr_inv}' from vendor '{curr_vendor}' was submitted before, but the grand total changed from {h_total} to {curr_total}.",
@@ -196,6 +196,13 @@ class DuplicateEngine(BaseEngine):
         best_fuzz_id = None
         for hist in history:
             if hist.get("id") == context.invoice_id:
+                continue
+            h_inv = hist.get("invoice_number", "").strip().lower()
+            h_date = hist.get("invoice_date", "").strip().lower()
+            h_total = hist.get("grand_total", 0.0)
+            # Require at least one matching transaction anchor (number, date, or amount)
+            # Distinct sequential invoices from same vendor are not duplicates.
+            if curr_inv and h_inv and curr_inv != h_inv and curr_date != h_date and abs(curr_total - h_total) > 1.0:
                 continue
             h_canon = hist.get("canonical_string", "")
             score = fuzz.token_set_ratio(curr_canonical, h_canon)

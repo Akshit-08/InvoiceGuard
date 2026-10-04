@@ -68,7 +68,7 @@ class VisualEngine(BaseEngine):
                         findings.append(self.create_finding(
                             finding_type="PDF_EDITOR_PRODUCER",
                             severity="high",
-                            score=75.0,
+                            score=65.0,
                             confidence=0.85,
                             title="Suspicious PDF Editor Detected",
                             summary=f"The PDF metadata indicates it was created or modified using '{editor}', which is typically used for image editing rather than invoicing.",
@@ -84,12 +84,16 @@ class VisualEngine(BaseEngine):
                 mod_dt = parse_pdf_date(meta.get("modDate"))
                 if creation_dt and mod_dt:
                     diff_seconds = (mod_dt - creation_dt).total_seconds()
-                    if diff_seconds > 3600:  # more than 1 hour gap
+                    # Threshold: 24 hours (86400 s). ReportLab and many PDF
+                    # generators record slightly different timestamps; flagging
+                    # any gap > 1 h caused false positives on genuine invoices
+                    # (ADR 006 root cause E). A 24 h gap is a meaningful signal.
+                    if diff_seconds > 86400:
                         findings.append(self.create_finding(
                             finding_type="PDF_MODIFIED_AFTER_CREATION",
                             severity="medium",
-                            score=60.0,
-                            confidence=0.85,
+                            score=45.0,
+                            confidence=0.75,
                             title="PDF Modified After Creation",
                             summary=f"The document was modified {(diff_seconds / 3600):.1f} hours after its initial creation.",
                             expected="Modification date close to creation date",
@@ -106,7 +110,7 @@ class VisualEngine(BaseEngine):
                         findings.append(self.create_finding(
                             finding_type="PDF_INCREMENTAL_UPDATE",
                             severity="medium",
-                            score=50.0,
+                            score=40.0,
                             confidence=0.85,
                             title="Multiple PDF Incremental Updates",
                             summary=f"The file contains {eof_count} end-of-file markers, indicating it was saved/edited incrementally.",
@@ -137,15 +141,15 @@ class VisualEngine(BaseEngine):
                                 if len(fonts_in_line) > 1:
                                     findings.append(self.create_finding(
                                         finding_type="FONT_MIX_IN_NUMERIC_FIELD",
-                                        severity="medium",
-                                        score=65.0,
-                                        confidence=0.85,
+                                        severity="info",
+                                        score=30.0,
+                                        confidence=0.55,
                                         title="Inconsistent Fonts in Text Line",
-                                        summary=f"A line on page {page_num+1} contains numeric data with mixed fonts ({', '.join(fonts_in_line)}).",
+                                        summary=f"A line on page {page_num+1} contains numeric data with mixed fonts ({', '.join(fonts_in_line)}). This can occur in genuine PDFs with bold/regular labels.",
                                         expected="Uniform font across a single line",
                                         found=f"Mixed fonts: {', '.join(fonts_in_line)}",
                                         difference="",
-                                        recommended_action=f"Check for inserted digits or altered amounts. {caveat}",
+                                        recommended_action=f"Only escalate if combined with other high-severity indicators. {caveat}",
                                         bbox=line.get("bbox")
                                     ))
                                     break

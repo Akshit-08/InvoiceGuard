@@ -40,7 +40,12 @@ logger = logging.getLogger(__name__)
 MEDIUM_THRESHOLD = 30.0   # scores >= 30 are flagged
 
 
-def _run_pipeline_for_row(row: dict, pdf_dir: str, gt_dir: str) -> dict[str, Any] | None:
+def _run_pipeline_for_row(
+    row: dict,
+    pdf_dir: str,
+    gt_dir: str,
+    vendor_registry: dict | None = None,
+) -> dict[str, Any] | None:
     """Run full fusion pipeline on one synthetic document, return score dict."""
     invoice_id = row["id"]
     gt_path = Path(gt_dir) / f"{invoice_id}.json"
@@ -67,7 +72,8 @@ def _run_pipeline_for_row(row: dict, pdf_dir: str, gt_dir: str) -> dict[str, Any
             gt = json.load(f)
 
         data = invoice_data_from_gt(gt)
-        ctx = analysis_context_from_gt(invoice_id, gt, data, pdf_path)
+        # ADR 009: pass vendor_registry so engines see realistic prior-invoice context
+        ctx = analysis_context_from_gt(invoice_id, gt, data, pdf_path, vendor_registry)
 
         engines = [
             FinancialRulesEngine(),
@@ -206,7 +212,12 @@ def compute_metrics(df_results: pd.DataFrame) -> dict[str, Any]:
     for ft in sorted(fraud_types_seen):
         if not ft:
             continue
-        subset = tampered_df[tampered_df["fraud_types"].str.contains(ft, na=False)]
+        # Support both comma-separated and semicolon-separated fraud_types
+        subset = tampered_df[
+            tampered_df["fraud_types"].str.split(r"[;,]").apply(
+                lambda parts: any(ft == p.strip() for p in (parts or []))
+            )
+        ]
         if len(subset) > 0:
             detected = (subset["final_score"] >= MEDIUM_THRESHOLD).sum()
             per_type[ft] = round(float(detected) / len(subset), 4)
@@ -364,9 +375,30 @@ def main() -> None:
 
     logger.info("Evaluating on %d documents (split=%s) …", len(df_manifest), args.split)
 
+    # ── Pre-build vendor registry from the FULL manifest (all splits) ─────────
+    # This mirrors production: the DB contains all prior invoices from all vendors,
+    # not just the invoices in the current evaluation split (ADR 009).
+    from ml.common import build_vendor_registry
+
+    full_manifest_path = Path(args.manifest)
+    df_full_manifest = pd.read_csv(full_manifest_path)
+    logger.info(
+        "Building vendor registry from %d rows (all splits) …",
+        len(df_full_manifest),
+    )
+    vendor_registry = build_vendor_registry(
+        df_full_manifest.to_dict("records"),
+        args.gt_dir,
+    )
+    logger.info(
+        "Vendor registry built: %d vendors, %d total invoices.",
+        len(vendor_registry),
+        sum(len(v["history"]) for v in vendor_registry.values()),
+    )
+
     results = []
     for _, row in df_manifest.iterrows():
-        r = _run_pipeline_for_row(row.to_dict(), args.pdf_dir, args.gt_dir)
+        r = _run_pipeline_for_row(row.to_dict(), args.pdf_dir, args.gt_dir, vendor_registry)
         if r is not None:
             results.append(r)
 

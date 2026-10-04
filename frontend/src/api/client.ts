@@ -63,7 +63,7 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 
 // ── Mock loader (VITE_USE_MOCKS=1) ────────────────────────────
 async function loadMock<T>(filename: string): Promise<T> {
-  const mod = await import(`../../frontend-mocks/${filename}`)
+  const mod = await import(/* @vite-ignore */ `../../frontend-mocks/${filename}`)
   return mod.default as T
 }
 
@@ -124,7 +124,7 @@ export const invoiceApi = {
   },
 
   pageUrl: (id: string, page: number) =>
-    USE_MOCKS ? '' : `${API_BASE}/api/v1/invoices/${id}/pages/${page}.png`,
+    USE_MOCKS ? '' : `${API_BASE}/api/v1/invoices/${id}/pages/${page - 1}.png`,
 
   thumbUrl: (id: string) =>
     USE_MOCKS ? '' : `${API_BASE}/api/v1/invoices/${id}/thumb`,

@@ -17,7 +17,8 @@ const levelConfig = {
 }
 
 export function RiskBadge({ level, size = 'md', className }: RiskBadgeProps) {
-  const config = levelConfig[level]
+  const normLevel = (level ? String(level).toUpperCase() : 'LOW') as RiskLevel
+  const config = levelConfig[normLevel] || levelConfig.LOW
   const { Icon } = config
   const sizeClass = {
     sm: 'text-xs px-2 py-0.5 gap-1',
@@ -58,7 +59,8 @@ const severityConfig: Record<Severity, { label: string; Icon: typeof Info; bg: s
 }
 
 export function SeverityChip({ severity, className }: SeverityChipProps) {
-  const config = severityConfig[severity]
+  const normSev = (severity ? String(severity).toLowerCase() : 'info') as Severity
+  const config = severityConfig[normSev] || severityConfig.info
   const { Icon } = config
   return (
     <span

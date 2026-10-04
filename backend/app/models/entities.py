@@ -252,6 +252,7 @@ class RiskScoreRecord(Base):
     confidence: Mapped[float] = mapped_column(Float, default=1.0)
     baseline_score: Mapped[float] = mapped_column(Float, default=0.0)
     ml_score: Mapped[float] = mapped_column(Float, default=0.0)
+    fusion_mode: Mapped[str] = mapped_column(String(50), default="xgboost+baseline")
     signals_json: Mapped[dict[str, float]] = mapped_column(JSON, default=dict)
     shap_json: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list)
     escalations_json: Mapped[list[str]] = mapped_column(JSON, default=list)

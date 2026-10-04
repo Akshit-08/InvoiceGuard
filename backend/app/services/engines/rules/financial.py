@@ -66,17 +66,10 @@ SCALES = {
 }
 
 
-def parse_indian_amount_words(text: str) -> Optional[float]:
-    """Parse Indian currency amount written in words to a numeric value."""
-    if not text or not text.strip():
-        return None
-
-    clean = re.sub(r"[^a-zA-Z\s]", " ", text.lower())
-    tokens = clean.split()
+def _parse_tokens(tokens: list[str]) -> tuple[int, bool]:
     total = 0
     current = 0
     found_any = False
-
     for tok in tokens:
         if tok in ONES:
             current += ONES[tok]
@@ -94,9 +87,32 @@ def parse_indian_amount_words(text: str) -> Optional[float]:
                 current = 0
             else:
                 current *= scale
-
     total += current
-    return float(total) if found_any and total > 0 else None
+    return total, found_any
+
+
+def parse_indian_amount_words(text: str) -> Optional[float]:
+    """Parse Indian currency amount written in words to a numeric value."""
+    if not text or not text.strip():
+        return None
+
+    clean = re.sub(r"[^a-zA-Z\s]", " ", text.lower()).strip()
+
+    # Handle rupees and paise splitting
+    if "paise" in clean or "paisa" in clean:
+        parts = re.split(r"\brupees?\b", clean)
+        if len(parts) == 2:
+            rupees_part, paise_part = parts
+            r_tokens = rupees_part.split()
+            p_tokens = re.sub(r"\b(paise?|only|and)\b", " ", paise_part).split()
+            r_val, r_found = _parse_tokens(r_tokens)
+            p_val, p_found = _parse_tokens(p_tokens)
+            if r_found or p_found:
+                return round(float(r_val) + (float(p_val) / 100.0 if p_found else 0.0), 2)
+
+    tokens = clean.split()
+    total, found = _parse_tokens(tokens)
+    return float(total) if found and total > 0 else None
 
 
 class FinancialRulesEngine(BaseEngine):
@@ -249,8 +265,16 @@ class FinancialRulesEngine(BaseEngine):
                 elif disc_total > 0 and abs(abs(diff_grand) - disc_total) <= 2.0:
                     plausible = "Discrepancy closely matches discount total applied inversely."
 
-                sev = "critical" if abs(diff_grand) >= 10000 else ("high" if abs(diff_grand) >= 500 else "medium")
-                score = min(95.0, 60.0 + min(35.0, (abs(diff_grand) / max(1.0, expected_grand)) * 40.0))
+                rel_diff = abs(diff_grand) / max(1.0, expected_grand)
+                if abs(diff_grand) >= 10000 or rel_diff >= 0.15:
+                    sev = "critical"
+                    score = min(95.0, 75.0 + min(20.0, rel_diff * 40.0))
+                elif abs(diff_grand) >= 3000 or rel_diff >= 0.05:
+                    sev = "high"
+                    score = min(74.0, 55.0 + min(19.0, rel_diff * 40.0))
+                else:
+                    sev = "medium"
+                    score = min(54.0, 35.0 + min(19.0, rel_diff * 40.0))
                 findings.append(
                     self.create_finding(
                         finding_type="GRAND_TOTAL_MISMATCH",

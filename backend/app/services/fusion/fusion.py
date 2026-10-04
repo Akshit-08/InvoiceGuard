@@ -77,6 +77,55 @@ def _noisy_or(signals: list[SignalResult], weights: dict[str, float]) -> float:
     return round((1.0 - prob_no_anomaly) * 100.0, 1)
 
 
+def _signals_without_informational(
+    signals: list[SignalResult],
+    informational_types: set[str],
+) -> list[SignalResult]:
+    """Return cloned signals with informational-only finding scores zeroed out.
+
+    If ALL findings on a signal are informational, the signal's effective score
+    for baseline purposes is 0.  If some findings are non-informational, only
+    the non-informational ones contribute to the effective score (max of their
+    individual scores, matching the original aggregate_score logic).
+
+    The original signal objects are NOT mutated — we only create lightweight
+    surrogate SignalResult objects with the adjusted scores for the noisy-OR
+    computation. The full, unmodified signals are still used everywhere else
+    (API response, SHAP, escalations, UI findings list).
+    """
+    if not informational_types:
+        return signals
+
+    adjusted: list[SignalResult] = []
+    for sig in signals:
+        if not sig.findings:
+            effective_score = sig.score
+        else:
+            non_info_scores = [
+                f.score
+                for f in sig.findings
+                if getattr(f, "type", getattr(f, "finding_type", "")) not in informational_types
+            ]
+            if not non_info_scores:
+                # All findings are informational — zero out this signal's baseline contribution
+                effective_score = 0.0
+            else:
+                effective_score = float(max(non_info_scores))
+
+        # Create a surrogate (only score is changed; name/confidence preserved)
+        adjusted.append(
+            SignalResult(
+                name=sig.name,
+                score=effective_score,
+                confidence=sig.confidence,
+                findings=[],  # findings are already in original sig
+                features=sig.features or {},
+            )
+        )
+    return adjusted
+
+
+
 # ── Main FusionEngine class ───────────────────────────────────────────────────
 class FusionEngine:
     """Fuses detection engine signals into an explainable 0–100 RiskResult."""
@@ -108,8 +157,15 @@ class FusionEngine:
         threshold_cfg = cfg.get("level_thresholds", {})
         confidence_band_cfg = cfg.get("confidence_band", {})
 
-        # ── Step 1: Noisy-OR baseline ─────────────────────────────────────────
-        baseline_score = _noisy_or(signals, weights)
+        # Informational finding types are shown in UI but excluded from the
+        # noisy-OR baseline so they cannot push genuine invoices above threshold.
+        informational_types: set[str] = set(cfg.get("informational_finding_types", []))
+
+        # ── Step 1: Noisy-OR baseline (informational findings excluded) ───────
+        # We rebuild per-engine scores after stripping informational findings.
+        scored_signals = _signals_without_informational(signals, informational_types)
+        baseline_score = _noisy_or(scored_signals, weights)
+
 
         # ── Step 2: Feature vector ────────────────────────────────────────────
         feat_values, feat_names = build_feature_vector(signals, invoice_meta or {})
@@ -164,6 +220,8 @@ class FusionEngine:
             "high_max": threshold_cfg.get("high_max", 79.0),
         }
 
+        actual_mode = "baseline" if (fusion_mode == "baseline" or not xgb_model.is_available) else "xgboost+baseline"
+
         return RiskResult(
             overall_score=final_score,
             level=level.lower(),  # schema uses lowercase
@@ -173,6 +231,7 @@ class FusionEngine:
             confidence=overall_confidence,
             baseline_score=baseline_score,
             ml_score=ml_score,
+            fusion_mode=actual_mode,
             shap_top=shap_top,
             escalations=escalations,
             recommendation=recommendation,

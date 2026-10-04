@@ -189,3 +189,47 @@
   - All requested pages from Blueprint Section 14 are complete with real backend integration, dark/light themes, and WCAG AA contrast.
   - Milestone tag `v0.3-day3` prepared.
 
+## Day 4 — Analysis Flow Fixes (Diagnosis)
+
+| Symptom | Root Cause | File |
+|---|---|---|
+| Pipeline stepper never advances | `analyze_invoice` is synchronous; `event_bus` lacks replay for missed events | `events.py`, `api/v1/invoices.py` |
+| Demo sample navigates to "not found" | Missing `POST /demo/samples/{key}/run` endpoint | `api/v1/demo.py`, `frontend` demo cards |
+| Vendors show "Unknown", invoices "Pending" | `process_upload` misses vendor linking; seed script doesn't analyze | `pipeline.py`, `api/v1/demo.py` |
+| Invoice page shows white placeholder | Frontend image URL pathing issues | `frontend` document viewer (`client.ts`) |
+| Dashboard donut/trend charts empty | `/dashboard/stats` lacks required fields/time series | `api/v1/dashboard.py` |
+
+### Fixes Implemented:
+1. **Event Replay & Async Analysis**: `EventBus` now tracks `_history` per invoice, replays it on connection, and handles heartbeat pinging via `EventSourceResponse`. `analyze_invoice` correctly fires as a `BackgroundTasks` function.
+2. **Demo Infrastructure**: Implemented `/demo/samples/{key}/run` that copies the sample, extracts, and analyzes. Made `/demo/seed` idempotent.
+3. **Vendor Linking**: Added vendor and account lookup logic in `process_upload` (Stage 4), accurately linking the invoice.
+4. **Dashboard Data**: Modified `dashboard.py` to fix `risk_level` casing (low, medium, high, critical) and explicitly injected `trend` and `top_vendors` lists to render the Area/Bar charts on the UI.
+5. **Image Pathing Zero-Indexing**: The frontend expects 1-indexed pages, but the backend stores 0-indexed images. Adjusted `client.ts`'s `pageUrl` to `page - 1`.
+
+- E2E validation script (`scripts/verify_e2e.py`) created.
+
+## Day 4 (Fix) — Model Quality & Evaluation Realism (fix/day4-model-quality)
+
+### Problem
+Initial evaluation showed end-to-end ROC-AUC of 0.54, PR-AUC of 0.66, precision 0.625 at recall 1.0 (FPR on genuine was 1.0 / 100% false alarms). Almost every invoice, including genuine ones, scored >= 30, making per-fraud-type recall of 1.0 meaningless.
+
+### Root Causes Diagnosed (ADR 006 & ADR 009 in `docs/DECISIONS.md`)
+1. **Tax Math Typo in Synthetic Data Engine (`ml/common.py`)**: `tax_rate` was already fractional (e.g. 0.05), but was divided by 100 again during subtotal calculation, producing tax amounts 100x too small and triggering false `GRAND_TOTAL_MISMATCH` and invalid slab errors on genuine invoices.
+2. **Indian Amount Words Parser (`financial.py`)**: `parse_indian_amount_words` did not separate rupees and paise tokens, causing paise words (e.g. "Nine") to be added into the rupee sum.
+3. **Premature Bank Account Registration (`pipeline.py`)**: `pipeline.process_upload` was inserting unseen bank accounts into `vendor_accounts` BEFORE analysis ran, so `BankEngine` saw the account as already known and never flagged `BANK_ACCOUNT_CHANGED`.
+4. **Missing PDF and Image Context (`pipeline.py`)**: `pipeline.py` never passed `pdf_path` or `page_images` into `AnalysisContext`, disabling `VisualEngine` on all uploaded invoices.
+5. **PyMuPDF Incremental Write Crash (`tamper_operators.py`)**: `apply_pdf_edit_structural` crashed with `ValueError: incremental needs original file`, silently leaving `06_pdf_edited_visual.pdf` unmodified.
+6. **Case Sensitivity in Duplicate Matching (`duplicate.py`)**: `DuplicateEngine` compared raw case `curr_vendor` against lowercased `h_vendor`, preventing exact field matches.
+7. **Cold-Start Informational Flooding (`fusion.py`, `fusion.yaml`)**: New vendor informational notices (`NEW_VENDOR_NO_BASELINE`) inflated noisy-OR baseline scores on legitimate first-time invoices. Created an informational tier that excludes cold-start notices from noisy-OR risk calculation.
+8. **Sample Size & Split Quality**: Scaled synthetic data to 4,400 documents with an uncontaminated held-out test split (480 documents).
+
+### Results on Held-Out Test Split (N=480)
+- **ROC-AUC**: **0.8772** (baseline 0.8476, ML gain +0.0296)
+- **PR-AUC**: **0.8924**
+- **Precision @ 30**: **0.8761**
+- **Recall @ 30**: **0.7615** (meaningful discrimination, no longer trivial 1.0)
+- **False Positive Rate on Genuine**: **0.1273** (meets target <= 0.15!)
+- **Confusion Matrix**: TN=192, FP=28, FN=62, TP=198 (87.3% of genuine invoices classified Low risk)
+- **Hero Demo Samples**: All 8 canonical samples PASS within their exact expected risk bands (`scripts/verify_e2e.py`).
+- **Quality Gates**: All 91 backend unit tests passing; `ruff check .` clean with zero errors.
+

@@ -1,7 +1,5 @@
 """Invoice management, extraction, SSE streaming, analysis, and review endpoints."""
 
-import asyncio
-import json
 from pathlib import Path
 from typing import Any, Optional
 
@@ -50,32 +48,7 @@ async def upload_invoice(
 @router.get("/{invoice_id}/events")
 async def invoice_events(invoice_id: str, request: Request):
     """Server-Sent Events (SSE) stream for real-time document processing stage events."""
-    queue = event_bus.subscribe(invoice_id)
-
-    async def event_generator():
-        try:
-            # Emit initial connection event
-            yield {
-                "event": "connected",
-                "data": json.dumps({"invoice_id": invoice_id, "message": "Subscribed to pipeline events"}),
-            }
-            while True:
-                if await request.is_disconnected():
-                    break
-                try:
-                    data = await asyncio.wait_for(queue.get(), timeout=20.0)
-                    yield {
-                        "event": "stage_event",
-                        "data": json.dumps(data) if isinstance(data, dict) else str(data),
-                    }
-                    if isinstance(data, dict) and data.get("stage") == "analyze" and data.get("status") in {"completed", "failed"}:
-                        break
-                except asyncio.TimeoutError:
-                    yield {"event": "ping", "data": "keep-alive"}
-        finally:
-            event_bus.unsubscribe(invoice_id, queue)
-
-    return EventSourceResponse(event_generator())
+    return EventSourceResponse(event_bus.event_generator(invoice_id, request))
 
 
 @router.get("/{invoice_id}/extraction", response_model=ExtractionResponse)
@@ -168,19 +141,27 @@ async def analyze_invoice(
     db: Session = Depends(get_db),
 ):
     """Run all detection engines and multimodal fusion to produce explainable risk score."""
-    try:
-        result = await pipeline.analyze_invoice(invoice_id, db)
-        return result
-    except ValueError as e:
+    inv = db.query(Invoice).filter(Invoice.id == invoice_id).first()
+    if not inv:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"code": "INVOICE_NOT_FOUND", "message": str(e)},
+            detail={"code": "INVOICE_NOT_FOUND", "message": f"Invoice {invoice_id} not found."},
         )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"code": "ANALYSIS_FAILED", "message": str(e)},
-        )
+
+    async def run_analyze_task(inv_id: str):
+        from backend.app.core.db import SessionLocal
+        with SessionLocal() as db_session:
+            try:
+                await pipeline.analyze_invoice(inv_id, db_session)
+            except Exception as e:
+                inv_record = db_session.query(Invoice).filter(Invoice.id == inv_id).first()
+                if inv_record:
+                    inv_record.status = "failed"
+                    db_session.commit()
+                await event_bus.emit(inv_id, "analyze", "failed", str(e), 1.0)
+
+    background_tasks.add_task(run_analyze_task, invoice_id)
+    return {"invoice_id": invoice_id, "status": "analyzing"}
 
 
 @router.get("/{invoice_id}")
@@ -230,6 +211,7 @@ def get_full_result(invoice_id: str, db: Session = Depends(get_db)):
             "confidence": risk_rec.confidence,
             "baseline_score": risk_rec.baseline_score,
             "ml_score": risk_rec.ml_score,
+            "fusion_mode": getattr(risk_rec, "fusion_mode", "xgboost+baseline") or "xgboost+baseline",
             "signals": risk_rec.signals_json or {},
             "shap_top": risk_rec.shap_json or [],
             "escalations": risk_rec.escalations_json or [],
@@ -343,6 +325,7 @@ def get_history(
         {
             "id": inv.id,
             "invoice_number": inv.invoice_number or "N/A",
+            "original_filename": inv.original_filename,
             "vendor_name": inv.vendor.name if inv.vendor else "Unknown",
             "invoice_date": inv.invoice_date,
             "grand_total": inv.grand_total,

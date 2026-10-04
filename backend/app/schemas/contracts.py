@@ -182,6 +182,9 @@ class RiskResult(BaseModel):
     confidence: float = PydanticField(..., ge=0.0, le=1.0, description="Overall decision confidence")
     baseline_score: float = PydanticField(..., ge=0.0, le=100.0, description="Noisy-OR baseline score")
     ml_score: float = PydanticField(..., ge=0.0, le=100.0, description="XGBoost ML risk score")
+    fusion_mode: str = PydanticField(
+        default="xgboost+baseline", description="Active fusion strategy: xgboost+baseline or baseline"
+    )
     shap_top: list[dict[str, Any]] = PydanticField(
         default_factory=list, description="Top SHAP feature contributions"
     )

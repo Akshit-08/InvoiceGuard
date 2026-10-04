@@ -166,20 +166,29 @@ class IdentifiersRulesEngine(BaseEngine):
 
         if curr_num and history:
             for past in history:
-                past_num = str(past.get("invoice_number", "")).strip()
+                p_num_val = past.get("invoice_number")
+                if isinstance(p_num_val, dict):
+                    p_num_val = p_num_val.get("value")
+                past_num = str(p_num_val or "").strip()
                 past_id = str(past.get("id", past.get("invoice_id", "")))
                 if past_num and past_num.lower() == curr_num.lower() and past_id != context.invoice_id:
                     related_ids.append(past_id)
                     features["has_reused_number"] = 1
                     past_total = past.get("grand_total")
+                    if isinstance(past_total, dict):
+                        past_total = past_total.get("value")
+                    past_total = float(past_total or 0.0)
                     past_date = past.get("invoice_date")
-                    curr_total = data.grand_total.value
+                    if isinstance(past_date, dict):
+                        past_date = past_date.get("value")
+                    past_date = str(past_date or "")
+                    curr_total = float(data.grand_total.value or 0.0)
 
                     findings.append(
                         self.create_finding(
                             finding_type="INVOICE_NUMBER_REUSED",
                             severity="critical" if past_total != curr_total else "high",
-                            score=90.0 if past_total != curr_total else 80.0,
+                            score=75.0,
                             confidence=0.98,
                             title=f"Reused Invoice Number '{curr_num}'",
                             summary=(
@@ -209,7 +218,10 @@ class IdentifiersRulesEngine(BaseEngine):
             # Check prefix consistency in history
             prefixes = []
             for past in history:
-                p_num = str(past.get("invoice_number", "")).strip()
+                p_num_val = past.get("invoice_number")
+                if isinstance(p_num_val, dict):
+                    p_num_val = p_num_val.get("value")
+                p_num = str(p_num_val or "").strip()
                 match = re.match(r"^([A-Za-z]+[\-_/]?)", p_num)
                 if match:
                     prefixes.append(match.group(1).upper())
@@ -247,11 +259,14 @@ class IdentifiersRulesEngine(BaseEngine):
         # 6. INVOICE_NUMBER_SEQUENCE_ANOMALY
         if curr_num and len(history) >= 3:
             curr_seq = extract_trailing_number(curr_num)
-            past_seqs = [
-                extract_trailing_number(str(p.get("invoice_number", "")))
-                for p in history
-                if extract_trailing_number(str(p.get("invoice_number", ""))) is not None
-            ]
+            past_seqs = []
+            for p in history:
+                p_num_val = p.get("invoice_number")
+                if isinstance(p_num_val, dict):
+                    p_num_val = p_num_val.get("value")
+                seq = extract_trailing_number(str(p_num_val or ""))
+                if seq is not None:
+                    past_seqs.append(seq)
             if curr_seq is not None and past_seqs:
                 max_past_seq = max(past_seqs)
                 # Sequence regression check

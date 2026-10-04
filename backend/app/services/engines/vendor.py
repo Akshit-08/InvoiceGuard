@@ -120,7 +120,12 @@ class VendorEngine(BaseEngine):
             )
 
         # Behavioral stats
-        amounts = [h.get("grand_total", 0.0) for h in history if h.get("grand_total", 0.0) > 0]
+        amounts = []
+        for h in history:
+            gt = h.get("grand_total", {})
+            val = gt.get("value", 0.0) if isinstance(gt, dict) else (gt or 0.0)
+            if isinstance(val, (int, float)) and val > 0:
+                amounts.append(float(val))
         if amounts:
             med_amount = np.median(amounts)
             mad_amount = median_absolute_deviation(amounts)
