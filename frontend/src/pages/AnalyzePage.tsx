@@ -152,7 +152,8 @@ export default function AnalyzePage() {
              </div>
              {/* Scan Beam */}
              <motion.div 
-               className="absolute top-0 left-0 right-0 h-1 bg-accent/80 shadow-[0_0_15px_rgba(var(--accent-rgb),0.8)] z-10"
+               className="absolute top-0 left-0 right-0 h-0.5 z-10"
+               style={{ background: 'var(--accent)', boxShadow: '0 0 12px rgba(123,114,248,0.7)', opacity: 0.9 }}
                animate={{ top: ['0%', '100%', '0%'] }}
                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
              />

@@ -53,10 +53,10 @@ export default function SettingsPage() {
               <span className="font-mono">{criticalThreshold}</span>
             </div>
             <Slider.Root className="relative flex items-center w-full h-5 touch-none" value={[criticalThreshold]} onValueChange={(v) => setCriticalThreshold(v[0])} max={100} step={1}>
-              <Slider.Track className="bg-neutral-500/20 relative grow rounded-full h-[4px]">
-                <Slider.Range className="absolute bg-red-500 rounded-full h-full" />
+              <Slider.Track className="relative grow rounded-full h-[4px]" style={{ background: 'var(--bg-subtle)' }}>
+                <Slider.Range className="absolute rounded-full h-full" style={{ background: 'var(--risk-critical-text)' }} />
               </Slider.Track>
-              <Slider.Thumb className="block w-5 h-5 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.2)] rounded-full hover:bg-neutral-100 focus:outline-none focus:shadow-[0_0_0_5px_rgba(0,0,0,0.1)]" />
+              <Slider.Thumb className="block w-5 h-5 rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent" style={{ background: 'var(--text-primary)' }} />
             </Slider.Root>
           </div>
 
@@ -66,10 +66,10 @@ export default function SettingsPage() {
               <span className="font-mono">{highThreshold}</span>
             </div>
             <Slider.Root className="relative flex items-center w-full h-5 touch-none" value={[highThreshold]} onValueChange={(v) => setHighThreshold(v[0])} max={100} step={1}>
-              <Slider.Track className="bg-neutral-500/20 relative grow rounded-full h-[4px]">
-                <Slider.Range className="absolute bg-orange-500 rounded-full h-full" />
+              <Slider.Track className="relative grow rounded-full h-[4px]" style={{ background: 'var(--bg-subtle)' }}>
+                <Slider.Range className="absolute rounded-full h-full" style={{ background: 'var(--risk-high-text)' }} />
               </Slider.Track>
-              <Slider.Thumb className="block w-5 h-5 bg-white shadow-lg rounded-full focus:outline-none" />
+              <Slider.Thumb className="block w-5 h-5 rounded-full shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent" style={{ background: 'var(--text-primary)' }} />
             </Slider.Root>
           </div>
 
@@ -79,10 +79,10 @@ export default function SettingsPage() {
               <span className="font-mono">{mediumThreshold}</span>
             </div>
             <Slider.Root className="relative flex items-center w-full h-5 touch-none" value={[mediumThreshold]} onValueChange={(v) => setMediumThreshold(v[0])} max={100} step={1}>
-              <Slider.Track className="bg-neutral-500/20 relative grow rounded-full h-[4px]">
-                <Slider.Range className="absolute bg-yellow-500 rounded-full h-full" />
+              <Slider.Track className="relative grow rounded-full h-[4px]" style={{ background: 'var(--bg-subtle)' }}>
+                <Slider.Range className="absolute rounded-full h-full" style={{ background: 'var(--risk-medium-text)' }} />
               </Slider.Track>
-              <Slider.Thumb className="block w-5 h-5 bg-white shadow-lg rounded-full focus:outline-none" />
+              <Slider.Thumb className="block w-5 h-5 rounded-full shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent" style={{ background: 'var(--text-primary)' }} />
             </Slider.Root>
           </div>
         </div>

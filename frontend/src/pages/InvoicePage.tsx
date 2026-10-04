@@ -145,16 +145,33 @@ export default function InvoicePage() {
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         
         {/* Left 60%: Document Viewer */}
-        <div className="w-full lg:w-3/5 h-1/2 lg:h-full flex flex-col border-b lg:border-b-0 lg:border-r bg-[#0a0a0a] relative" style={{ borderColor: 'var(--border-hairline)' }}>
+        <div className="w-full lg:w-3/5 h-1/2 lg:h-full flex flex-col border-b lg:border-b-0 lg:border-r relative" style={{ background: 'var(--bg-base)', borderColor: 'var(--border-hairline)' }}>
           
           {/* Top Controls */}
           <div className="absolute top-4 left-4 z-10 flex gap-2">
-            <div className="bg-neutral-900/80 backdrop-blur px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-4 shadow-lg border border-neutral-800">
-              <label className="flex items-center gap-2 cursor-pointer text-neutral-300 hover:text-white transition-colors">
+            <div
+              style={{
+                background: 'var(--glass-bg)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid var(--border-hairline)',
+              }}
+              className="px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-4 shadow-lg"
+            >
+              <label
+                className="flex items-center gap-2 cursor-pointer transition-colors"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
+              >
                 <input type="checkbox" checked={showFindings} onChange={e => setShowFindings(e.target.checked)} className="accent-accent" />
                 Findings
               </label>
-              <label className="flex items-center gap-2 cursor-pointer text-neutral-300 hover:text-white transition-colors">
+              <label
+                className="flex items-center gap-2 cursor-pointer transition-colors"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
+              >
                 <input type="checkbox" checked={showExtracted} onChange={e => setShowExtracted(e.target.checked)} className="accent-accent" />
                 Extracted Fields
               </label>
@@ -203,7 +220,7 @@ export default function InvoicePage() {
                               width: `${(x1 - x0) * 100}%`, height: `${(y1 - y0) * 100}%`,
                               borderWidth: isSelected ? 3 : 2,
                               borderColor: 'var(--risk-high-text)',
-                              backgroundColor: isSelected ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.05)'
+                              backgroundColor: isSelected ? 'var(--risk-high-bg)' : 'rgba(249,115,22,0.05)'
                             }}
                           >
                             {isSelected && (
@@ -224,7 +241,7 @@ export default function InvoicePage() {
             </TransformWrapper>
           </div>
           
-          <div className="h-12 border-t flex items-center justify-center gap-4 text-sm" style={{ borderColor: 'var(--border-hairline)', background: '#0a0a0a', color: 'var(--text-secondary)' }}>
+          <div className="h-12 border-t flex items-center justify-center gap-4 text-sm" style={{ borderColor: 'var(--border-hairline)', background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
             <button 
               disabled={page <= 1} 
               onClick={() => setPage(p => Math.max(1, p - 1))}

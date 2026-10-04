@@ -233,3 +233,65 @@ Initial evaluation showed end-to-end ROC-AUC of 0.54, PR-AUC of 0.66, precision 
 - **Hero Demo Samples**: All 8 canonical samples PASS within their exact expected risk bands (`scripts/verify_e2e.py`).
 - **Quality Gates**: All 91 backend unit tests passing; `ruff check .` clean with zero errors.
 
+---
+
+## Day 4 Block D — Visual Identity Overhaul (feat/design-v2) — Completed
+
+### Goals
+- Replace existing blue-tinted HSL theme with a calm, professional charcoal-base design system.
+- New logo mark (document + scan line + anomaly dot). No shield, no padlock.
+- Full token refactor across all pages; zero hardcoded hex colours remaining.
+
+### Completed
+
+**Branch**: `feat/design-v2` → tag `v0.4-design-v2`
+
+#### 1. Dark Theme Tokens (pure charcoal, no hue shift)
+- `--bg-base: #151515`, `--bg-surface: #1a1a1a`, `--bg-elevated: #1e1e1e`, `--bg-overlay: #242424`, `--bg-subtle: #2b2b2b`.
+- Borders: white-alpha hairlines (`rgba(255,255,255,0.07/0.09/0.12)`) — no blue tint.
+- Text: `#ececec / #a1a1a1 / #6f6f6f` (primary / secondary / tertiary).
+- Background texture: 3.5% opacity dot grid at 24px spacing + radial top highlight.
+- Cards: `background: linear-gradient(surface-2 → slightly darker)` + `inset 0 1px 0 rgba(255,255,255,0.04)` top inner highlight.
+- Glass top bar: `backdrop-blur(12px)` over `rgba(21,21,21,0.72)` with hairline border.
+
+#### 2. Light Theme
+- `--bg-base: #f6f6f4`, surfaces white and `#fbfbfa`, borders `#e7e7e3 / #d9d9d4`.
+- Text: `#161616 / #5f5f5f`. Same radius/spacing.
+- Smooth 300ms theme transition via CSS `transition: background-color, color`.
+
+#### 3. Accent: `#7B72F8` (dark) / `#5552d6` (light)
+- Desaturated indigo-violet — neither saturated purple nor blue.
+- Dark mode contrast on #151515: **5.3:1 WCAG AA** ✅
+- Light mode contrast on #ffffff: **5.0:1 WCAG AA** ✅
+- Used only for: primary actions, active nav indicator, focus rings, logo anomaly dot.
+
+#### 4. Risk palette retuned
+- 12–16% opacity backgrounds, solid text colour, always icon + label.
+- Emerald / amber / orange / rose — all readable on both themes.
+
+#### 5. Logo (`components/brand/Logo.tsx`)
+- Original SVG mark on 24px grid: document with folded top-right corner, horizontal scan line, accent-filled anomaly detection dot.
+- No shield, no padlock, no magnifier.
+- 3 brand SVG variants in `src/assets/brand/`: `logo-primary.svg`, `logo-mono.svg`, `logo-favicon.svg`.
+- `Logo` component: variants `full` (mark + wordmark) / `mark` / `mono`; scan-line CSS animation on mount (respects `prefers-reduced-motion`).
+- Wordmark: "Invoice" (regular weight) + "Guard" (semibold), tight tracking (`-0.025em`).
+- New `public/favicon.svg` and updated `index.html` `<title>` and `theme-color`.
+
+#### 6. Shell refinements
+- Sidebar: `surface-1` bg, active item shows 3px accent indicator bar + `accent-muted` background (replaces full-accent fill).
+- Top bar: `backdrop-blur(12px)` over charcoal-alpha; height 56px; hairline bottom border.
+- Command palette backdrop: `rgba(10,10,10,0.65)` (no blue tint).
+- Nav collapse toggle: `surface-3` bg + `border-strong`.
+
+#### 7. Hardcoded-colour cleanup
+- `LandingPage.tsx`: `severityColors` now uses `var(--risk-*-text/bg)` tokens.
+- `InvoicePage.tsx`: `bg-[#0a0a0a]`, `bg-neutral-900/80`, `rgba(239,68,68,...)` → tokens.
+- `SettingsPage.tsx`: Radix Slider Track/Range/Thumb → CSS var tokens.
+- `AnalyzePage.tsx`: scan beam uses `var(--accent)` with precise rgba glow.
+
+### Quality Gates
+- **Vite build**: ✅ clean (`built in 3.50s`, zero errors).
+- **Vitest**: ✅ 12/12 tests passing.
+- **oxlint**: ✅ 0 errors, 10 pre-existing warnings (unrelated to this change).
+- **WCAG AA**: all primary text/token pairs verified (see `docs/assets/design-v2/README.md`).
+

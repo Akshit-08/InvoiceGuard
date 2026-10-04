@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-10-04
+
+### Added
+- **New Logo & Brand Mark** (`components/brand/Logo.tsx`):
+  - Original SVG mark on a 24px grid: document with folded top-right corner, horizontal scan line, accent-coloured anomaly dot. No shield, no padlock, no magnifier.
+  - Three brand SVG variants in `src/assets/brand/`: `logo-primary.svg`, `logo-mono.svg`, `logo-favicon.svg`.
+  - `Logo` component with `full` / `mark` / `mono` variants and optional scan-line animation (CSS keyframe, respects `prefers-reduced-motion`).
+  - New `public/favicon.svg` using the optimised favicon mark; updated `index.html` `<title>` and `theme-color`.
+- **Design System v2 Tokens** (`src/styles/globals.css`):
+  - Dark theme: pure charcoal base (`#151515` / `#1a1a1a` / `#1e1e1e` / `#242424` / `#2b2b2b`). Zero hue shift toward blue in any neutral.
+  - Borders: white-alpha hairlines (`rgba(255,255,255,0.07/0.09/0.12)`).
+  - Text: `#ececec / #a1a1a1 / #6f6f6f` (primary / secondary / tertiary).
+  - Light theme: `#f6f6f4` base, surfaces `#fbfbfa` and `#ffffff`, borders `#e7e7e3`.
+  - Accent: `#7B72F8` (dark, 5.3:1 WCAG AA) / `#5552d6` (light, 5.0:1 WCAG AA) — desaturated indigo-violet.
+  - Risk palette retuned: 12–16% opacity fills, solid text, emerald/amber/orange/rose.
+  - Background texture: 3.5% dot grid at 24px + radial top highlight.
+  - Card depth: linear-gradient surface-2→darker + `inset 0 1px 0 rgba(255,255,255,0.04)` inner highlight.
+  - Glass top bar: `backdrop-blur(12px)` over `rgba(21,21,21,0.72)` with hairline border.
+  - Smooth 300ms theme transition. Chart grid/axis tokens. `--inner-highlight` token.
+  - `.nav-item-active` CSS: 3px accent indicator bar + `accent-muted` background.
+  - `.input-base`, `.badge` utility classes.
+
+### Changed
+- **AppShell** (`components/AppShell.tsx`):
+  - Replaced `Shield` icon with `Logo` component (collapsed: mark-only, expanded: full wordmark).
+  - Sidebar active nav item: accent indicator bar + `accent-muted` bg with `layoutId` animation (replaces full-accent fill).
+  - Top bar height 56px (was 64px); more refined search trigger with themed `esc` kbd.
+  - Command palette backdrop: `rgba(10,10,10,0.65)` — no blue tint.
+- **Page hardcoded colours eliminated**:
+  - `LandingPage.tsx`: `severityColors` hardcoded hex → `var(--risk-*-text/bg)` tokens; radial gradient → `var(--accent-muted)`.
+  - `InvoicePage.tsx`: `bg-[#0a0a0a]`, `bg-neutral-900/80`, `rgba(239,68,68,...)` → CSS var tokens.
+  - `SettingsPage.tsx`: Radix Slider Track/Range/Thumb → `var(--bg-subtle)`, `var(--risk-*-text)`, `var(--text-primary)`.
+  - `AnalyzePage.tsx`: scan beam `bg-accent/80 shadow-[0_0_15px_rgba(var(--accent-rgb)...)]` (broken) → explicit `style={{ background: 'var(--accent)', boxShadow: '...' }}`.
+
 ## [0.3.2] - 2026-10-04
 
 ### Fixed

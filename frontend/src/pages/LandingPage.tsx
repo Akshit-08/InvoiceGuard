@@ -21,10 +21,10 @@ function InvoiceMockScan() {
   ]
 
   const severityColors = {
-    critical: { border: '#f43f5e', bg: 'rgba(244,63,94,0.08)', text: '#f43f5e' },
-    high:     { border: '#fb923c', bg: 'rgba(251,146,60,0.08)', text: '#fb923c' },
-    medium:   { border: '#fbbf24', bg: 'rgba(251,191,36,0.08)', text: '#fbbf24' },
-    low:      { border: '#34d399', bg: 'rgba(52,211,153,0.08)', text: '#34d399' },
+    critical: { border: 'var(--risk-critical-text)', bg: 'var(--risk-critical-bg)', text: 'var(--risk-critical-text)' },
+    high:     { border: 'var(--risk-high-text)',     bg: 'var(--risk-high-bg)',      text: 'var(--risk-high-text)' },
+    medium:   { border: 'var(--risk-medium-text)',   bg: 'var(--risk-medium-bg)',    text: 'var(--risk-medium-text)' },
+    low:      { border: 'var(--risk-low-text)',      bg: 'var(--risk-low-bg)',       text: 'var(--risk-low-text)' },
   }
 
   return (
@@ -293,7 +293,7 @@ export default function LandingPage() {
               transform: 'translateX(-50%)',
               width: '80%',
               height: '60%',
-              background: 'radial-gradient(ellipse, hsl(248 80% 60% / 0.06) 0%, transparent 70%)',
+              background: 'radial-gradient(ellipse, var(--accent-muted) 0%, transparent 70%)',
               borderRadius: '50%',
             }}
           />
