@@ -1,22 +1,65 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ShieldAlert } from 'lucide-react'
 
 export default function NotFoundPage() {
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="p-6 h-full flex flex-col items-center justify-center">
-      <div className="surface p-12 text-center max-w-lg mx-auto rounded-2xl w-full">
-        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ background: 'var(--risk-critical-bg)' }}>
-          <ShieldAlert size={32} style={{ color: 'var(--risk-critical-text)' }} />
-        </div>
-        <h1 className="text-3xl font-bold mb-2" style={{ letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>404 Not Found</h1>
-        <p className="text-base mb-8" style={{ color: 'var(--text-secondary)' }}>
-          The page you are looking for does not exist or has been moved.
-        </p>
-        <Link to="/" className="btn-primary inline-flex">
-          Go back home
-        </Link>
+    <div
+      className="flex flex-col items-center justify-center"
+      style={{ minHeight: '100vh', background: 'var(--bg-base)' }}
+    >
+      <div className="flex flex-col items-center text-center px-6 max-w-md w-full">
+        {/* Large 404 */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          style={{
+            fontFamily:    'var(--font-mono)',
+            fontSize:      '96px',
+            lineHeight:    1,
+            letterSpacing: '-0.05em',
+            color:         'var(--text-tertiary)',
+            userSelect:    'none',
+          }}
+          aria-hidden="true"
+        >
+          404
+        </motion.p>
+
+        {/* Heading + description */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2, ease: 'easeOut' }}
+          className="mt-4 space-y-3"
+        >
+          <h1
+            className="text-2xl font-bold"
+            style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em' }}
+          >
+            Page not found
+          </h1>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            The page you are looking for doesn't exist or has been moved.
+            Head back to safety below.
+          </p>
+        </motion.div>
+
+        {/* Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.35, ease: 'easeOut' }}
+          className="mt-8 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto"
+        >
+          <Link to="/dashboard" className="btn-primary">
+            Go to Dashboard
+          </Link>
+          <Link to="/analyze" className="btn-ghost">
+            Analyze an invoice
+          </Link>
+        </motion.div>
       </div>
-    </motion.div>
+    </div>
   )
 }

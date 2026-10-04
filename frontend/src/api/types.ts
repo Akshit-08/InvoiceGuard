@@ -133,6 +133,7 @@ export interface RiskResult {
   escalations?: string[]
   recommendation?: string
   disclaimer?: string
+  fusion_mode?: string
 }
 
 export interface InvoiceMatch {

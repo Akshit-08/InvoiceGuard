@@ -5,6 +5,79 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-10-05
+
+### Added / Changed
+- **InvoicePage Overhaul (The Showpiece)** (`feat/reskin-pages`):
+  - Zoom & Pan interactive document canvas (`react-zoom-pan-pinch`) with reset, zoom in/out, and page pagination.
+  - Two-way synced bounding box overlays: severity color-coded (critical rose, high orange, medium amber, low emerald, info blue), dashed outlines for visual findings.
+  - Heatmap layer toggle: rendered multi-gradient ELA & structural anomaly heatmap overlay.
+  - Top finding initial entrance pulse animation for instant reviewer focus.
+  - Two-way click synchronization between finding cards and document bounding boxes.
+  - Summary Tab: sweeps `RiskGauge`, new Recharts Multimodal Anomaly Radar chart (7 engines), `ConfidenceMeter`, plain-English recommendation narrative, and active escalation triggers.
+  - Model Tab: 3-metric score card (Baseline Noisy-OR, Calibrated ML, Final Risk Score), Fusion Pipeline mode badge, and directional SHAP feature contribution bars.
+  - Compare Tab: Best matching earlier invoice diff table (Invoice #, Grand Total, Remittance) with modification badges, and vendor transaction cadence area timeline.
+  - Data Tab: Extracted headers, payment details, and line items.
+  - Timeline Tab: Chronological audit trail with lifecycle milestones.
+- **Command Palette (`AppShell.tsx`)**:
+  - Full keyboard-accessible command palette (Ctrl/Cmd+K) with live search.
+  - Added executable quick actions: Toggle Theme (Dark / Light), Upload New Invoice, Open Recent Invoices, Review Queue, Vendors, Insights, Settings.
+- **Backend Quality & Contract Integrity**:
+  - `POST /api/v1/invoices/{id}/analyze` returns full `risk_result` contract directly for callers/tests while supporting `async_mode` background processing.
+  - `POST /api/v1/demo/seed` supports `seed_invoices` parameter to prevent self-duplicate collision during unit/golden test execution.
+  - 95/95 pytest unit/integration/golden tests passing; 12/12 vitest frontend tests passing.
+  - Frontend TypeScript build clean (`tsc -b && vite build` in <900ms).
+
+## [0.4.3] - 2026-10-05
+
+### Changed
+- **VendorsPage** (`feat/reskin-pages`):
+  - VendorList: replaced TanStack Table with a responsive card-grid (3 cols lg / 2 md / 1 sm). Each card shows `Monogram` avatar + `RiskBadge`, font-mono GSTIN, stats row, and a 7-bar decorative sparkline seeded from vendor name.
+  - Live search filter above the grid (filters by name or GSTIN).
+  - Page title changed to "Vendors" with subtitle.
+  - `Monogram` component extracted locally (mirrors `DashboardPage` pattern, HSL-based, no hex).
+  - Removed all `divide-neutral-*`, `hover:bg-neutral-*`, `bg-neutral-*` classes; borders use `var(--border-hairline)`.
+  - VendorProfile: 4-card KPI row added (Invoice Count / Total Volume / Avg Risk Score / Known Accounts) using `.surface` + icon + label + value pattern.
+  - Known accounts list: replaced `bg-orange-500 text-white` "NEW" badge with `var(--risk-medium-bg/text/border)` tokens; added first_seen / last_seen dates; separator uses `var(--border-hairline)`.
+  - Chart axis ticks now use `var(--text-tertiary)` via `fill` prop; normal scatter dots use `var(--accent)` instead of `var(--text-primary)`.
+  - `Building2` unused import removed.
+- **SettingsPage** (`feat/reskin-pages`):
+  - Layout changed to `max-w-4xl mx-auto space-y-6` (linear column, no sidebar).
+  - Reorganised into 4 section cards: Appearance · Risk Thresholds · Detection Engines · Demo & Reset.
+  - Theme control replaced with segmented control (Moon / Sun / Monitor icons) using `var(--bg-subtle)` track, `var(--bg-elevated)` active pill — no Tailwind `bg-*` classes.
+  - Risk Thresholds section: live RiskGauge preview placed inline to the right of the sliders via 2-col grid.
+  - Detection Engine switches: removed `bg-black/30 dark:bg-white/10 dark:bg-accent`; switched to inline `var(--accent)` / `var(--bg-subtle)` styles.
+  - Demo & Reset section: `demoSeed` input + inline confirmation dialog for "Reset demo data" using `var(--risk-critical-*)` tokens.
+  - Renamed reset handler to `handleResetDefaults`; added `handleResetDemoData`.
+  - All `bg-subtle`, hardcoded neutral, and opacity-based colour references replaced with CSS vars.
+
+## [0.4.2] - 2026-10-05
+
+### Changed
+- **AnalyzePage** (`feat/reskin-pages`):
+  - Dropzone redesigned: `var(--border-strong)` dashed border, `var(--bg-elevated)` idle fill, `var(--accent-muted)` drag-over glow (`box-shadow 0 0 0 4px`), 200 ms transition. Upload icon colour changes to accent on drag.
+  - Format badge row (PDF / JPG / PNG pills) + "Max 20 MB" note added; maxSize lifted from 15 MB to 20 MB.
+  - `SAMPLE_GALLERY` extended with `desc` field; cards rewritten with top-row label/badge, description, large mono score in risk colour, hover "Run →" arrow.
+  - Pipeline stepper: per-stage lucide icons (`Database`, `ScanLine`, `FileText`, `Activity`); thin accent progress bar at absolute top; dot animates `scale(0.8→1.2→1)` on completion; stage labels renamed "Ingesting / Reading / Extracting / Analysing".
+  - Extraction-review: document preview uses `var(--bg-base)` / `var(--bg-elevated)` (no hardcoded colours); bbox overlay uses `var(--accent)` / `var(--accent-muted)`; disclaimer notice added inside review pane.
+  - Error state replaced with `<ErrorState onRetry>` component.
+  - `handleApproveExtraction` wrapped in `useCallback([invoiceId])` to fix exhaustive-deps warning.
+  - All `hover:bg-neutral-*` / `bg-neutral-*` / hardcoded hex removed.
+- **InsightsPage** (`feat/reskin-pages`):
+  - Skeleton loading state replaces plain text spinner.
+  - KPI row updated: ROC-AUC 87, PR-AUC 89, Precision 88, Recall 76 (from real retrained model; API fallbacks 0.8772 / 0.8924).
+  - Ablation bars corrected: baseline 0.8476 → ML fusion 0.8772 (horizontal CSS bars, no Recharts dependency).
+  - Per-fraud-type recall section added (7 categories, horizontal accent bars).
+  - Confusion matrix 2×2 grid: TN=192, FP=28, FN=62, TP=198 with risk-palette cell colours.
+  - Evaluation dataset card: 4,400 docs · 45 vendors · 5 templates · seed 42 · 80/20 split.
+  - Limitations panel with `Info` icon; uses `var(--bg-overlay)` / `var(--border-default)`.
+- **NotFoundPage** (`feat/reskin-pages`):
+  - Complete rewrite: 96 px monospace "404", staggered fade/slide-up animation (reduced-motion safe), two CTA buttons (`btn-primary` → `/dashboard`, `btn-ghost` → `/analyze`).
+
+### Quality gates
+- `vite build`: ✅ zero errors, built in ~990 ms.
+- `oxlint`: ✅ 0 errors, 0 warnings across all three pages.
+
 ## [0.4.1] - 2026-10-04
 
 ### Added

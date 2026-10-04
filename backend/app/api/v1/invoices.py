@@ -139,6 +139,7 @@ async def analyze_invoice(
     invoice_id: str,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
+    async_mode: bool = False,
 ):
     """Run all detection engines and multimodal fusion to produce explainable risk score."""
     inv = db.query(Invoice).filter(Invoice.id == invoice_id).first()
@@ -148,20 +149,30 @@ async def analyze_invoice(
             detail={"code": "INVOICE_NOT_FOUND", "message": f"Invoice {invoice_id} not found."},
         )
 
-    async def run_analyze_task(inv_id: str):
-        from backend.app.core.db import SessionLocal
-        with SessionLocal() as db_session:
-            try:
-                await pipeline.analyze_invoice(inv_id, db_session)
-            except Exception as e:
-                inv_record = db_session.query(Invoice).filter(Invoice.id == inv_id).first()
-                if inv_record:
-                    inv_record.status = "failed"
-                    db_session.commit()
-                await event_bus.emit(inv_id, "analyze", "failed", str(e), 1.0)
+    if async_mode:
+        async def run_analyze_task(inv_id: str):
+            from backend.app.core.db import SessionLocal
+            with SessionLocal() as db_session:
+                try:
+                    await pipeline.analyze_invoice(inv_id, db_session)
+                except Exception as e:
+                    inv_record = db_session.query(Invoice).filter(Invoice.id == inv_id).first()
+                    if inv_record:
+                        inv_record.status = "failed"
+                        db_session.commit()
+                    await event_bus.emit(inv_id, "analyze", "failed", str(e), 1.0)
 
-    background_tasks.add_task(run_analyze_task, invoice_id)
-    return {"invoice_id": invoice_id, "status": "analyzing"}
+        background_tasks.add_task(run_analyze_task, invoice_id)
+        return {"invoice_id": invoice_id, "status": "analyzing"}
+
+    try:
+        result = await pipeline.analyze_invoice(invoice_id, db)
+        return result
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"code": "ANALYSIS_FAILED", "message": str(e)},
+        )
 
 
 @router.get("/{invoice_id}")

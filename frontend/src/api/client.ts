@@ -123,6 +123,19 @@ export const invoiceApi = {
     return apiFetch(`/invoices/${id}/extraction`)
   },
 
+  compare: async (id: string, otherId: string) => {
+    return apiFetch<{
+      invoice_a_id: string
+      invoice_b_id: string
+      differences: Array<{
+        field: string
+        invoice_a_value: unknown
+        invoice_b_value: unknown
+        status: 'changed' | 'identical'
+      }>
+    }>(`/invoices/${id}/compare/${otherId}`)
+  },
+
   pageUrl: (id: string, page: number) =>
     USE_MOCKS ? '' : `${API_BASE}/api/v1/invoices/${id}/pages/${page - 1}.png`,
 

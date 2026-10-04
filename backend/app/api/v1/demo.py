@@ -28,7 +28,7 @@ if str(REPO_ROOT) not in sys.path:
 router = APIRouter(prefix="/demo", tags=["demo"])
 
 @router.post("/seed")
-async def seed_demo(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+async def seed_demo(background_tasks: BackgroundTasks, db: Session = Depends(get_db), seed_invoices: bool = True):
     """Loads synthetic vendors and the 8 hero docs into the DB."""
     try:
         from scripts.seed_demo import build_hero_demo_samples
@@ -67,28 +67,29 @@ async def seed_demo(background_tasks: BackgroundTasks, db: Session = Depends(get
                     ))
         db.commit()
 
-        # Upload and analyze the 8 hero samples if not already in DB
-        samples_dir = Path("data/samples")
-        for key in expected_bands.keys():
-            pdf_path = samples_dir / f"{key}.pdf"
-            if not pdf_path.exists():
-                continue
+        # Upload and analyze the 8 hero samples if requested and not already in DB
+        if seed_invoices:
+            samples_dir = Path("data/samples")
+            for key in expected_bands.keys():
+                pdf_path = samples_dir / f"{key}.pdf"
+                if not pdf_path.exists():
+                    continue
 
-            # Check if already seeded to make it idempotent
-            existing_inv = db.query(Invoice).filter(Invoice.original_filename == f"{key}.pdf").first()
-            if existing_inv:
-                continue
+                # Check if already seeded to make it idempotent
+                existing_inv = db.query(Invoice).filter(Invoice.original_filename == f"{key}.pdf").first()
+                if existing_inv:
+                    continue
 
-            with open(pdf_path, "rb") as f:
-                upload_file = UploadFile(
-                    filename=f"{key}.pdf",
-                    file=f,
-                    headers=Headers({"content-type": "application/pdf"})
-                )
-                upload_res, _ = await pipeline.process_upload(upload_file, db)
+                with open(pdf_path, "rb") as f:
+                    upload_file = UploadFile(
+                        filename=f"{key}.pdf",
+                        file=f,
+                        headers=Headers({"content-type": "application/pdf"})
+                    )
+                    upload_res, _ = await pipeline.process_upload(upload_file, db)
 
-            # Analyze immediately so it doesn't stay pending
-            await pipeline.analyze_invoice(upload_res.invoice_id, db)
+                # Analyze immediately so it doesn't stay pending
+                await pipeline.analyze_invoice(upload_res.invoice_id, db)
 
         return {"status": "success", "message": "Demo seeded successfully, generated 8 hero samples.", "samples": expected_bands}
     except Exception as e:

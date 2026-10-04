@@ -23,12 +23,12 @@ import {
 } from 'lucide-react'
 import {
   AreaChart, Area, PieChart, Pie, Cell,
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend,
+  XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts'
 import { toast } from 'sonner'
 
 import { dashboardApi, invoiceApi } from '@/api/client'
-import type { DashboardStats, DateRange } from '@/api/types'
+import type { DateRange } from '@/api/types'
 import { ErrorState, SkeletonCard } from '@/components/ui'
 import { RiskBadge } from '@/components/RiskBadge'
 import { scoreToLevel, formatRelativeTime, formatDate } from '@/lib/utils'
@@ -292,25 +292,6 @@ function DashboardSkeleton() {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
-// SECTION CARD WRAPPER
-// ─────────────────────────────────────────────────────────────────
-function SectionCard({ title, action, children, className = '' }: {
-  title: string
-  action?: React.ReactNode
-  children: React.ReactNode
-  className?: string
-}) {
-  return (
-    <div className={`surface p-5 flex flex-col gap-4 ${className}`}>
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{title}</h2>
-        {action}
-      </div>
-      {children}
-    </div>
-  )
-}
 
 // ─────────────────────────────────────────────────────────────────
 // MAIN PAGE

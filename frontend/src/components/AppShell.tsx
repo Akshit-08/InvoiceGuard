@@ -22,26 +22,37 @@ const NAV_ITEMS = [
 ] as const
 
 const CMD_ITEMS = [
-  { id: 'dashboard', label: 'Go to Dashboard',  icon: LayoutDashboard, to: '/dashboard' },
-  { id: 'analyze',   label: 'Analyze Invoice',   icon: Upload,          to: '/analyze' },
-  { id: 'history',   label: 'Invoice History',   icon: History,         to: '/history' },
-  { id: 'review',    label: 'Review Queue',      icon: ClipboardList,   to: '/review' },
-  { id: 'vendors',   label: 'Vendors',           icon: Users,           to: '/vendors' },
-  { id: 'insights',  label: 'Model Insights',    icon: BarChart2,       to: '/insights' },
-  { id: 'settings',  label: 'Settings',          icon: Settings,        to: '/settings' },
+  { id: 'upload',    label: 'Upload New Invoice',            icon: Upload,          to: '/analyze' },
+  { id: 'recent',    label: 'Open Recent Invoices',          icon: History,         to: '/history' },
+  { id: 'theme',     label: 'Toggle Theme (Dark / Light)',   icon: Moon,            action: 'toggle-theme' },
+  { id: 'dashboard', label: 'Go to Dashboard',              icon: LayoutDashboard, to: '/dashboard' },
+  { id: 'review',    label: 'Open Review Queue',             icon: ClipboardList,   to: '/review' },
+  { id: 'vendors',   label: 'View Vendors',                  icon: Users,           to: '/vendors' },
+  { id: 'insights',  label: 'Model Insights & Metrics',       icon: BarChart2,       to: '/insights' },
+  { id: 'settings',  label: 'Settings & Risk Thresholds',     icon: Settings,        to: '/settings' },
 ] as const
 
 // ── Command Palette ───────────────────────────────────────────────
 interface CommandPaletteProps {
   onClose: () => void
   onNavigate: (to: string) => void
+  onToggleTheme: () => void
 }
 
-function CommandPalette({ onClose, onNavigate }: CommandPaletteProps) {
+function CommandPalette({ onClose, onNavigate, onToggleTheme }: CommandPaletteProps) {
   const [query, setQuery] = useState('')
   const filtered = CMD_ITEMS.filter(i =>
     i.label.toLowerCase().includes(query.toLowerCase())
   )
+
+  const handleSelect = (item: (typeof CMD_ITEMS)[number]) => {
+    if ('action' in item && item.action === 'toggle-theme') {
+      onToggleTheme()
+      onClose()
+    } else if ('to' in item && item.to) {
+      onNavigate(item.to)
+    }
+  }
 
   return (
     <>
@@ -92,7 +103,7 @@ function CommandPalette({ onClose, onNavigate }: CommandPaletteProps) {
               style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-sans)' }}
               onKeyDown={e => {
                 if (e.key === 'Escape') onClose()
-                if (e.key === 'Enter' && filtered.length > 0) onNavigate(filtered[0].to)
+                if (e.key === 'Enter' && filtered.length > 0) handleSelect(filtered[0])
               }}
               aria-label="Command search"
             />
@@ -123,7 +134,7 @@ function CommandPalette({ onClose, onNavigate }: CommandPaletteProps) {
                     key={item.id}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors duration-100"
                     style={{ color: 'var(--text-primary)', background: 'transparent' }}
-                    onClick={() => onNavigate(item.to)}
+                    onClick={() => handleSelect(item)}
                     onMouseEnter={e => {
                       (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-subtle)'
                     }}
@@ -368,6 +379,7 @@ export function AppShell({ children }: AppShellProps) {
           <CommandPalette
             onClose={() => setCmdOpen(false)}
             onNavigate={(to) => { navigate(to); setCmdOpen(false) }}
+            onToggleTheme={toggle}
           />
         )}
       </AnimatePresence>
