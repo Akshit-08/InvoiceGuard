@@ -17,6 +17,7 @@ const VendorsPage    = lazy(() => import('@/pages/VendorsPage'))
 const InsightsPage   = lazy(() => import('@/pages/InsightsPage'))
 const SettingsPage   = lazy(() => import('@/pages/SettingsPage'))
 const ComparePage    = lazy(() => import('@/pages/ComparePage'))
+const BatchPage      = lazy(() => import('@/pages/BatchPage'))
 const NotFoundPage   = lazy(() => import('@/pages/NotFoundPage'))
 
 const queryClient = new QueryClient({
@@ -56,6 +57,7 @@ export default function App() {
                     <Routes>
                       <Route path="/dashboard"        element={<DashboardPage />} />
                       <Route path="/analyze"          element={<AnalyzePage />} />
+                      <Route path="/batch/:id"        element={<BatchPage />} />
                       <Route path="/invoices/:id"     element={<InvoicePage />} />
                       <Route path="/history"          element={<HistoryPage />} />
                       <Route path="/review"           element={<ReviewPage />} />

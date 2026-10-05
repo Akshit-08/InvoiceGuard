@@ -313,4 +313,64 @@ class LayoutLMv3Extractor:
                     page=1,
                 )
 
+        if "invoice_date" in layoutlm_results:
+            res = layoutlm_results["invoice_date"]
+            if res["conf"] > invoice_data.invoice_date.conf or not invoice_data.invoice_date.value:
+                invoice_data.invoice_date = Field(
+                    value=str(res["value"]),
+                    raw=str(res["value"]),
+                    conf=res["conf"],
+                    source="layoutlmv3",
+                    bbox=res["bbox"],
+                    page=1,
+                )
+
+        if "subtotal" in layoutlm_results:
+            res = layoutlm_results["subtotal"]
+            try:
+                val = float(str(res["value"]).replace(",", "").replace("$", "").replace("₹", "").strip())
+                if res["conf"] > invoice_data.subtotal.conf or invoice_data.subtotal.value == 0.0:
+                    invoice_data.subtotal = Field(
+                        value=val,
+                        raw=str(res["value"]),
+                        conf=res["conf"],
+                        source="layoutlmv3",
+                        bbox=res["bbox"],
+                        page=1,
+                    )
+            except ValueError:
+                pass
+
+        if "total_vat" in layoutlm_results:
+            res = layoutlm_results["total_vat"]
+            try:
+                val = float(str(res["value"]).replace(",", "").replace("$", "").replace("₹", "").strip())
+                if res["conf"] > invoice_data.tax.total.conf or invoice_data.tax.total.value == 0.0:
+                    invoice_data.tax.total = Field(
+                        value=val,
+                        raw=str(res["value"]),
+                        conf=res["conf"],
+                        source="layoutlmv3",
+                        bbox=res["bbox"],
+                        page=1,
+                    )
+            except ValueError:
+                pass
+
+        if "total_gross_worth" in layoutlm_results:
+            res = layoutlm_results["total_gross_worth"]
+            try:
+                val = float(str(res["value"]).replace(",", "").replace("$", "").replace("₹", "").strip())
+                if res["conf"] > invoice_data.grand_total.conf or invoice_data.grand_total.value == 0.0:
+                    invoice_data.grand_total = Field(
+                        value=val,
+                        raw=str(res["value"]),
+                        conf=res["conf"],
+                        source="layoutlmv3",
+                        bbox=res["bbox"],
+                        page=1,
+                    )
+            except ValueError:
+                pass
+
         return invoice_data

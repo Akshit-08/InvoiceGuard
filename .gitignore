@@ -79,3 +79,5 @@ Thumbs.db
 .vscode/
 .gemini/
 *.log
+my-test-invoices/
+frontend/test-results/

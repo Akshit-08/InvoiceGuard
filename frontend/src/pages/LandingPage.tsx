@@ -12,12 +12,14 @@
  * - No layout shift; lazy-mount heavy stage SVGs
  */
 
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  motion, AnimatePresence,
-  useScroll, useTransform, useMotionValueEvent, useInView,
-} from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 import {
   Upload, ChevronRight, ArrowRight,
   Calculator, Fingerprint, Copy, Building2, CreditCard, Eye, CheckCircle2,
@@ -675,238 +677,243 @@ const WHY_DIFFERENT = [
 ] as const
 
 // ─────────────────────────────────────────────────────────────────
-// HOW IT WORKS — sticky scroll (desktop) + stacked (mobile)
+// HOW IT WORKS — GSAP ScrollTrigger implementation
 // ─────────────────────────────────────────────────────────────────
-
-/** Wrapper that only mounts children once the container enters view. */
-function ViewportGate({ children, className }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-40px' })
-  return (
-    <div ref={ref} className={className}>
-      {inView ? children : null}
-    </div>
-  )
-}
 
 function HowItWorksSection({ reduced }: { reduced: boolean }) {
   const sectionRef = useRef<HTMLDivElement>(null)
+  
+  useGSAP(() => {
+    if (reduced) return
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start start', 'end end'],
-  })
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top top',
+        end: '+=4000',
+        scrub: 1,
+        pin: true,
+      }
+    })
 
-  const [activeStep, setActiveStep] = useState(0)
+    tl.to('.gsap-progress-line', { height: '100%', ease: 'none', duration: 4 }, 0)
 
-  const stepFloat = useTransform(scrollYProgress, [0, 0.99], [0, 3.99])
-  useMotionValueEvent(stepFloat, 'change', (v) => {
-    const next = Math.min(3, Math.floor(v))
-    if (next !== activeStep) setActiveStep(next)
-  })
+    HOW_IT_WORKS.forEach((_, i) => {
+      const stepStart = i
+      
+      tl.to(`.gsap-step-${i}`, { opacity: 1, duration: 0.5 }, stepStart)
+        .to(`.gsap-step-dot-${i}`, { scale: 1.18, borderColor: 'var(--accent)', backgroundColor: 'var(--accent)', color: 'white', duration: 0.5 }, stepStart)
+      
+      if (i < HOW_IT_WORKS.length - 1) {
+        tl.to(`.gsap-step-${i}`, { opacity: 0.38, duration: 0.5 }, stepStart + 0.8)
+          .to(`.gsap-step-dot-${i}`, { scale: 1, backgroundColor: 'var(--bg-base)', color: 'var(--text-tertiary)', duration: 0.5 }, stepStart + 0.8)
+      }
 
-  // Discrete step progress for the vertical indicator line (0→33→66→100%)
-  const linePercent = `${Math.round((activeStep / 3) * 100)}%`
+      tl.to(`.gsap-stage-${i}`, { opacity: 1, y: 0, duration: 0.5 }, stepStart)
+      if (i < HOW_IT_WORKS.length - 1) {
+        tl.to(`.gsap-stage-${i}`, { opacity: 0, y: -20, duration: 0.5 }, stepStart + 0.8)
+      }
+    })
+
+    tl.fromTo('.gsap-s0-dropzone', { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.3 }, 0)
+    tl.to('.gsap-s0-prompt', { opacity: 0, duration: 0.2 }, 0.2)
+    tl.fromTo('.gsap-s0-thumb', { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.4 }, 0.3)
+    tl.fromTo('.gsap-s0-badge', { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.3 }, 0.5)
+    tl.fromTo('.gsap-s0-chip', { opacity: 0, y: -40 }, { opacity: 1, y: 90, duration: 0.5 }, 0.1)
+    tl.to('.gsap-s0-chip', { opacity: 0, duration: 0.2 }, 0.6)
+
+    tl.fromTo('.gsap-s1-doc', { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.3 }, 1)
+    tl.fromTo('.gsap-s1-beam', { top: '0%', opacity: 0 }, { top: '100%', opacity: 1, duration: 0.6 }, 1.2)
+    tl.to('.gsap-s1-beam', { opacity: 0, duration: 0.1 }, 1.8)
+    tl.fromTo('.gsap-s1-box', { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.3, stagger: 0.1 }, 1.3)
+    tl.fromTo('.gsap-s1-chip', { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.3, stagger: 0.1 }, 1.4)
+
+    tl.fromTo('.gsap-s2-eng', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.3, stagger: 0.05 }, 2)
+    tl.fromTo('.gsap-s2-bar', { width: 0 }, { width: (_i: number, el: HTMLElement) => el.dataset.w + '%', duration: 0.4, stagger: 0.05 }, 2.1)
+    tl.fromTo('.gsap-s2-arrow', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 2.5)
+    tl.fromTo('.gsap-s2-fusion', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 2.6)
+
+    const arcLen = Math.PI * 52
+    const filled = 0.885 * arcLen
+    tl.fromTo('.gsap-s3-arc', { strokeDashoffset: arcLen }, { strokeDashoffset: arcLen - filled, duration: 0.6 }, 3)
+    tl.fromTo('.gsap-s3-card', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.1 }, 3.3)
+
+  }, { scope: sectionRef })
 
   return (
-    <section
-      className="border-t"
-      style={{ borderColor: 'var(--border-hairline)' }}
-      id="how-it-works"
-    >
-      {/* ── DESKTOP: sticky scroll ── (hidden on mobile) */}
-      <div
-        ref={sectionRef}
-        className="relative hidden lg:block"
-        style={{ height: 'calc(4 * 100vh)' }}
-        aria-label="How InvoiceGuard works"
-      >
-        {/* Sticky frame */}
-        <div
-          className="sticky top-0 overflow-hidden"
-          style={{ height: '100svh' }}
-        >
-          <div
-            className="h-full grid"
-            style={{ gridTemplateColumns: '1fr 1fr', maxWidth: 1280, margin: '0 auto' }}
-          >
-            {/* ── Left: section header + step list ── */}
-            <div
-              className="flex flex-col justify-center px-10 xl:px-20 py-16"
-              style={{ borderRight: '1px solid var(--border-hairline)' }}
-            >
-              {/* Section header */}
-              <div className="mb-10">
-                <p
-                  className="text-xs font-semibold uppercase tracking-widest mb-2"
-                  style={{ color: 'var(--accent)', letterSpacing: '0.1em' }}
-                >
-                  How it works
-                </p>
-                <h2 className="text-3xl font-bold mb-2" style={{ letterSpacing: '-0.02em' }}>
-                  From upload to explained risk
-                </h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
-                  Under 10 seconds. Evidence on the document.
-                </p>
-              </div>
-
-              {/* Steps with vertical progress line */}
-              <div className="relative pl-10">
-                {/* Line track */}
-                <div
-                  className="absolute left-3"
-                  style={{ top: 14, bottom: 14, width: 1, background: 'var(--border-hairline)' }}
-                  aria-hidden="true"
-                />
-                {/* Line fill — animated to current step */}
-                <motion.div
-                  className="absolute left-3"
-                  aria-hidden="true"
-                  style={{ top: 14, width: 1, background: 'var(--accent)', originY: 0 }}
-                  animate={{ height: linePercent }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                />
-
-                <div className="space-y-9">
-                  {HOW_IT_WORKS.map((step, i) => {
-                    const isActive = i === activeStep
-                    const isPast   = i < activeStep
-                    const StepIcon = step.icon
-                    return (
-                      <div key={step.num} className="relative flex items-start gap-4">
-                        {/* Step dot */}
-                        <motion.div
-                          className="absolute -left-10 flex items-center justify-center rounded-full border-2 shrink-0"
-                          style={{
-                            width: 28, height: 28,
-                            top: -2,
-                            borderColor: isActive || isPast ? 'var(--accent)' : 'var(--border-default)',
-                            background:  isActive || isPast ? 'var(--accent)' : 'var(--bg-base)',
-                          }}
-                          animate={{ scale: isActive ? 1.18 : 1 }}
-                          transition={{ duration: 0.2 }}
-                          aria-hidden="true"
-                        >
-                          <span style={{
-                            fontSize: 10,
-                            fontWeight: 700,
-                            fontFamily: 'var(--font-mono)',
-                            color: isActive || isPast ? 'white' : 'var(--text-tertiary)',
-                          }}>
-                            {step.num}
-                          </span>
-                        </motion.div>
-
-                        {/* Content */}
-                        <motion.div
-                          animate={{ opacity: isActive ? 1 : 0.38 }}
-                          transition={{ duration: 0.25 }}
-                        >
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <StepIcon
-                              size={15}
-                              style={{ color: isActive ? 'var(--accent)' : 'var(--text-tertiary)' }}
-                              aria-hidden="true"
-                            />
-                            <h3
-                              className="font-semibold"
-                              style={{ fontSize: 16, color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}
-                            >
-                              {step.title}
-                            </h3>
-                          </div>
-                          <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.55, maxWidth: 340 }}>
-                            {step.desc}
-                          </p>
-                        </motion.div>
+    <section className="border-t" style={{ borderColor: 'var(--border-hairline)' }} id="how-it-works">
+      <div ref={sectionRef} className="relative hidden lg:block" style={{ height: '100vh', overflow: 'hidden' }}>
+        <div className="h-full grid" style={{ gridTemplateColumns: '1fr 1fr', maxWidth: 1280, margin: '0 auto' }}>
+          
+          <div className="flex flex-col justify-center px-10 xl:px-20 py-16" style={{ borderRight: '1px solid var(--border-hairline)' }}>
+            <div className="mb-10">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--accent)', letterSpacing: '0.1em' }}>How it works</p>
+              <h2 className="text-3xl font-bold mb-2" style={{ letterSpacing: '-0.02em' }}>From upload to explained risk</h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>Under 10 seconds. Evidence on the document.</p>
+            </div>
+            
+            <div className="relative pl-10">
+              <div className="absolute left-3" style={{ top: 14, bottom: 14, width: 1, background: 'var(--border-hairline)' }} />
+              <div className="gsap-progress-line absolute left-3" style={{ top: 14, width: 1, height: 0, background: 'var(--accent)', transformOrigin: 'top' }} />
+              
+              <div className="space-y-9">
+                {HOW_IT_WORKS.map((step, i) => {
+                  const StepIcon = step.icon
+                  return (
+                    <div key={step.num} className="relative flex items-start gap-4">
+                      <div className={`gsap-step-dot-${i} absolute -left-10 flex items-center justify-center rounded-full border-2 shrink-0`} style={{ width: 28, height: 28, top: -2, borderColor: 'var(--border-default)', background: 'var(--bg-base)', color: 'var(--text-tertiary)' }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{step.num}</span>
                       </div>
-                    )
-                  })}
+                      <div className={`gsap-step-${i}`} style={{ opacity: i === 0 ? 1 : 0.38 }}>
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <StepIcon size={15} style={{ color: 'var(--accent)' }} />
+                          <h3 className="font-semibold" style={{ fontSize: 16, color: 'var(--text-primary)' }}>{step.title}</h3>
+                        </div>
+                        <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.55, maxWidth: 340 }}>{step.desc}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="relative flex items-center justify-center px-10 xl:px-20 py-16" style={{ background: 'var(--bg-surface)' }}>
+            
+            <div className="gsap-stage-0 absolute" style={{ opacity: 1, y: 0, width: 300, height: 280 }}>
+              <div className="gsap-s0-dropzone absolute inset-0 rounded-2xl flex flex-col items-center justify-center gap-2" style={{ border: '2px dashed var(--border-strong)', background: 'var(--bg-elevated)' }}>
+                <div className="gsap-s0-prompt flex flex-col items-center gap-2">
+                  <Upload size={32} style={{ color: 'var(--text-tertiary)' }} />
+                  <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Drop invoice here</span>
                 </div>
+                <div className="gsap-s0-thumb absolute inset-4 rounded-xl overflow-hidden" style={{ background: 'var(--bg-overlay)', border: '1px solid var(--border-default)' }}>
+                  {[14, 28, 50, 62, 74, 90, 102, 118, 130].map((top, j) => (
+                    <div key={j} className="absolute" style={{ top, left: 12, right: j % 3 === 0 ? 60 : j % 3 === 1 ? 30 : 12, height: j === 3 ? 14 : 6, borderRadius: 3, background: j === 3 ? 'var(--border-hairline)' : j % 4 === 0 ? 'var(--border-strong)' : 'var(--border-hairline)', opacity: j === 3 ? 0.8 : 0.6 }} />
+                  ))}
+                </div>
+                <div className="gsap-s0-badge absolute bottom-3 left-1/2 flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ transform: 'translateX(-50%)', background: 'var(--risk-low-bg)', border: '1px solid var(--risk-low-border)' }}>
+                  <CheckCircle2 size={11} style={{ color: 'var(--risk-low-text)' }} />
+                  <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--risk-low-text)' }}>Ready to analyse</span>
+                </div>
+              </div>
+              <div className="gsap-s0-chip absolute flex items-center gap-2 px-3 py-2 rounded-xl z-10" style={{ top: -28, left: '50%', transform: 'translateX(-50%)', background: 'var(--bg-overlay)', border: '1px solid var(--border-strong)', boxShadow: 'var(--shadow-md)', whiteSpace: 'nowrap' }}>
+                <FileText size={14} style={{ color: 'var(--accent)' }} />
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>invoice.pdf</span>
               </div>
             </div>
 
-            {/* ── Right: stage illustration ── */}
-            <div
-              className="flex items-center justify-center px-10 xl:px-20 py-16"
-              style={{ background: 'var(--bg-surface)' }}
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeStep}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
-                >
-                  {activeStep === 0 && <StageUpload />}
-                  {activeStep === 1 && <StageExtract />}
-                  {activeStep === 2 && <StageAnalyse />}
-                  {activeStep === 3 && <StageExplain />}
-                </motion.div>
-              </AnimatePresence>
+            <div className="gsap-stage-1 absolute" style={{ opacity: 0, y: 20, width: 300, height: 300 }}>
+              <div className="gsap-s1-doc absolute inset-0 rounded-xl overflow-hidden" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
+                {[10, 22, 50, 70, 82, 118, 132, 160, 178, 196, 214, 240, 260].map((top, j) => (
+                  <div key={j} className="absolute" style={{ top, left: 12, right: j % 3 === 2 ? 80 : j % 3 === 1 ? 40 : 12, height: j === 3 ? 16 : 6, borderRadius: 3, background: j === 0 ? 'var(--border-strong)' : 'var(--border-hairline)', opacity: j === 0 ? 0.9 : 0.5 }} />
+                ))}
+                <div className="gsap-s1-beam absolute inset-x-0 h-0.5 pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%)', boxShadow: '0 0 8px var(--accent)' }} />
+                {[
+                  { label: 'Invoice No', value: 'INV-2026-0042', conf: 98, top: '18%' },
+                  { label: 'Amount', value: '₹1,53,900', conf: 96, top: '56%' },
+                  { label: 'GSTIN', value: '27AABCA…F1Z9', conf: 94, top: '72%' },
+                  { label: 'Date', value: '15 Mar 2026', conf: 99, top: '34%' }
+                ].map(f => (
+                  <div key={f.label} className="gsap-s1-box absolute" style={{ top: f.top, left: 8, right: 8, height: 16, border: '1.5px solid var(--accent-border)', background: 'var(--accent-muted)', borderRadius: 3 }} />
+                ))}
+              </div>
+              <div className="absolute -right-2 top-0 bottom-0 flex flex-col justify-around pointer-events-none">
+                {[
+                  { label: 'Invoice No', value: 'INV-2026-0042', conf: 98, top: '18%' },
+                  { label: 'Amount', value: '₹1,53,900', conf: 96, top: '56%' },
+                  { label: 'GSTIN', value: '27AABCA…F1Z9', conf: 94, top: '72%' },
+                  { label: 'Date', value: '15 Mar 2026', conf: 99, top: '34%' }
+                ].map(f => (
+                  <div key={f.label} className="gsap-s1-chip flex items-center gap-1.5 px-2 py-1.5 rounded-lg" style={{ background: 'var(--bg-overlay)', border: '1px solid var(--border-strong)', boxShadow: 'var(--shadow-sm)', minWidth: 130 }}>
+                    <div className="flex-1 min-w-0">
+                      <p style={{ fontSize: 8, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</p>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{f.value}</p>
+                    </div>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--risk-low-text)', background: 'var(--risk-low-bg)', padding: '1px 4px', borderRadius: 4 }}>{f.conf}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="gsap-stage-2 absolute mx-auto" style={{ opacity: 0, y: 20, width: 300 }}>
+              <div className="grid grid-cols-4 gap-1.5 mb-3">
+                {[
+                  { icon: Calculator, name: 'Financial', score: 72, color: 'var(--risk-high-text)' },
+                  { icon: Fingerprint, name: 'Tax', score: 0, color: 'var(--risk-low-text)' },
+                  { icon: Copy, name: 'Duplicate', score: 15, color: 'var(--risk-low-text)' },
+                  { icon: Building2, name: 'Vendor', score: 45, color: 'var(--risk-medium-text)' },
+                  { icon: CreditCard, name: 'Bank', score: 85, color: 'var(--risk-critical-text)' },
+                  { icon: CheckCircle2, name: 'Identifiers', score: 8, color: 'var(--risk-low-text)' },
+                  { icon: Eye, name: 'Visual', score: 30, color: 'var(--risk-medium-text)' }
+                ].map(eng => {
+                  const EngIcon = eng.icon
+                  return (
+                    <div key={eng.name} className="gsap-s2-eng flex flex-col items-center gap-1 py-2 px-1 rounded-lg" style={{ background: 'var(--bg-overlay)', border: '1px solid var(--border-hairline)' }}>
+                      <EngIcon size={13} style={{ color: eng.color }} />
+                      <span style={{ fontSize: 8, color: 'var(--text-tertiary)', textAlign: 'center', lineHeight: 1.2 }}>{eng.name}</span>
+                      <span className="tabular-nums" style={{ fontSize: 13, fontWeight: 700, color: eng.color, fontFamily: 'var(--font-mono)' }}>{eng.score}</span>
+                      <div className="w-full rounded-full overflow-hidden" style={{ height: 3, background: 'var(--bg-subtle)' }}>
+                        <div className="gsap-s2-bar h-full rounded-full" data-w={eng.score} style={{ background: eng.color }} />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="gsap-s2-arrow flex items-center gap-2 justify-center mb-2">
+                <div style={{ flex: 1, height: 1, background: 'var(--border-default)' }} />
+                <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>Noisy-OR + XGBoost</span>
+                <div style={{ flex: 1, height: 1, background: 'var(--border-default)' }} />
+              </div>
+              <div className="gsap-s2-fusion flex items-center gap-2.5 rounded-xl px-4 py-3" style={{ background: 'var(--accent-muted)', border: '1px solid var(--accent-border)' }}>
+                <Cpu size={15} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Risk Fusion</span>
+                <span style={{ marginLeft: 'auto', fontSize: 18, fontWeight: 800, color: 'var(--risk-critical-text)', fontFamily: 'var(--font-mono)' }}>88.5</span>
+              </div>
+            </div>
+
+            <div className="gsap-stage-3 absolute mx-auto flex flex-col items-center gap-3" style={{ opacity: 0, y: 20, width: 300 }}>
+              <div>
+                <svg viewBox="0 0 120 76" width="180" height="114">
+                  <path d="M 8 64 A 52 52 0 0 1 112 64" fill="none" stroke="var(--bg-subtle)" strokeWidth="10" strokeLinecap="round" />
+                  <path className="gsap-s3-arc" d="M 8 64 A 52 52 0 0 1 112 64" fill="none" stroke="var(--risk-critical)" strokeWidth="10" strokeLinecap="round" strokeDasharray={Math.PI * 52} />
+                  <text x="60" y="50" textAnchor="middle" style={{ fontSize: 22, fontWeight: 700, fill: 'var(--risk-critical-text)', fontFamily: 'monospace' }}>88</text>
+                  <text x="60" y="64" textAnchor="middle" style={{ fontSize: 8, fill: 'var(--text-tertiary)', letterSpacing: '0.08em' }}>CRITICAL RISK</text>
+                </svg>
+              </div>
+              {[
+                { label: 'Grand Total Mismatch', severity: 'critical' as const, diff: '+₹30,000' },
+                { label: 'Bank Account Changed', severity: 'high' as const, diff: 'New payee' }
+              ].map((f) => (
+                <div key={f.label} className="gsap-s3-card w-full flex items-center gap-3 rounded-xl px-3 py-2.5" style={{ background: f.severity === 'critical' ? 'var(--risk-critical-bg)' : 'var(--risk-high-bg)', border: `1px solid ${f.severity === 'critical' ? 'var(--risk-critical-border)' : 'var(--risk-high-border)'}` }}>
+                  <AlertCircle size={14} style={{ color: f.severity === 'critical' ? 'var(--risk-critical-text)' : 'var(--risk-high-text)' }} />
+                  <span style={{ fontSize: 12, fontWeight: 500, color: f.severity === 'critical' ? 'var(--risk-critical-text)' : 'var(--risk-high-text)', flex: 1 }}>{f.label}</span>
+                  <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: f.severity === 'critical' ? 'var(--risk-critical-text)' : 'var(--risk-high-text)', opacity: 0.8 }}>{f.diff}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
-
-      {/* ── MOBILE / REDUCED: stacked cards ── */}
-      <div
-        className="block lg:hidden py-16 px-6"
-        aria-label="How InvoiceGuard works"
-      >
+      
+      <div className="block lg:hidden py-16 px-6">
         <div className="max-w-xl mx-auto">
-          {/* Section header */}
-          <motion.div
-            className="mb-10"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <p className="text-xs font-semibold uppercase mb-2" style={{ color: 'var(--accent)', letterSpacing: '0.1em' }}>
-              How it works
-            </p>
-            <h2 className="text-2xl font-bold mb-2" style={{ letterSpacing: '-0.02em' }}>
-              From upload to explained risk
-            </h2>
+          <div className="mb-10">
+            <p className="text-xs font-semibold uppercase mb-2" style={{ color: 'var(--accent)', letterSpacing: '0.1em' }}>How it works</p>
+            <h2 className="text-2xl font-bold mb-2" style={{ letterSpacing: '-0.02em' }}>From upload to explained risk</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>Under 10 seconds. Evidence on the document.</p>
-          </motion.div>
-
+          </div>
           <div className="space-y-8">
-            {HOW_IT_WORKS.map((step) => {
+            {HOW_IT_WORKS.map(step => {
               const StepIcon = step.icon
               return (
-                <motion.div
-                  key={step.num}
-                  className="surface p-6"
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-60px' }}
-                  transition={{ delay: 0, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                >
+                <div key={step.num} className="surface p-6">
                   <div className="flex items-center gap-3 mb-3">
-                    <span
-                      className="inline-flex items-center justify-center rounded-full text-xs font-bold"
-                      style={{ width: 28, height: 28, background: 'var(--accent)', color: 'white', fontFamily: 'var(--font-mono)', flexShrink: 0 }}
-                    >
-                      {step.num}
-                    </span>
-                    <StepIcon size={15} style={{ color: 'var(--accent)' }} aria-hidden="true" />
+                    <span className="inline-flex items-center justify-center rounded-full text-xs font-bold" style={{ width: 28, height: 28, background: 'var(--accent)', color: 'white', fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{step.num}</span>
+                    <StepIcon size={15} style={{ color: 'var(--accent)' }} />
                     <h3 className="font-semibold" style={{ fontSize: 16 }}>{step.title}</h3>
                   </div>
-                  <p className="mb-5" style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                    {step.desc}
-                  </p>
-                  {/* Inline illustration — only mounts when in view */}
-                  {!reduced && (
-                    <ViewportGate className="flex justify-center pt-2">
-                      <step.Stage />
-                    </ViewportGate>
-                  )}
-                </motion.div>
+                  <p className="mb-5" style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{step.desc}</p>
+                </div>
               )
             })}
           </div>

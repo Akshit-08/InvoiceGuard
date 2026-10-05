@@ -471,50 +471,23 @@ def get_invoice_pdf_report(invoice_id: str, db: Session = Depends(get_db)):
     if not inv:
         raise HTTPException(status_code=404, detail="Invoice not found")
 
-    from io import BytesIO
-
-    from reportlab.lib.pagesizes import letter
-    from reportlab.pdfgen import canvas
-
-    buffer = BytesIO()
-    p = canvas.Canvas(buffer, pagesize=letter)
-    p.setTitle(f"InvoiceGuard Report - {inv.invoice_number or invoice_id}")
-
-    p.setFont("Helvetica-Bold", 18)
-    p.drawString(50, 750, "InvoiceGuard Compliance & Anomaly Report")
-
-    p.setFont("Helvetica", 10)
-    p.drawString(50, 730, "InvoiceGuard flags anomalies for human review. It does not determine fraud.")
-
-    p.line(50, 720, 550, 720)
-
-    p.setFont("Helvetica-Bold", 12)
-    p.drawString(50, 690, f"Invoice Number: {inv.invoice_number or 'N/A'}")
-    p.drawString(50, 670, f"Vendor: {inv.vendor.name if inv.vendor else 'Unknown'}")
-    p.drawString(50, 650, f"Date: {inv.invoice_date or 'N/A'}")
-    p.drawString(50, 630, f"Grand Total: {inv.currency} {inv.grand_total:,.2f}" if inv.grand_total else "N/A")
-
-    p.drawString(50, 590, f"Risk Score: {inv.overall_score or 0.0:.1f} / 100")
-    p.drawString(50, 570, f"Risk Band: {inv.risk_level or 'PENDING'}")
-    p.drawString(50, 550, f"Review Status: {inv.review_status}")
-
+    risk_rec = db.query(RiskScoreRecord).filter(RiskScoreRecord.invoice_id == invoice_id).first()
     findings_db = db.query(InvoiceFinding).filter(InvoiceFinding.invoice_id == invoice_id).all()
-    p.drawString(50, 510, f"Detected Anomaly Indicators ({len(findings_db)}):")
+    audit_events = db.query(AuditEvent).filter(AuditEvent.invoice_id == invoice_id).order_by(AuditEvent.created_at.asc()).all()
+    
+    doc = db.query(InvoiceDocument).filter(InvoiceDocument.invoice_id == invoice_id, InvoiceDocument.page == 0).first()
+    thumb_path = doc.thumb_path if doc else None
+    if not thumb_path and doc and doc.image_path:
+        thumb_path = doc.image_path
 
-    y = 485
-    p.setFont("Helvetica", 9)
-    for f in findings_db[:10]:
-        p.drawString(60, y, f"[{f.severity.upper()}] {f.title} ({f.engine})")
-        y -= 18
-        if y < 80:
-            break
-
-    p.showPage()
-    p.save()
-    buffer.seek(0)
+    from backend.app.services.reporting.pdf_builder import build_pdf_report
+    try:
+        pdf_bytes = build_pdf_report(inv, findings_db, risk_rec, audit_events, thumb_path)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate report: {str(e)}")
 
     return Response(
-        content=buffer.getvalue(),
+        content=pdf_bytes,
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename=InvoiceGuard_Report_{invoice_id}.pdf"},
     )

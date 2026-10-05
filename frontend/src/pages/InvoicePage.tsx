@@ -11,8 +11,10 @@ import {
 } from 'lucide-react'
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip,
 } from 'recharts'
+import * as Tooltip from '@radix-ui/react-tooltip'
+import * as Popover from '@radix-ui/react-popover'
 
 import { invoiceApi } from '@/api/client'
 import { RiskGauge, SignalBars } from '@/components/RiskGauge'
@@ -95,6 +97,7 @@ export default function InvoicePage() {
   const [showExtracted, setShowExtracted] = useState(false)
   const [showHeatmap, setShowHeatmap] = useState(false)
   const [page, setPage] = useState(1)
+  const [showHint, setShowHint] = useState(true)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['invoice', id],
@@ -218,6 +221,7 @@ export default function InvoicePage() {
   const signals = data.signals ?? data.risk?.signals ?? {}
 
   return (
+    <Tooltip.Provider delayDuration={200}>
     <div className="flex flex-col h-full overflow-hidden" style={{ background: 'var(--bg-base)' }}>
       {/* ── Header ────────────────────────────────────────────── */}
       <header
@@ -253,8 +257,23 @@ export default function InvoicePage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Popover.Root>
+            <Popover.Trigger asChild>
+              <button className="btn-ghost text-xs px-3 py-1.5 h-8 flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
+                <AlertCircle size={13} /> How to read this
+              </button>
+            </Popover.Trigger>
+            <Popover.Content sideOffset={4} className="w-64 p-4 rounded-xl shadow-xl z-50 text-sm animate-in fade-in slide-in-from-top-2" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
+              <h4 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Reading the Report</h4>
+              <p className="text-xs mb-2" style={{ color: 'var(--text-secondary)' }}><strong style={{ color: 'var(--text-primary)' }}>Score:</strong> The Risk Gauge shows the fused Noisy-OR XGBoost score.</p>
+              <p className="text-xs mb-2" style={{ color: 'var(--text-secondary)' }}><strong style={{ color: 'var(--text-primary)' }}>Findings:</strong> Cards list detected anomalies. Click one to highlight evidence.</p>
+              <p className="text-xs" style={{ color: 'var(--text-secondary)' }}><strong style={{ color: 'var(--text-primary)' }}>Radar:</strong> Shows contributing signals. Spikes indicate high-risk engines.</p>
+              <Popover.Arrow style={{ fill: 'var(--bg-elevated)' }} stroke="var(--border-default)" strokeWidth={1} />
+            </Popover.Content>
+          </Popover.Root>
+
           <a
-            href={`/api/v1/invoices/${id}/report.pdf`}
+            href={`${import.meta.env.VITE_API_URL ?? ''}/api/v1/invoices/${id}/report.pdf`}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-ghost text-xs px-3 py-1.5 h-8 flex items-center gap-1.5"
@@ -300,8 +319,22 @@ export default function InvoicePage() {
           style={{ background: 'var(--bg-base)', borderColor: 'var(--border-hairline)' }}
         >
           {/* Top Controls Bar */}
-          <div className="absolute top-4 left-4 z-10 flex gap-2">
-            <div
+          <div className="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
+            {showHint && (
+              <div className="relative px-3 py-2.5 rounded-xl shadow-lg flex items-start gap-3 max-w-xs animate-in fade-in slide-in-from-top-4 duration-500" style={{ background: 'var(--accent-muted)', border: '1px solid var(--accent-border)' }}>
+                <Zap size={14} style={{ color: 'var(--accent)', marginTop: 2, flexShrink: 0 }} />
+                <div className="flex-1">
+                  <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--accent)' }}>Interactive Viewer</p>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)', lineHeight: 1.4 }}>Click on any highlighted box or finding card to see evidence directly on the invoice.</p>
+                </div>
+                <button onClick={() => setShowHint(false)} className="opacity-50 hover:opacity-100 mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                  <span className="sr-only">Dismiss</span>
+                  <svg width="10" height="10" viewBox="0 0 15 15" fill="none" stroke="currentColor"><path d="M11.78 3.22a.75.75 0 010 1.06L8.56 7.5l3.22 3.22a.75.75 0 11-1.06 1.06L7.5 8.56l-3.22 3.22a.75.75 0 01-1.06-1.06L6.44 7.5 3.22 4.28a.75.75 0 011.06-1.06L7.5 6.44l3.22-3.22a.75.75 0 011.06 0z" fill="currentColor"/></svg>
+                </button>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <div
               style={{
                 background: 'var(--glass-bg)',
                 backdropFilter: 'blur(12px)',
@@ -347,6 +380,7 @@ export default function InvoicePage() {
                 />
                 <span className="flex items-center gap-1"><Flame size={12} /> Heatmap</span>
               </label>
+            </div>
             </div>
           </div>
 
@@ -816,7 +850,7 @@ export default function InvoicePage() {
                               </defs>
                               <XAxis dataKey="invoice" tick={{ fill: 'var(--text-tertiary)', fontSize: 10 }} />
                               <YAxis tick={{ fill: 'var(--text-tertiary)', fontSize: 10 }} />
-                              <Tooltip
+                              <RechartsTooltip
                                 contentStyle={{
                                   background: 'var(--bg-elevated)',
                                   borderColor: 'var(--border-default)',
@@ -1090,5 +1124,6 @@ export default function InvoicePage() {
         </div>
       </div>
     </div>
+    </Tooltip.Provider>
   )
 }

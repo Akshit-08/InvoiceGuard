@@ -41,14 +41,21 @@ class ExtractorChain:
         self.llm = LLMExtractor()
 
     def extract(
-        self, tokens: list[Token], invoice_id: str, read_quality: float = 1.0
+        self, tokens: list[Token], invoice_id: str, read_quality: float = 1.0, page_image_path: Optional[str] = None
     ) -> ExtractionResponse:
         # 1. Primary: Run Heuristic extractor
         invoice_data = self.heuristic.extract(tokens)
 
         # 2. Secondary: If LayoutLMv3 is enabled and model loaded, fill/override fields by confidence
         if self.layoutlm.is_available:
-            layoutlm_results = self.layoutlm.extract(tokens)
+            from PIL import Image
+            page_image = None
+            if page_image_path:
+                try:
+                    page_image = Image.open(page_image_path)
+                except Exception:
+                    pass
+            layoutlm_results = self.layoutlm.extract(tokens, page_image=page_image)
             invoice_data = self.layoutlm.merge_into_invoice_data(invoice_data, layoutlm_results)
 
         # 3. Compute per-field confidence report and audit critical fields

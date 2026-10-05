@@ -185,6 +185,36 @@ export const invoiceApi = {
   },
 }
 
+// ── Batch ─────────────────────────────────────────────────────
+export const batchApi = {
+  upload: async (files: File[]) => {
+    if (USE_MOCKS) return { batch_id: 'mock-batch', message: 'Mock started' }
+    const form = new FormData()
+    files.forEach(f => form.append('files', f))
+    const res = await fetch(`${API_BASE}/api/v1/batch/upload`, { method: 'POST', body: form })
+    if (!res.ok) throw new ApiException('BATCH_FAILED', 'Batch upload failed', res.status)
+    return res.json()
+  },
+  status: async (batchId: string) => {
+    if (USE_MOCKS) return { status: 'completed', total: 2, completed: 2, failed: 0, results: [] }
+    return apiFetch<{
+      status: string
+      total: number
+      completed: number
+      failed: number
+      results: Array<{
+        filename: string
+        invoice_id?: string
+        status: string
+        risk_level?: string
+        overall_score?: number
+        error?: string
+      }>
+    }>(`/batch/${batchId}/status`)
+  }
+}
+
+
 // ── Dashboard ─────────────────────────────────────────────────
 export const dashboardApi = {
   stats: async (dateRange?: import('./types').DateRange): Promise<DashboardStats> => {

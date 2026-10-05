@@ -147,14 +147,33 @@ export default function AnalyzePage() {
   }, [state, handleApproveExtraction])
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
-    onDrop: (accepted) => { if (accepted[0]) handleUpload(accepted[0]) },
+    onDrop: async (accepted) => {
+      if (accepted.length === 0) return
+      
+      if (accepted.length > 1) {
+        if (accepted.length > 20) {
+          toast.error('Maximum 20 files allowed per batch')
+          return
+        }
+        try {
+          const { batchApi } = await import('@/api/client')
+          const res = await batchApi.upload(accepted)
+          toast.success(res.message)
+          navigate(`/batch/${res.batch_id}`)
+        } catch (e) {
+          toast.error(e instanceof Error ? e.message : 'Batch upload failed')
+        }
+      } else {
+        handleUpload(accepted[0])
+      }
+    },
     accept: {
       'application/pdf': ['.pdf'],
       'image/jpeg': ['.jpg', '.jpeg'],
       'image/png': ['.png'],
     },
     maxSize: 20 * 1024 * 1024,
-    multiple: false,
+    multiple: true,
     disabled: state !== 'idle',
   })
 

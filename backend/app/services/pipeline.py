@@ -47,7 +47,8 @@ class DocumentPipeline:
         )
 
         # Stage 3: Extract (Heuristic + Normalizer)
-        extraction_res = extractor_chain.extract(tokens, inv_id, read_quality)
+        first_page_path = ingest_res.page_image_paths[0] if ingest_res.page_image_paths else None
+        extraction_res = extractor_chain.extract(tokens, inv_id, read_quality, page_image_path=first_page_path)
 
         await event_bus.emit(
             invoice_id=inv_id,

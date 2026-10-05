@@ -160,6 +160,9 @@ def create_app() -> FastAPI:
     from backend.app.api.v1.models import router as models_router
     app.include_router(models_router, prefix=settings.API_V1_STR)
 
+    from backend.app.api.v1.batch import router as batch_router
+    app.include_router(batch_router, prefix=settings.API_V1_STR)
+
     return app
 
 

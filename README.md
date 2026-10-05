@@ -42,6 +42,32 @@ InvoiceGuard is a portfolio-grade, explainable multimodal platform for invoice a
 
 ---
 
+## Performance & Metrics (v0.3.2 Final)
+- **ROC AUC**: 0.8772
+- **PR AUC**: 0.8924
+- **Precision**: 87.6%
+- **Recall**: 76.1%
+- **F1 Score**: 0.8148
+- **Throughput**: ~11ms p50 / 14ms p95 latency per inference
+- **Evaluation Dataset**: 480 invoices (220 genuine, 260 tampered)
+- **Zero False-Positives** on standard genuine variations (FPR: 12.7%).
+
+*See [Model Card](docs/MODEL_CARD.md) and [Evaluation Report](docs/EVALUATION.md) for detailed ablations, per-fraud-type recall, and known limitations.*
+
+---
+
+## Screenshots
+
+<div align="center">
+  <img src="media/demo-analyze.png" width="800" alt="InvoiceGuard Analysis Interface" />
+  <p><i>Multimodal anomaly radar and bounding-box level visual forensics.</i></p>
+  <br />
+  <img src="media/dashboard-v2.png" width="800" alt="InvoiceGuard Dashboard" />
+  <p><i>Command centre dashboard with real-time risk distribution metrics.</i></p>
+</div>
+
+---
+
 ## Quick Start & Setup
 
 ### Prerequisites
