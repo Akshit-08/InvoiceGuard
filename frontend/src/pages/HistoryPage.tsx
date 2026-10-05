@@ -272,10 +272,10 @@ export default function HistoryPage() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3 flex-wrap">
           {/* Search input */}
-          <div className="relative flex-1 max-w-sm">
+          <div className="relative flex-1 max-w-md">
             <Search
-              size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              size={16}
+              className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
               style={{ color: 'var(--text-tertiary)' }}
             />
             <input
@@ -283,8 +283,8 @@ export default function HistoryPage() {
               placeholder="Search invoices…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="input-base w-full"
-              style={{ paddingLeft: '2.25rem' }}
+              className="input-base w-full rounded-full transition-shadow hover:shadow-sm focus:shadow-md py-3 text-[15px]"
+              style={{ paddingLeft: 42, background: '#EAE5DB', border: 'none', outline: 'none' }}
             />
           </div>
 
@@ -379,7 +379,10 @@ export default function HistoryPage() {
       </div>
 
       {/* ── Table card ───────────────────────────────────────────── */}
-      <div className="surface rounded-2xl overflow-hidden flex-1 flex flex-col min-h-0">
+      <div className="surface rounded-2xl overflow-hidden flex-1 flex flex-col min-h-0 relative">
+        {/* Bottom corner curve lines */}
+        <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 rounded-bl-2xl pointer-events-none" style={{ borderColor: 'var(--sidebar-bg)' }} />
+        <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 rounded-br-2xl pointer-events-none" style={{ borderColor: 'var(--sidebar-bg)' }} />
         {isLoading ? (
           <div className="p-4 flex flex-col gap-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -411,8 +414,8 @@ export default function HistoryPage() {
               <thead
                 className="sticky top-0 z-10"
                 style={{
-                  background: 'var(--bg-surface)',
-                  borderBottom: '1px solid var(--border-hairline)',
+                  background: 'var(--sidebar-bg)',
+                  borderBottom: 'none',
                 }}
               >
                 {table.getHeaderGroups().map(hg => (
@@ -425,7 +428,7 @@ export default function HistoryPage() {
                           padding: '10px 16px',
                           fontSize: 11,
                           fontWeight: 600,
-                          color: 'var(--text-tertiary)',
+                          color: 'var(--sidebar-text-muted)',
                           textTransform: 'uppercase',
                           letterSpacing: '0.06em',
                           cursor: 'pointer',

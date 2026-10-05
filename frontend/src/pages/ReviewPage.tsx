@@ -11,12 +11,6 @@ import { formatCurrency, formatDate, scoreToLevel } from '@/lib/utils'
 import type { InvoiceListItem, ReviewStatus } from '@/api/types'
 
 // ── Helpers ────────────────────────────────────────────────────
-function nameHue(name: string): number {
-  let h = 0
-  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h)
-  return Math.abs(h) % 360
-}
-
 function Monogram({ name }: { name: string }) {
   const initials = name
     .split(/\s+/)
@@ -24,7 +18,6 @@ function Monogram({ name }: { name: string }) {
     .join('')
     .slice(0, 2)
     .toUpperCase()
-  const hue = nameHue(name)
   return (
     <div
       aria-hidden="true"
@@ -32,8 +25,8 @@ function Monogram({ name }: { name: string }) {
         width: 36,
         height: 36,
         borderRadius: 'var(--radius-md)',
-        background: `hsl(${hue}, 45%, 38%)`,
-        color: '#fff',
+        background: 'var(--sidebar-bg)',
+        color: 'var(--bg-base)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -64,16 +57,16 @@ function QueueItem({
       onClick={onClick}
       style={{
         display: 'flex',
-        gap: 10,
+        gap: 12,
         padding: 16,
-        borderRadius: 'var(--radius-lg)',
-        border: selected ? '1px solid var(--accent-border)' : '1px solid var(--border-hairline)',
-        background: selected ? 'var(--accent-muted)' : 'var(--bg-surface)',
-        opacity: selected ? 1 : 0.7,
+        borderRadius: 24,
+        border: selected ? '1px solid var(--sidebar-bg)' : '1px solid var(--border-hairline)',
+        background: selected ? '#EAE5DB' : '#F4EFE6',
         cursor: 'pointer',
         textAlign: 'left',
         transition: 'all 120ms ease',
         width: '100%',
+        boxSizing: 'border-box',
       }}
     >
       <Monogram name={vendorName} />
@@ -297,7 +290,8 @@ export default function ReviewPage() {
             <div className="flex-1 overflow-y-auto p-8">
               <div className="max-w-2xl mx-auto space-y-6">
                 {/* Header */}
-                <div className="flex justify-between items-start gap-4">
+                <div className="p-6 rounded-[24px] space-y-6" style={{ background: '#EAE5DB', border: '1px solid var(--border-hairline)' }}>
+                  <div className="flex justify-between items-start gap-4">
                   <div className="flex gap-3 items-start">
                     <Monogram
                       name={
@@ -360,61 +354,46 @@ export default function ReviewPage() {
                     </div>
                   </div>
                 </div>
+                </div>
 
-                <div className="flex justify-center">
+                <div className="flex justify-center mb-4">
                   <button
                     onClick={() => navigate(`/invoices/${selectedItem.id}`)}
                     className="btn-ghost"
+                    style={{ color: 'var(--sidebar-bg)' }}
                   >
                     <MousePointerClick size={16} /> Open Full Analysis
                   </button>
                 </div>
+
+                {/* ── Action boxes ────────────────────────────────────────── */}
+                <div className="flex justify-center gap-4 flex-wrap pb-6">
+                  <button
+                    className="flex items-center gap-2 px-5 py-3 rounded-2xl transition-transform hover:-translate-y-0.5 shadow-sm hover:shadow"
+                    style={{ border: '1px solid var(--border-default)', background: '#F4EFE6', color: 'var(--text-primary)' }}
+                    onClick={() => handleAction(selectedItem.id, 'false_positive')}
+                    title="Shortcut: f"
+                  >
+                    <XCircle size={16} /> <span className="font-semibold text-sm">False positive</span> <Kbd>F</Kbd>
+                  </button>
+                  <button
+                    className="flex items-center gap-2 px-5 py-3 rounded-2xl transition-transform hover:-translate-y-0.5 shadow-sm hover:shadow"
+                    style={{ border: '1px solid var(--risk-low-border)', background: 'var(--risk-low-bg)', color: 'var(--risk-low-text)' }}
+                    onClick={() => handleAction(selectedItem.id, 'approved')}
+                    title="Shortcut: a"
+                  >
+                    <CheckCircle2 size={16} /> <span className="font-semibold text-sm">Approve</span> <Kbd>A</Kbd>
+                  </button>
+                  <button
+                    className="flex items-center gap-2 px-5 py-3 rounded-2xl transition-transform hover:-translate-y-0.5 shadow-sm hover:shadow"
+                    style={{ border: '1px solid var(--risk-critical-border)', background: 'var(--risk-critical-bg)', color: 'var(--risk-critical-text)' }}
+                    onClick={() => handleAction(selectedItem.id, 'confirmed_issue')}
+                    title="Shortcut: c"
+                  >
+                    <AlertTriangle size={16} /> <span className="font-semibold text-sm">Confirm issue</span> <Kbd>C</Kbd>
+                  </button>
+                </div>
               </div>
-            </div>
-
-            {/* ── Action bar ────────────────────────────────────────── */}
-            <div
-              className="p-4 flex justify-center gap-3 flex-wrap"
-              style={{ borderTop: '1px solid var(--border-hairline)' }}
-            >
-              <button
-                className="btn-ghost"
-                onClick={() => handleAction(selectedItem.id, 'false_positive')}
-                title="Shortcut: f"
-              >
-                <XCircle size={16} /> False positive <Kbd>F</Kbd>
-              </button>
-
-              <button
-                className="btn-ghost"
-                onClick={() => handleAction(selectedItem.id, 'approved')}
-                title="Shortcut: a"
-                style={{ color: 'var(--risk-low-text)' }}
-              >
-                <CheckCircle2 size={16} /> Approve <Kbd>A</Kbd>
-              </button>
-
-              <div
-                style={{
-                  width: 1,
-                  alignSelf: 'stretch',
-                  background: 'var(--border-default)',
-                  margin: '0 4px',
-                }}
-              />
-
-              <button
-                className="btn-primary"
-                onClick={() => handleAction(selectedItem.id, 'confirmed_issue')}
-                title="Shortcut: c"
-                style={{
-                  background: 'var(--risk-critical-bg)',
-                  color: 'var(--risk-critical-text)',
-                  border: '1px solid var(--risk-critical-border)',
-                }}
-              >
-                <AlertTriangle size={16} /> Confirm issue <Kbd>C</Kbd>
-              </button>
             </div>
           </div>
         )}

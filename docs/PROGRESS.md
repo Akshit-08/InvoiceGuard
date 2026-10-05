@@ -460,4 +460,11 @@ Initial evaluation showed end-to-end ROC-AUC of 0.54, PR-AUC of 0.66, precision 
 - **Backend Linting**: ✅ `ruff check .` clean with zero errors.
 - **Frontend Linting**: ✅ `oxlint` clean with zero errors.
 
+### UI Polish & Data Sync (v0.5.1)
+- **Dashboard Backend Integration**: Synced "Needs Review" and "Value at Risk" widgets with live backend data and dynamic deltas.
+- **Visual Consistency**: Standardised dashboard-style partition boxes (rounded 24px, #EAE5DB bg) across all analytical views (Invoice, Insights, Analyze).
+- **Color Unification**: Removed the appearance toggle and unified all primary interactive elements and icons to use the central `var(--sidebar-bg)` color.
+- **Chart Readability**: Darkened background tracks on RiskGauge and ConfidenceMeter; added a subtle nav-colored web grid to the Anomaly Radar.
+- **Code Health**: Fixed lingering TypeScript unused imports and component props.
+
 

@@ -89,7 +89,7 @@ export function ConfidenceMeter({ confidence, showLabel = true, className }: Con
     <div className={cn('flex items-center gap-2', className)}>
       <div
         className="h-1.5 rounded-full overflow-hidden flex-1"
-        style={{ background: 'var(--bg-subtle)', minWidth: 40 }}
+        style={{ background: 'rgba(0, 0, 0, 0.08)', minWidth: 40 }}
         role="progressbar"
         aria-valuenow={pct}
         aria-valuemin={0}

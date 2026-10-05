@@ -39,487 +39,88 @@
    Charcoal base. No hue shift toward blue in any neutral.
    ─────────────────────────────────────────────────────────────── */
 :root {
-  color-scheme: dark;
-
-  /* — Base surfaces (lightness steps, pure neutrals) — */
-  --bg-base:     #151515;   /* app canvas */
-  --bg-surface:  #1a1a1a;   /* sidebar, top bar  (surface-1) */
-  --bg-elevated: #1e1e1e;   /* cards             (surface-2) */
-  --bg-overlay:  #242424;   /* popovers, inputs, hover (surface-3) */
-  --bg-subtle:   #2b2b2b;   /* pressed / selected (surface-4) */
-
-  /* — Borders (white-alpha hairlines) — */
-  --border-hairline: rgba(255, 255, 255, 0.07);
-  --border-default:  rgba(255, 255, 255, 0.09);
-  --border-strong:   rgba(255, 255, 255, 0.12);
-
-  /* — Text — */
-  --text-primary:   #ececec;
-  --text-secondary: #a1a1a1;
-  --text-tertiary:  #6f6f6f;
-  --text-disabled:  #4a4a4a;
-  --text-inverse:   #151515;
-
-  /* — Accent: desaturated indigo-violet #7B72F8
-       Contrast on #151515 ≈ 5.3:1  (WCAG AA for UI / large text)
-       Used only for primary actions, active nav, focus rings, logo.
-       ─────────────────────────────────────────────────────────── */
-  --accent:        #7B72F8;
-  --accent-hover:  #9088ff;
-  --accent-muted:  rgba(123, 114, 248, 0.12);
-  --accent-border: rgba(123, 114, 248, 0.28);
-
-  /* — Risk palette: 12–16% opacity fills, solid text, always icon+label — */
-  --risk-low:             #3ecf8e;
-  --risk-low-bg:          rgba(62, 207, 142, 0.12);
-  --risk-low-border:      rgba(62, 207, 142, 0.22);
-  --risk-low-text:        #3ecf8e;
-
-  --risk-medium:          #e8a838;
-  --risk-medium-bg:       rgba(232, 168, 56, 0.12);
-  --risk-medium-border:   rgba(232, 168, 56, 0.22);
-  --risk-medium-text:     #e8a838;
-
-  --risk-high:            #f97316;
-  --risk-high-bg:         rgba(249, 115, 22, 0.12);
-  --risk-high-border:     rgba(249, 115, 22, 0.22);
-  --risk-high-text:       #f97316;
-
-  --risk-critical:        #f4697e;
-  --risk-critical-bg:     rgba(244, 105, 126, 0.12);
-  --risk-critical-border: rgba(244, 105, 126, 0.22);
-  --risk-critical-text:   #f4697e;
-
-  --risk-info:            #a1a1a1;
-  --risk-info-bg:         rgba(161, 161, 161, 0.09);
-  --risk-info-border:     rgba(161, 161, 161, 0.16);
-  --risk-info-text:       #a1a1a1;
-
-  /* — Semantic — */
-  --success: #3ecf8e;
-  --warning: #e8a838;
-  --error:   #f4697e;
-
-  /* — Glass effect (top bar: blur 12px over charcoal-alpha) — */
-  --glass-bg:     rgba(21, 21, 21, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.07);
-
-  /* — Shadows: depth from lightness steps, not heavy drops — */
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.45), 0 1px 2px rgba(0,0,0,0.6);
-  --shadow-md:  0 4px 12px rgba(0,0,0,0.5),  0 2px 4px rgba(0,0,0,0.55);
-  --shadow-lg:  0 8px 28px rgba(0,0,0,0.55), 0 4px 8px rgba(0,0,0,0.45);
-  --shadow-xl:  0 16px 48px rgba(0,0,0,0.6), 0 8px 16px rgba(0,0,0,0.45);
-
-  /* Inner highlight (top edge on raised surfaces) */
-  --inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-
-  /* Card vertical gradient end (slightly darker than surface-2) */
-  --card-gradient-end: #1b1b1b;
-
-  /* Accent glow */
-  --shadow-glow-accent:    0 0 20px rgba(123, 114, 248, 0.22);
-  --shadow-glow-critical:  0 0 20px rgba(244, 105, 126, 0.22);
-
-  /* Chart grid / axis lines */
-  --chart-grid: rgba(255, 255, 255, 0.05);
-  --chart-axis: rgba(255, 255, 255, 0.08);
-}
-
-/* ───────────────────────────────────────────────────────────────
-   LIGHT THEME
-   Warm off-white base (#f6f6f4). Same spacing and radii.
-   ─────────────────────────────────────────────────────────────── */
-.light {
   color-scheme: light;
 
-  --bg-base:     #f6f6f4;
-  --bg-surface:  #fbfbfa;
-  --bg-elevated: #ffffff;
-  --bg-overlay:  #f5f5f3;
-  --bg-subtle:   #eeeeed;
+  /* — Base surfaces (lightness steps, pure neutrals) — */
+  --bg-base:     #F3EFE9;   /* app canvas */
+  --bg-surface:  #222222;   /* sidebar, top bar */
+  --bg-elevated: #ffffff;   /* cards */
+  --bg-overlay:  #f8f7f4;   /* popovers, inputs, hover */
+  --bg-subtle:   #efeee9;   /* pressed / selected */
 
-  --border-hairline: #e7e7e3;
-  --border-default:  #d9d9d4;
-  --border-strong:   #c5c5be;
+  /* — Sidebar specific — */
+  --sidebar-bg: #222222;
+  --sidebar-text: #ffffff;
+  --sidebar-text-muted: #9a9a9a;
+  --sidebar-hover: #333333;
 
-  --text-primary:   #161616;
-  --text-secondary: #5f5f5f;
-  --text-tertiary:  #9a9a9a;
+  /* — Borders — */
+  --border-hairline: #e7e4db;
+  --border-default:  #dcd8cd;
+  --border-strong:   #c8c4b7;
+
+  /* — Text — */
+  --text-primary:   #252525;
+  --text-secondary: #6e6e6e;
+  --text-tertiary:  #a1a1a1;
   --text-disabled:  #c0c0c0;
-  --text-inverse:   #f6f6f4;
+  --text-inverse:   #ffffff;
 
-  /* Slightly darker accent for adequate contrast on white */
-  --accent:        #5552d6;
-  --accent-hover:  #4440c4;
-  --accent-muted:  rgba(85, 82, 214, 0.08);
-  --accent-border: rgba(85, 82, 214, 0.28);
+  /* — Accent (from reference Upgrade card) — */
+  --accent:        #A8A3F4;
+  --accent-hover:  #958ef0;
+  --accent-muted:  rgba(168, 163, 244, 0.15);
+  --accent-border: rgba(168, 163, 244, 0.3);
 
-  --risk-low:             #16a34a;
-  --risk-low-bg:          rgba(22, 163, 74, 0.10);
-  --risk-low-border:      rgba(22, 163, 74, 0.22);
-  --risk-low-text:        #15803d;
+  /* — Risk palette (using reference colors for Sales, Balance) — */
+  --risk-low:             #C5D9B9;
+  --risk-low-bg:          rgba(197, 217, 185, 0.3);
+  --risk-low-border:      rgba(197, 217, 185, 0.5);
+  --risk-low-text:        #3B502C;
 
-  --risk-medium:          #b45309;
-  --risk-medium-bg:       rgba(180, 83, 9, 0.10);
-  --risk-medium-border:   rgba(180, 83, 9, 0.22);
-  --risk-medium-text:     #92400e;
+  --risk-medium:          #F3D896;
+  --risk-medium-bg:       rgba(243, 216, 150, 0.3);
+  --risk-medium-border:   rgba(243, 216, 150, 0.5);
+  --risk-medium-text:     #705419;
 
-  --risk-high:            #c2410c;
-  --risk-high-bg:         rgba(194, 65, 12, 0.10);
-  --risk-high-border:     rgba(194, 65, 12, 0.22);
-  --risk-high-text:       #9a3412;
+  --risk-high:            #F4A381;
+  --risk-high-bg:         rgba(244, 163, 129, 0.2);
+  --risk-high-border:     rgba(244, 163, 129, 0.4);
+  --risk-high-text:       #8A3A19;
 
-  --risk-critical:        #be123c;
-  --risk-critical-bg:     rgba(190, 18, 60, 0.10);
-  --risk-critical-border: rgba(190, 18, 60, 0.22);
-  --risk-critical-text:   #9f1239;
+  --risk-critical:        #e58b8b;
+  --risk-critical-bg:     rgba(229, 139, 139, 0.15);
+  --risk-critical-border: rgba(229, 139, 139, 0.3);
+  --risk-critical-text:   #8a2121;
 
-  --risk-info:            #5f5f5f;
-  --risk-info-bg:         rgba(95, 95, 95, 0.08);
-  --risk-info-border:     rgba(95, 95, 95, 0.16);
+  --risk-info:            #9a9a9a;
+  --risk-info-bg:         rgba(154, 154, 154, 0.12);
+  --risk-info-border:     rgba(154, 154, 154, 0.22);
   --risk-info-text:       #5f5f5f;
 
-  --success: #16a34a;
-  --warning: #b45309;
-  --error:   #be123c;
+  /* — Semantic — */
+  --success: #C5D9B9;
+  --warning: #F3D896;
+  --error:   #e58b8b;
 
-  --glass-bg:     rgba(251, 251, 250, 0.82);
-  --glass-border: #e7e7e3;
+  /* — Glass effect — */
+  --glass-bg:     rgba(243, 239, 233, 0.82);
+  --glass-border: #e7e4db;
 
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md:  0 4px 12px rgba(0,0,0,0.09), 0 2px 4px rgba(0,0,0,0.06);
-  --shadow-lg:  0 8px 28px rgba(0,0,0,0.11), 0 4px 8px rgba(0,0,0,0.06);
-  --shadow-xl:  0 16px 48px rgba(0,0,0,0.13), 0 8px 16px rgba(0,0,0,0.07);
+  /* — Shadows: depth from lightness steps, not heavy drops — */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  --shadow-md:  0 6px 16px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02);
+  --shadow-lg:  0 10px 30px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.03);
+  --shadow-xl:  0 20px 50px rgba(0,0,0,0.08), 0 8px 16px rgba(0,0,0,0.04);
 
-  --inner-highlight: none;  /* inner highlight not needed on light surfaces */
+  --inner-highlight: none;
   --card-gradient-end: #ffffff;
-
-  --shadow-glow-accent:   0 0 20px rgba(85, 82, 214, 0.15);
-  --shadow-glow-critical: 0 0 20px rgba(190, 18, 60, 0.12);
+  
+  --shadow-glow-accent:    0 0 20px rgba(168, 163, 244, 0.32);
+  --shadow-glow-critical:  0 0 20px rgba(229, 139, 139, 0.32);
 
   --chart-grid: rgba(0, 0, 0, 0.04);
   --chart-axis: rgba(0, 0, 0, 0.08);
 }
 
-/* ───────────────────────────────────────────────────────────────
-   BASE STYLES
-   ─────────────────────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
 
-html {
-  font-family: var(--font-sans);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  font-optical-sizing: auto;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-
-body {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  min-height: 100svh;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* Smooth theme transition */
-  transition:
-    background-color 300ms var(--ease-out),
-    color            300ms var(--ease-out);
-  position: relative;
-}
-
-/* ── Background texture: very faint dot grid (≈3–4% opacity, 24px) ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px);
-  background-size: 24px 24px;
-  pointer-events: none;
-}
-
-/* ── Soft radial highlight at top of page (dark mode) ── */
-body::after {
-  content: '';
-  position: fixed;
-  top: -30%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  height: 70%;
-  background: radial-gradient(ellipse at 50% 0%, rgba(123,114,248,0.045) 0%, transparent 65%);
-  pointer-events: none;
-  z-index: -1;
-}
-
-.light body::before {
-  background-image: radial-gradient(circle, rgba(0,0,0,0.025) 1px, transparent 1px);
-}
-
-.light body::after {
-  background: radial-gradient(ellipse at 50% 0%, rgba(85,82,214,0.03) 0%, transparent 65%);
-}
-
-/* ── Scrollbars — thin, themed ── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: var(--border-default);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
-
-/* ── Focus ring — 2px accent, offset ── */
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ── Selection colour ── */
-::selection {
-  background: rgba(123, 114, 248, 0.25);
-  color: var(--text-primary);
-}
-
-.light ::selection {
-  background: rgba(85, 82, 214, 0.15);
-}
-
-/* ───────────────────────────────────────────────────────────────
-   TYPOGRAPHY SCALE  12 / 13 / 14 / 16 / 20 / 28 / 40
-   Tight heading tracking. Tabular numerals for figures.
-   ─────────────────────────────────────────────────────────────── */
-.font-mono   { font-family: var(--font-mono); }
-.tabular-nums { font-variant-numeric: tabular-nums; }
-
-/* Heading tracking tightened */
-h1, h2, h3, h4 {
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-}
-
-/* ───────────────────────────────────────────────────────────────
-   COMPONENT UTILITIES
-   ─────────────────────────────────────────────────────────────── */
-
-/* Glass top bar: backdrop-blur 12px over charcoal-alpha, hairline border */
-.glass {
-  background: var(--glass-bg);
-  border-color: var(--glass-border);
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
-}
-
-/* Card surface — vertical gradient + 1px top inner highlight */
-.surface {
-  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--card-gradient-end) 100%);
-  border: 1px solid var(--border-hairline);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--inner-highlight), var(--shadow-sm);
-}
-
-.surface-elevated {
-  background: var(--bg-overlay);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--inner-highlight), var(--shadow-md);
-}
-
-/* Risk colour helpers */
-.risk-low      { color: var(--risk-low-text); }
-.risk-medium   { color: var(--risk-medium-text); }
-.risk-high     { color: var(--risk-high-text); }
-.risk-critical { color: var(--risk-critical-text); }
-.risk-info     { color: var(--risk-info-text); }
-
-/* ── Skeleton shimmer ── */
-@keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position:  400px 0; }
-}
-
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--bg-subtle)  25%,
-    var(--bg-overlay) 50%,
-    var(--bg-subtle)  75%
-  );
-  background-size: 800px 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
-  border-radius: var(--radius-sm);
-}
-
-/* ── Logo scan-line animation (sweeps once, respects reduced-motion) ── */
-@keyframes logo-scan {
-  0%   { transform: translateY(-100%); opacity: 0; }
-  8%   { opacity: 1; }
-  92%  { opacity: 1; }
-  100% { transform: translateY(200%); opacity: 0; }
-}
-
-.logo-scan-line {
-  animation: logo-scan 1.4s var(--ease-in-out) 0.3s 1 forwards;
-}
-
-/* ── Scan beam (pipeline view) ── */
-@keyframes scan-beam {
-  0%   { top: 0%;   opacity: 0; }
-  5%   { opacity: 1; }
-  95%  { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
-}
-
-.scan-beam {
-  animation: scan-beam 2.4s var(--ease-in-out) infinite;
-}
-
-/* ── Bounding box draw-in ── */
-@keyframes box-draw {
-  0%   { clip-path: inset(0 100% 100% 0); opacity: 0; }
-  40%  { opacity: 1; }
-  100% { clip-path: inset(0 0% 0% 0); opacity: 1; }
-}
-
-.bbox-draw {
-  animation: box-draw 0.5s var(--ease-out) forwards;
-}
-
-/* ── Glow pulse ── */
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 currentColor; }
-  50%       { box-shadow: 0 0 0 4px transparent; }
-}
-
-/* ── Count-up flash ── */
-@keyframes count-flash {
-  0%   { opacity: 0.4; }
-  50%  { opacity: 1; }
-  100% { opacity: 1; }
-}
-
-/* ── Sidebar widths ── */
-.sidebar-collapsed { width: 64px; }
-.sidebar-expanded  { width: 240px; }
-
-/* ── Reduced motion — disable non-essential animations ── */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration:       0.01ms !important;
-    animation-iteration-count: 1     !important;
-    transition-duration:      0.01ms !important;
-  }
-  .scan-beam     { display: none; }
-  .logo-scan-line { display: none; }
-}
-
-/* ───────────────────────────────────────────────────────────────
-   BUTTON COMPONENTS
-   ─────────────────────────────────────────────────────────────── */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1.25rem;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 500;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  border-radius: var(--radius-md);
-  border: none;
-  cursor: pointer;
-  letter-spacing: -0.01em;
-  transition:
-    background        var(--duration-fast) var(--ease-out),
-    transform         var(--duration-fast) var(--ease-out),
-    box-shadow        var(--duration-fast) var(--ease-out);
-}
-.btn-primary:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-glow-accent);
-}
-.btn-primary:active { transform: translateY(0); }
-
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition:
-    background    var(--duration-fast) var(--ease-out),
-    color         var(--duration-fast) var(--ease-out),
-    border-color  var(--duration-fast) var(--ease-out);
-}
-.btn-ghost:hover {
-  background: var(--bg-subtle);
-  color: var(--text-primary);
-  border-color: var(--border-default);
-}
-
-/* ───────────────────────────────────────────────────────────────
-   SIDEBAR ACTIVE INDICATOR
-   Accent left bar + soft accent background on active nav items.
-   ─────────────────────────────────────────────────────────────── */
-.nav-item-active {
-  position: relative;
-  background: var(--accent-muted) !important;
-  color: var(--accent) !important;
-}
-
-.nav-item-active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 4px;
-  bottom: 4px;
-  width: 3px;
-  background: var(--accent);
-  border-radius: 0 3px 3px 0;
-}
-
-/* ───────────────────────────────────────────────────────────────
-   INPUT BASE
-   ─────────────────────────────────────────────────────────────── */
-.input-base {
-  background: var(--bg-overlay);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  padding: 0.5rem 0.75rem;
-  transition: border-color var(--duration-fast) var(--ease-out),
-              box-shadow   var(--duration-fast) var(--ease-out);
-}
-.input-base:focus {
-  outline: none;
-  border-color: var(--accent-border);
-  box-shadow: 0 0 0 3px var(--accent-muted);
-}
-
-/* ───────────────────────────────────────────────────────────────
-   BADGE BASE
-   ─────────────────────────────────────────────────────────────── */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.15rem 0.55rem;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 500;
-  border: 1px solid;
-  letter-spacing: 0.01em;
-}

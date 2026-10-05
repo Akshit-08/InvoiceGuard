@@ -199,7 +199,9 @@ export default function AnalyzePage() {
             </div>
             <motion.div
               className="scan-beam absolute left-0 right-0 h-0.5 z-10"
-              style={{ background: 'var(--accent)', boxShadow: '0 0 12px rgba(123,114,248,0.7)' }}
+              style={{ background: 'var(--sidebar-bg)', boxShadow: '0 0 12px var(--sidebar-bg)' }}
+              animate={{ top: ['0%', '100%', '0%'] }}
+              transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
             />
           </div>
           <p
@@ -219,7 +221,7 @@ export default function AnalyzePage() {
           >
             <motion.div
               className="h-full"
-              style={{ background: 'var(--accent)' }}
+              style={{ background: 'var(--sidebar-bg)' }}
               initial={{ width: 0 }}
               animate={{ width: `${currentProgress}%` }}
               transition={{ ease: 'linear', duration: 0.5 }}
@@ -380,9 +382,13 @@ export default function AnalyzePage() {
           </div>
 
           <div className="pt-4 mt-4 border-t" style={{ borderColor: 'var(--border-hairline)' }}>
-            <button className="btn-primary w-full" onClick={handleApproveExtraction}>
+            <button
+              className="btn-primary w-full !rounded-full py-3"
+              style={{ background: 'var(--sidebar-bg)', color: '#ffffff' }}
+              onClick={handleApproveExtraction}
+            >
               Looks good — Analyze{' '}
-              <kbd className="ml-2 font-mono text-[10px] opacity-60">↵</kbd>
+              <kbd className="ml-2 font-mono text-[10px] opacity-60 text-white">↵</kbd>
             </button>
           </div>
         </div>
@@ -517,31 +523,39 @@ export default function AnalyzePage() {
 
             {/* Sample gallery */}
             <div>
-              <p
-                className="text-xs font-bold mb-4 uppercase tracking-widest text-center"
-                style={{ color: 'var(--text-tertiary)' }}
-              >
-                Demo Samples
-              </p>
+              <div className="mb-6 text-center">
+                <p
+                  className="text-sm font-bold mb-1 uppercase tracking-widest"
+                  style={{ color: 'var(--sidebar-bg)' }}
+                >
+                  Demo Samples
+                </p>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  Select a predefined sample to see the analysis pipeline in action.
+                </p>
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {SAMPLE_GALLERY.map((sample, num) => (
                   <motion.button
                     key={sample.id}
-                    className="surface p-3 text-left rounded-xl cursor-pointer group"
+                    className="px-4 py-3.5 text-left rounded-2xl cursor-pointer group flex flex-col"
+                    style={{ background: '#EAE5DB' }}
                     onClick={() => handleSampleClick(sample.id)}
                     whileHover={{ y: -2 }}
                     transition={{ duration: 0.15 }}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>
+                    <div className="flex items-center justify-between gap-2 mb-2 w-full">
+                      <span className="text-[13px] font-bold whitespace-nowrap" style={{ color: 'var(--sidebar-bg)' }}>
                         Demo {String(num + 1).padStart(2, '0')}
                       </span>
-                      <RiskBadge level={sample.level} size="sm" />
+                      <div className="shrink-0">
+                        <RiskBadge level={sample.level} size="sm" />
+                      </div>
                     </div>
-                    <p className="text-xs mb-2 leading-snug" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="text-xs mb-2 leading-snug flex-1" style={{ color: 'var(--text-secondary)' }}>
                       {sample.desc}
                     </p>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between w-full">
                       <span
                         className="text-2xl font-mono font-bold tabular-nums"
                         style={{ color: RISK_SCORE_COLOR[sample.level] }}
@@ -549,8 +563,8 @@ export default function AnalyzePage() {
                         {sample.score}
                       </span>
                       <span
-                        className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-                        style={{ color: 'var(--accent)' }}
+                        className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-150 font-medium"
+                        style={{ color: 'var(--sidebar-bg)' }}
                       >
                         Run →
                       </span>

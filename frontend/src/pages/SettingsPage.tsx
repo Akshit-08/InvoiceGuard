@@ -1,14 +1,12 @@
 import { useState } from 'react'
-import { Save, RotateCcw, Monitor, Moon, Sun, AlertTriangle, ShieldCheck, Settings, Database } from 'lucide-react'
+import { Save, RotateCcw, AlertTriangle, ShieldCheck, Database } from 'lucide-react'
 import * as Switch from '@radix-ui/react-switch'
 import * as Slider from '@radix-ui/react-slider'
-import { useTheme } from '@/hooks/useTheme'
 import { RiskGauge } from '@/components/RiskGauge'
 import { scoreToLevel } from '@/lib/utils'
 import { toast } from 'sonner'
 
 export default function SettingsPage() {
-  const { theme, setTheme } = useTheme()
 
   // Risk thresholds
   const [criticalThreshold, setCriticalThreshold] = useState(80)
@@ -76,50 +74,7 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {/* ── 1. Appearance ── */}
-      <div
-        className="surface p-6 space-y-5 rounded-2xl"
-        style={{ border: '1px solid var(--border-hairline)' }}
-      >
-        <h3 className="font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-          <Settings size={16} style={{ color: 'var(--accent)' }} />
-          Appearance
-        </h3>
 
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Theme</p>
-            <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
-              Select your preferred colour scheme.
-            </p>
-          </div>
-
-          {/* Segmented control */}
-          <div
-            className="flex rounded-lg p-0.5 gap-0.5"
-            style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-hairline)' }}
-          >
-            {(['dark', 'light', 'system'] as const).map(t => (
-              <button
-                key={t}
-                onClick={() => setTheme(t)}
-                aria-pressed={theme === t}
-                className="px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5"
-                style={{
-                  background: theme === t ? 'var(--bg-elevated)' : 'transparent',
-                  color: theme === t ? 'var(--text-primary)' : 'var(--text-tertiary)',
-                  boxShadow: theme === t ? 'var(--shadow-sm)' : 'none',
-                }}
-              >
-                {t === 'dark'   ? <Moon size={12} />    :
-                 t === 'light'  ? <Sun size={12} />     :
-                                  <Monitor size={12} />}
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* ── 2. Risk Thresholds ── */}
       <div
@@ -127,7 +82,7 @@ export default function SettingsPage() {
         style={{ border: '1px solid var(--border-hairline)' }}
       >
         <h3 className="font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-          <AlertTriangle size={16} style={{ color: 'var(--accent)' }} />
+          <AlertTriangle size={16} style={{ color: 'var(--sidebar-bg)' }} />
           Risk Thresholds
         </h3>
 
@@ -229,7 +184,7 @@ export default function SettingsPage() {
         style={{ border: '1px solid var(--border-hairline)' }}
       >
         <h3 className="font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-          <ShieldCheck size={16} style={{ color: 'var(--accent)' }} />
+          <ShieldCheck size={16} style={{ color: 'var(--sidebar-bg)' }} />
           Detection Engines
         </h3>
 
@@ -252,14 +207,14 @@ export default function SettingsPage() {
                   onCheckedChange={c => setEngines(prev => ({ ...prev, [key]: c }))}
                   className="w-[42px] h-[25px] rounded-full relative shadow-inner focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 shrink-0 transition-colors duration-200"
                   style={{
-                    background: active ? 'var(--accent)' : 'var(--bg-subtle)',
-                    border: `1px solid ${active ? 'var(--accent-border)' : 'var(--border-default)'}`,
+                    background: active ? 'var(--sidebar-bg)' : 'var(--bg-subtle)',
+                    border: `1px solid ${active ? 'var(--sidebar-bg)' : 'var(--border-default)'}`,
                   }}
                 >
                   <Switch.Thumb
-                    className="block w-[19px] h-[19px] rounded-full transition-transform duration-200"
+                    className="block w-[19px] h-[19px] rounded-full transition-transform duration-200 shadow-sm"
                     style={{
-                      background: 'var(--text-primary)',
+                      background: active ? '#ffffff' : 'var(--text-primary)',
                       transform: active ? 'translateX(20px)' : 'translateX(2px)',
                     }}
                   />
@@ -276,7 +231,7 @@ export default function SettingsPage() {
         style={{ border: '1px solid var(--border-hairline)' }}
       >
         <h3 className="font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-          <Database size={16} style={{ color: 'var(--accent)' }} />
+          <Database size={16} style={{ color: 'var(--sidebar-bg)' }} />
           Demo & Reset
         </h3>
 
@@ -297,7 +252,7 @@ export default function SettingsPage() {
               border: '1px solid var(--border-default)',
               color: 'var(--text-primary)',
             }}
-            onFocus={e => (e.target.style.borderColor = 'var(--accent)')}
+            onFocus={e => (e.target.style.borderColor = 'var(--sidebar-bg)')}
             onBlur={e => (e.target.style.borderColor = 'var(--border-default)')}
           />
         </div>

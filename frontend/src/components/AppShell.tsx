@@ -3,10 +3,9 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Upload, History, Users,
-  Settings, ChevronLeft, ChevronRight, Moon, Sun,
+  Settings, ChevronLeft, ChevronRight,
   Search, ClipboardList, BarChart2, Command,
 } from 'lucide-react'
-import { useTheme } from '@/hooks/useTheme'
 import { Disclaimer } from './ui'
 import { Logo } from './brand/Logo'
 import { cn } from '@/lib/utils'
@@ -24,7 +23,6 @@ const NAV_ITEMS = [
 const CMD_ITEMS = [
   { id: 'upload',    label: 'Upload New Invoice',            icon: Upload,          to: '/analyze' },
   { id: 'recent',    label: 'Open Recent Invoices',          icon: History,         to: '/history' },
-  { id: 'theme',     label: 'Toggle Theme (Dark / Light)',   icon: Moon,            action: 'toggle-theme' },
   { id: 'dashboard', label: 'Go to Dashboard',              icon: LayoutDashboard, to: '/dashboard' },
   { id: 'review',    label: 'Open Review Queue',             icon: ClipboardList,   to: '/review' },
   { id: 'vendors',   label: 'View Vendors',                  icon: Users,           to: '/vendors' },
@@ -163,7 +161,6 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [cmdOpen, setCmdOpen] = useState(false)
-  const { theme, toggle } = useTheme()
   const navigate = useNavigate()
 
   const handleGlobalKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -184,10 +181,10 @@ export function AppShell({ children }: AppShellProps) {
         initial={false}
         animate={{ width: collapsed ? 64 : 240 }}
         transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-        className="relative flex flex-col border-r shrink-0 overflow-hidden"
+        className="relative flex flex-col shrink-0 overflow-hidden"
         style={{
-          background: 'var(--bg-surface)',
-          borderColor: 'var(--border-hairline)',
+          background: 'var(--sidebar-bg)',
+          color: 'var(--sidebar-text)',
           minHeight: '100vh',
           position: 'sticky',
           top: 0,
@@ -205,6 +202,7 @@ export function AppShell({ children }: AppShellProps) {
               variant={collapsed ? 'mark' : 'full'}
               size={24}
               animated
+              wordmarkColor="var(--sidebar-text)"
             />
           </Link>
         </div>
@@ -231,8 +229,8 @@ export function AppShell({ children }: AppShellProps) {
                       isActive && 'nav-item-active',
                     )}
                     style={{
-                      color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
-                      background: isActive ? 'var(--accent-muted)' : 'transparent',
+                      color: isActive ? 'var(--sidebar-text)' : 'var(--sidebar-text-muted)',
+                      background: isActive ? 'var(--sidebar-hover)' : 'transparent',
                       transition: 'background 150ms, color 150ms',
                     }}
                     whileHover={isActive ? {} : { x: 2 }}
@@ -243,7 +241,7 @@ export function AppShell({ children }: AppShellProps) {
                       <motion.span
                         layoutId="sidebar-active-bar"
                         className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r"
-                        style={{ background: 'var(--accent)' }}
+                        style={{ background: 'var(--sidebar-text)' }}
                         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                       />
                     )}
@@ -313,17 +311,18 @@ export function AppShell({ children }: AppShellProps) {
 
         {/* ── Top bar: backdrop-blur 12px over charcoal-alpha, hairline bottom border ── */}
         <header
-          className="glass sticky top-0 z-30 flex items-center gap-3 px-5 border-b shrink-0"
-          style={{ borderColor: 'var(--glass-border)', height: 56 }}
+          className="sticky top-0 z-30 flex items-center gap-3 px-5 shrink-0"
+          style={{ height: 56, background: 'var(--bg-base)' }}
           role="banner"
         >
           {/* Search / command palette trigger */}
           <button
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors duration-150 max-w-xs flex-1"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-colors duration-150 max-w-xs flex-1"
             style={{
-              background: 'var(--bg-overlay)',
+              background: 'var(--bg-elevated)',
               color: 'var(--text-tertiary)',
-              border: '1px solid var(--border-hairline)',
+              border: 'none',
+              boxShadow: 'var(--shadow-sm)',
             }}
             onClick={() => setCmdOpen(true)}
             aria-label="Open command palette (Ctrl+K)"
@@ -345,20 +344,12 @@ export function AppShell({ children }: AppShellProps) {
           </button>
 
           <div className="flex items-center gap-2 ml-auto">
-            {/* Theme toggle */}
-            <button
-              onClick={toggle}
-              className="btn-ghost w-8 h-8 p-0 justify-center"
-              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-            >
-              {theme === 'dark'
-                ? <Sun  size={15} aria-hidden="true" />
-                : <Moon size={15} aria-hidden="true" />
-              }
-            </button>
-
             {/* Primary CTA */}
-            <Link to="/analyze" className="btn-primary text-sm py-1.5 px-4">
+            <Link 
+              to="/analyze" 
+              className="inline-flex items-center justify-center gap-2 text-sm py-1.5 px-4 rounded-lg font-medium transition-transform hover:scale-[0.98] active:scale-95"
+              style={{ background: 'var(--sidebar-bg)', color: 'var(--sidebar-text)' }}
+            >
               <Upload size={13} aria-hidden="true" />
               Upload
             </Link>
@@ -379,7 +370,7 @@ export function AppShell({ children }: AppShellProps) {
           <CommandPalette
             onClose={() => setCmdOpen(false)}
             onNavigate={(to) => { navigate(to); setCmdOpen(false) }}
-            onToggleTheme={toggle}
+            onToggleTheme={() => {}}
           />
         )}
       </AnimatePresence>

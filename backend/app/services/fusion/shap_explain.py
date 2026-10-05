@@ -102,12 +102,20 @@ def compute_shap_top(
 
         # Build sorted contributor list
         contributors = []
+        raw_vals = []
         for i, (name, sv_i) in enumerate(zip(feature_names, sv)):
+            raw_vals.append((name, float(sv_i), float(feature_vector[i])))
+            
+        max_abs = max((abs(v[1]) for v in raw_vals), default=0.0)
+        
+        for name, sv_i, fv_i in raw_vals:
+            # Scale SHAP values relative to the maximum contributor (capped at 100)
+            norm_sv = (sv_i / max_abs * 100.0) if max_abs > 1e-6 else 0.0
             contributors.append(
                 {
                     "feature": name,
-                    "shap_value": round(float(sv_i), 4),
-                    "value": round(float(feature_vector[i]), 4),
+                    "shap_value": round(norm_sv, 1),
+                    "value": round(fv_i, 4),
                     "direction": "increases_risk" if sv_i > 0 else "decreases_risk",
                 }
             )

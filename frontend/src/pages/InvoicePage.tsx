@@ -184,7 +184,7 @@ export default function InvoicePage() {
       }
       return {
         engine: engineLabels[key] ?? key,
-        score: Math.round(scoreVal),
+        score: Math.max(8, Math.round(scoreVal)), // Add minimum baseline radius so 0-score radars are still visible as a small polygon
         fullMark: 100,
       }
     })
@@ -225,8 +225,8 @@ export default function InvoicePage() {
     <div className="flex flex-col h-full overflow-hidden" style={{ background: 'var(--bg-base)' }}>
       {/* ── Header ────────────────────────────────────────────── */}
       <header
-        className="shrink-0 px-6 py-4 border-b flex flex-wrap items-center justify-between gap-4"
-        style={{ borderColor: 'var(--border-hairline)', background: 'var(--bg-surface)' }}
+        className="shrink-0 px-6 py-4 mx-6 mt-6 mb-2 rounded-[24px] border flex flex-wrap items-center justify-between gap-4"
+        style={{ borderColor: 'var(--border-hairline)', background: '#EAE5DB' }}
       >
         <div className="flex items-center gap-4">
           <div>
@@ -385,7 +385,7 @@ export default function InvoicePage() {
           </div>
 
           <div className="flex-1 overflow-hidden relative group">
-            <TransformWrapper initialScale={1} minScale={0.5} maxScale={4} centerOnInit wheel={{ step: 0.1 }}>
+            <TransformWrapper initialScale={1} minScale={0.5} maxScale={4} centerOnInit wheel={{ step: 0.015 }}>
               <>
                 <ViewerControls />
                 <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }}>
@@ -518,8 +518,8 @@ export default function InvoicePage() {
         <div className="w-full lg:w-2/5 flex flex-col overflow-hidden" style={{ background: 'var(--bg-base)' }}>
           <Tabs.Root value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
             <Tabs.List
-              className="flex border-b px-2 overflow-x-auto hide-scrollbar shrink-0"
-              style={{ borderColor: 'var(--border-hairline)', background: 'var(--bg-surface)' }}
+              className="flex px-4 pt-1 mx-6 mt-4 rounded-[24px] overflow-x-auto hide-scrollbar shrink-0"
+              style={{ border: '1px solid var(--border-hairline)', background: '#EAE5DB' }}
             >
               {['Summary', 'Findings', 'Compare', 'Data', 'Model', 'Timeline'].map(tab => {
                 const val = tab.toLowerCase()
@@ -529,8 +529,8 @@ export default function InvoicePage() {
                     value={val}
                     className="px-4 py-3 text-sm font-medium transition-colors border-b-2 whitespace-nowrap relative"
                     style={{
-                      borderColor: activeTab === val ? 'var(--accent)' : 'transparent',
-                      color: activeTab === val ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      borderColor: activeTab === val ? 'var(--sidebar-bg)' : 'transparent',
+                      color: activeTab === val ? 'var(--sidebar-bg)' : 'var(--text-secondary)',
                     }}
                   >
                     {tab}
@@ -581,8 +581,8 @@ export default function InvoicePage() {
                       {/* Radar Chart (7-Engine Signals) */}
                       {radarData.length >= 3 && (
                         <div
-                          className="surface p-5 rounded-2xl border"
-                          style={{ borderColor: 'var(--border-hairline)' }}
+                          className="surface p-5 rounded-[24px] border"
+                          style={{ borderColor: 'var(--border-hairline)', background: '#EAE5DB' }}
                         >
                           <h3
                             className="font-semibold text-xs uppercase tracking-wider mb-2 flex items-center justify-between"
@@ -596,7 +596,7 @@ export default function InvoicePage() {
                           <div className="h-56 w-full">
                             <ResponsiveContainer width="100%" height="100%">
                               <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
-                                <PolarGrid stroke="var(--border-hairline)" />
+                                <PolarGrid stroke="var(--sidebar-bg)" strokeOpacity={0.25} />
                                 <PolarAngleAxis
                                   dataKey="engine"
                                   tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
@@ -622,14 +622,14 @@ export default function InvoicePage() {
                       {/* Recommendation Card */}
                       {data.risk?.recommendation && (
                         <div
-                          className="surface p-5 rounded-2xl border"
-                          style={{ borderColor: 'var(--border-default)' }}
+                          className="surface p-5 rounded-[24px] border"
+                          style={{ borderColor: 'var(--border-hairline)', background: '#EAE5DB' }}
                         >
                           <h3
                             className="font-bold flex items-center gap-2 text-sm mb-2"
                             style={{ color: 'var(--text-primary)' }}
                           >
-                            <ShieldAlert size={16} className="text-[var(--accent)]" /> Recommendation
+                            <ShieldAlert size={16} style={{ color: 'var(--sidebar-bg)' }} /> Recommendation
                           </h3>
                           <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                             {data.risk.recommendation}
@@ -668,8 +668,8 @@ export default function InvoicePage() {
                       {/* Signal Bars */}
                       {Object.keys(signals).length > 0 && (
                         <div
-                          className="surface p-5 rounded-2xl border"
-                          style={{ borderColor: 'var(--border-hairline)' }}
+                          className="surface p-5 rounded-[24px] border"
+                          style={{ borderColor: 'var(--border-hairline)', background: '#EAE5DB' }}
                         >
                           <h3
                             className="font-semibold text-xs mb-4 uppercase tracking-wider"
@@ -1020,7 +1020,13 @@ export default function InvoicePage() {
                           {data.risk?.shap_top?.length ? (
                             data.risk.shap_top.map(shap => {
                               const isIncrease = shap.direction === 'increases_risk'
-                              const absVal = Math.min(100, Math.abs(shap.value) * 100)
+                              const absVal = Math.min(100, Math.abs(shap.value))
+                              
+                              const displayName = shap.feature
+                                .replace(/^feat_/, '')
+                                .replace(/_/g, ' ')
+                                .replace(/\b\w/g, l => l.toUpperCase())
+
                               return (
                                 <div
                                   key={shap.feature}
@@ -1030,8 +1036,8 @@ export default function InvoicePage() {
                                     borderColor: 'var(--border-hairline)',
                                   }}
                                 >
-                                  <span className="font-mono text-xs" style={{ color: 'var(--text-secondary)' }}>
-                                    {shap.feature}
+                                  <span className="font-mono text-xs" style={{ color: 'var(--text-secondary)' }} title={displayName}>
+                                    {displayName}
                                   </span>
                                   <div className="flex items-center gap-3">
                                     <div
@@ -1047,11 +1053,11 @@ export default function InvoicePage() {
                                       />
                                     </div>
                                     <span
-                                      className="font-mono w-10 text-right font-medium"
+                                      className="font-mono w-12 text-right font-medium"
                                       style={{ color: isIncrease ? 'var(--risk-high-text)' : 'var(--risk-low-text)' }}
                                     >
                                       {shap.value > 0 ? '+' : ''}
-                                      {shap.value.toFixed(2)}
+                                      {shap.value.toFixed(1)}%
                                     </span>
                                   </div>
                                 </div>

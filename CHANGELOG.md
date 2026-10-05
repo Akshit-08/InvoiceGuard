@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2026-10-06
+
+### Changed
+- **UI Refinements & Styling**:
+  - Unified accent colors across settings, navigation, and badges to use `var(--sidebar-bg)`.
+  - Removed "Appearance" section from Settings (now managed centrally).
+  - Standardized "Dashboard" style partition boxes (rounded-24px, `#EAE5DB` background) across `InsightsPage`, `InvoicePage`, and `AnalyzePage`.
+  - Adjusted RiskGauge and ConfidenceMeter background tracks to slightly darker transparent overlays for better visibility.
+  - Set RadarChart web grid color to `var(--sidebar-bg)` with 0.25 opacity.
+- **Backend Data Sync**:
+  - `DashboardPage`: "Needs Review" and "Value at Risk" now pull live data from the backend instead of using hardcoded fallbacks.
+  - Dynamic content updates applied for trend deltas on the dashboard.
+
 ## [0.5.0] - 2026-10-05
 
 ### Added / Changed

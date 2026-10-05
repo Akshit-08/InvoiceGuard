@@ -18,16 +18,14 @@ import type { VendorProfile } from '@/api/types'
 /** Monogram avatar seeded from vendor name (matches Dashboard pattern) */
 function Monogram({ name, size = 32 }: { name: string; size?: number }) {
   const initials = name.split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('')
-  const hue = [...name].reduce((h, c) => h + c.charCodeAt(0), 0) % 360
   return (
     <div
       style={{
-        width: size, height: size, fontSize: size * 0.38,
-        background: `hsl(${hue} 35% 28%)`,
-        color: `hsl(${hue} 70% 72%)`,
-        border: `1px solid hsl(${hue} 35% 38%)`,
+        width: size, height: size, fontSize: size * 0.4,
+        background: 'var(--sidebar-bg)',
+        color: 'var(--bg-base)',
       }}
-      className="rounded-lg flex items-center justify-center font-bold select-none shrink-0"
+      className="rounded-full flex items-center justify-center font-bold select-none shrink-0"
       aria-hidden="true"
     >
       {initials}
@@ -76,10 +74,10 @@ function VendorList() {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-sm mb-6">
+      <div className="relative max-w-md mb-8">
         <Search
-          size={14}
-          className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+          size={16}
+          className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
           style={{ color: 'var(--text-tertiary)' }}
         />
         <input
@@ -87,7 +85,8 @@ function VendorList() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search vendors or GSTIN…"
-          className="input-base w-full pl-9"
+          className="input-base w-full rounded-full transition-shadow hover:shadow-sm focus:shadow-md py-3 text-[15px]"
+          style={{ paddingLeft: 42, background: '#EAE5DB', border: 'none', outline: 'none' }}
         />
       </div>
 
@@ -108,8 +107,8 @@ function VendorList() {
               <button
                 key={vendor.id}
                 onClick={() => navigate(`/vendors/${vendor.id}`)}
-                className="surface p-5 rounded-xl text-left cursor-pointer transition-all duration-150 group"
-                style={{ border: '1px solid var(--border-hairline)' }}
+                className="p-6 rounded-[32px] text-left cursor-pointer transition-all duration-150 group flex flex-col"
+                style={{ background: '#F4EFE6', border: '1px solid var(--border-hairline)' }}
                 onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-2px)')}
                 onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
                 aria-label={`View vendor ${vendor.name}`}

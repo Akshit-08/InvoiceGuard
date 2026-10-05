@@ -325,7 +325,10 @@ def get_history(
     if risk_level:
         query = query.filter(Invoice.risk_level == risk_level.upper())
     if status_filter:
-        query = query.filter(Invoice.status == status_filter)
+        if status_filter == "needs_review":
+            query = query.filter(Invoice.review_status.in_(["needs_review", "pending"]))
+        else:
+            query = query.filter(Invoice.status == status_filter)
     if vendor_id:
         query = query.filter(Invoice.vendor_id == vendor_id)
 

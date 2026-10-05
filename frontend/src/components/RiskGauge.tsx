@@ -54,7 +54,7 @@ export function RiskGauge({ score, level, size = 160, animate = true }: RiskGaug
     `A ${r} ${r} 0 ${fillLargeArc} 1 ${fillEnd.x} ${fillEnd.y}`,
   ].join(' ')
 
-  const color = LEVEL_COLORS[level]
+  const color = riskLevelColor(level)
   const strokeWidth = size * 0.065
 
   return (
@@ -69,7 +69,7 @@ export function RiskGauge({ score, level, size = 160, animate = true }: RiskGaug
         <path
           d={trackPath}
           fill="none"
-          stroke="var(--bg-subtle)"
+          stroke="var(--border-strong)"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
         />
@@ -167,7 +167,7 @@ export function SignalBars({ signals, className }: SignalBarsProps) {
             >
               {signalDisplayName(key)}
             </span>
-            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg-subtle)' }}>
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0, 0, 0, 0.08)' }}>
               <motion.div
                 className="h-full rounded-full"
                 style={{ background: color }}

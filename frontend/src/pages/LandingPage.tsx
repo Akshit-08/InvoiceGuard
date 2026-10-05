@@ -698,7 +698,7 @@ function HowItWorksSection({ reduced }: { reduced: boolean }) {
 
     tl.to('.gsap-progress-line', { height: '100%', ease: 'none', duration: 4 }, 0)
 
-    HOW_IT_WORKS.forEach((_, i) => {
+    HOW_IT_WORKS.forEach((step, i) => {
       const stepStart = i
       
       tl.to(`.gsap-step-${i}`, { opacity: 1, duration: 0.5 }, stepStart)
@@ -729,7 +729,7 @@ function HowItWorksSection({ reduced }: { reduced: boolean }) {
     tl.fromTo('.gsap-s1-chip', { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.3, stagger: 0.1 }, 1.4)
 
     tl.fromTo('.gsap-s2-eng', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.3, stagger: 0.05 }, 2)
-    tl.fromTo('.gsap-s2-bar', { width: 0 }, { width: (_i: number, el: HTMLElement) => el.dataset.w + '%', duration: 0.4, stagger: 0.05 }, 2.1)
+    tl.fromTo('.gsap-s2-bar', { width: 0 }, { width: (i, el) => el.dataset.w + '%', duration: 0.4, stagger: 0.05 }, 2.1)
     tl.fromTo('.gsap-s2-arrow', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 2.5)
     tl.fromTo('.gsap-s2-fusion', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 2.6)
 

@@ -27,6 +27,7 @@ export interface LogoProps {
   /** Whether to play the one-shot scan animation on mount. */
   animated?: boolean
   className?: string
+  wordmarkColor?: string
 }
 
 // ── Mark SVG ─────────────────────────────────────────────────────
@@ -127,7 +128,7 @@ function MarkSvg({ size = 28, mono = false }: { size?: number; mono?: boolean })
 }
 
 // ── Logo Component ────────────────────────────────────────────────
-export function Logo({ variant = 'full', size = 28, animated = false, className }: LogoProps) {
+export function Logo({ variant = 'full', size = 28, animated = false, className, wordmarkColor = 'var(--text-primary)' }: LogoProps) {
   void animated // animation is handled by the CSS keyframe on mount inside MarkSvg
 
   if (variant === 'mark' || variant === 'mono') {
@@ -152,8 +153,8 @@ export function Logo({ variant = 'full', size = 28, animated = false, className 
           whiteSpace: 'nowrap',
         }}
       >
-        <span style={{ fontWeight: 400, color: 'var(--text-primary)' }}>Invoice</span>
-        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Guard</span>
+        <span style={{ fontWeight: 400, color: wordmarkColor }}>Invoice</span>
+        <span style={{ fontWeight: 600, color: wordmarkColor }}>Guard</span>
       </span>
     </span>
   )

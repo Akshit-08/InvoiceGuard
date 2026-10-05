@@ -41,7 +41,7 @@ def get_vendors(db: Session = Depends(get_db)):
             "avg_risk_score": round(float(avg_score), 1),
         })
 
-    return results
+    return {"items": results, "total": len(results)}
 
 
 @router.get("/{vendor_id}")
