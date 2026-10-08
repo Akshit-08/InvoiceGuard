@@ -1,8 +1,8 @@
-from typing import List
-import asyncio
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, status, BackgroundTasks
-from sqlalchemy.orm import Session
 import uuid
+from typing import List
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile
+from sqlalchemy.orm import Session
 
 from backend.app.deps import get_db
 from backend.app.services.pipeline import pipeline
@@ -26,7 +26,7 @@ async def batch_upload(
         raise HTTPException(status_code=400, detail="No files provided.")
 
     batch_id = str(uuid.uuid4())
-    
+
     BATCH_STATUS[batch_id] = {
         "status": "processing",
         "total": len(files),
@@ -37,7 +37,7 @@ async def batch_upload(
 
     async def process_batch(b_id: str, uploaded_files: List[UploadFile]):
         from backend.app.core.db import SessionLocal
-        
+
         for file in uploaded_files:
             try:
                 # We need a new session per file or manage it carefully
@@ -45,10 +45,10 @@ async def batch_upload(
                     # 1. Process Upload
                     upload_res, _ = await pipeline.process_upload(file, db_session)
                     inv_id = upload_res.invoice_id
-                    
+
                     # 2. Analyze
                     result = await pipeline.analyze_invoice(inv_id, db_session)
-                    
+
                     BATCH_STATUS[b_id]["results"].append({
                         "filename": file.filename,
                         "invoice_id": inv_id,
@@ -69,7 +69,7 @@ async def batch_upload(
         BATCH_STATUS[b_id]["status"] = "completed"
 
     background_tasks.add_task(process_batch, batch_id, files)
-    
+
     return {"batch_id": batch_id, "message": f"Started processing {len(files)} files."}
 
 @router.get("/{batch_id}/status")

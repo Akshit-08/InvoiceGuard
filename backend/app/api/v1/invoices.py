@@ -477,7 +477,7 @@ def get_invoice_pdf_report(invoice_id: str, db: Session = Depends(get_db)):
     risk_rec = db.query(RiskScoreRecord).filter(RiskScoreRecord.invoice_id == invoice_id).first()
     findings_db = db.query(InvoiceFinding).filter(InvoiceFinding.invoice_id == invoice_id).all()
     audit_events = db.query(AuditEvent).filter(AuditEvent.invoice_id == invoice_id).order_by(AuditEvent.created_at.asc()).all()
-    
+
     doc = db.query(InvoiceDocument).filter(InvoiceDocument.invoice_id == invoice_id, InvoiceDocument.page == 0).first()
     thumb_path = doc.thumb_path if doc else None
     if not thumb_path and doc and doc.image_path:

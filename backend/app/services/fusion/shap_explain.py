@@ -105,9 +105,9 @@ def compute_shap_top(
         raw_vals = []
         for i, (name, sv_i) in enumerate(zip(feature_names, sv)):
             raw_vals.append((name, float(sv_i), float(feature_vector[i])))
-            
+
         max_abs = max((abs(v[1]) for v in raw_vals), default=0.0)
-        
+
         for name, sv_i, fv_i in raw_vals:
             # Scale SHAP values relative to the maximum contributor (capped at 100)
             norm_sv = (sv_i / max_abs * 100.0) if max_abs > 1e-6 else 0.0

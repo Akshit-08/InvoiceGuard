@@ -94,7 +94,7 @@ def get_dashboard_stats(days: int = 30, db: Session = Depends(get_db)):
     from datetime import datetime, timedelta
     now = datetime.now()
     trend = []
-    
+
     # Query for daily anomalies (count of invoices with high/critical or count of anomalies)
     # We will count invoices analysed per day for the trend, grouped by risk_level
     daily_stats = (
@@ -107,7 +107,7 @@ def get_dashboard_stats(days: int = 30, db: Session = Depends(get_db)):
         .group_by(func.date(Invoice.created_at), Invoice.risk_level)
         .all()
     )
-    
+
     daily_map = {}
     for d, r, c in daily_stats:
         d_str = str(d)
@@ -117,7 +117,7 @@ def get_dashboard_stats(days: int = 30, db: Session = Depends(get_db)):
             r_key = r.lower()
             if r_key in daily_map[d_str]:
                 daily_map[d_str][r_key] = c
-    
+
     for i in range(days - 1, -1, -1):
         d_obj = now - timedelta(days=i)
         d_str = d_obj.strftime("%Y-%m-%d")
@@ -157,13 +157,13 @@ def get_dashboard_stats(days: int = 30, db: Session = Depends(get_db)):
                 "avg_score": tv.avg_score
             })
     # Fetch system status metrics
-    from pathlib import Path
     import json
-    
+    from pathlib import Path
+
     # Resolve project root relative to this file
     # dashboard.py is in backend/app/api/v1
     PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
-    
+
     system_status = {
         "model_loaded": False,
         "fusion_mode": "baseline",
@@ -171,12 +171,12 @@ def get_dashboard_stats(days: int = 30, db: Session = Depends(get_db)):
         "pr_auc": None,
         "engines_enabled": ["layoutlmv3", "financial", "tax_identity", "duplicate", "vendor", "bank_change", "identifiers", "visual"]
     }
-    
+
     xgb_exists = (PROJECT_ROOT / "ml" / "artifacts" / "fusion_xgb.joblib").exists()
     if xgb_exists:
         system_status["model_loaded"] = True
         system_status["fusion_mode"] = "xgboost+baseline"
-        
+
     metrics_path = PROJECT_ROOT / "reports" / "metrics.json"
     if metrics_path.exists():
         try:
