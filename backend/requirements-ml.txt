@@ -1,0 +1,8 @@
+# ML / Deep Learning Dependencies (Optional / LayoutLMv3)
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.38.0
+accelerate>=0.27.0
+datasets>=2.18.0
+seqeval>=1.2.2
+evaluate>=0.4.1

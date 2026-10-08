@@ -1,0 +1,1562 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "InvoiceGuard API",
+    "description": "Explainable Multimodal Invoice Anomaly & Fraud-Risk Detection API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Get Health",
+        "description": "Return service status, API version, and loaded optional model capabilities.",
+        "operationId": "get_health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/upload": {
+      "post": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Upload Invoice",
+        "description": "Upload PDF or scanned invoice image. Initiates ingest, reading, and extraction.",
+        "operationId": "upload_invoice_api_v1_invoices_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_invoice_api_v1_invoices_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{invoice_id}/events": {
+      "get": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Invoice Events",
+        "description": "Server-Sent Events (SSE) stream for real-time document processing stage events.",
+        "operationId": "invoice_events_api_v1_invoices__invoice_id__events_get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{invoice_id}/extraction": {
+      "get": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Get Invoice Extraction",
+        "description": "Fetch structured extraction and field-level confidence scores.",
+        "operationId": "get_invoice_extraction_api_v1_invoices__invoice_id__extraction_get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtractionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Update Invoice Extraction",
+        "description": "Save reviewer corrections to extracted invoice entities and record audit log.",
+        "operationId": "update_invoice_extraction_api_v1_invoices__invoice_id__extraction_put",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Updates"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{invoice_id}/analyze": {
+      "post": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Analyze Invoice",
+        "description": "Run all detection engines and multimodal fusion to produce explainable risk score.",
+        "operationId": "analyze_invoice_api_v1_invoices__invoice_id__analyze_post",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{invoice_id}": {
+      "get": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Get Full Result",
+        "description": "Fetch complete analysis: invoice metadata, risk score, signals, findings, SHAP, and recommendations.",
+        "operationId": "get_full_result_api_v1_invoices__invoice_id__get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{invoice_id}/pages/{page_idx}.png": {
+      "get": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Get Invoice Page Image",
+        "description": "Serve rendered 200 DPI PNG page image for document preview.",
+        "operationId": "get_invoice_page_image_api_v1_invoices__invoice_id__pages__page_idx__png_get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          },
+          {
+            "name": "page_idx",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page Idx"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{invoice_id}/thumb": {
+      "get": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Get Invoice Thumbnail",
+        "description": "Serve invoice thumbnail image.",
+        "operationId": "get_invoice_thumbnail_api_v1_invoices__invoice_id__thumb_get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices": {
+      "get": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Get History",
+        "description": "Retrieve invoice processing history with filtering, searching, and pagination.",
+        "operationId": "get_history_api_v1_invoices_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "name": "risk_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Risk Level"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "vendor_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vendor Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{invoice_id}/compare/{other_id}": {
+      "get": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Compare Invoices",
+        "description": "Produce field-level diff between two invoices (for duplicate or historical comparison).",
+        "operationId": "compare_invoices_api_v1_invoices__invoice_id__compare__other_id__get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          },
+          {
+            "name": "other_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Other Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{invoice_id}/review": {
+      "patch": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Review Invoice",
+        "description": "Update human reviewer status and audit note.",
+        "operationId": "review_invoice_api_v1_invoices__invoice_id__review_patch",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Review Data"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{invoice_id}/audit": {
+      "get": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Get Invoice Audit Trail",
+        "description": "Fetch chronological audit trail for the invoice.",
+        "operationId": "get_invoice_audit_trail_api_v1_invoices__invoice_id__audit_get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{invoice_id}/report.pdf": {
+      "get": {
+        "tags": [
+          "invoices"
+        ],
+        "summary": "Get Invoice Pdf Report",
+        "description": "Generate a downloadable PDF audit report.",
+        "operationId": "get_invoice_pdf_report_api_v1_invoices__invoice_id__report_pdf_get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo/seed": {
+      "post": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "Seed Demo",
+        "description": "Loads synthetic vendors and the 8 hero docs into the DB.",
+        "operationId": "seed_demo_api_v1_demo_seed_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo/reset": {
+      "post": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "Reset Demo",
+        "operationId": "reset_demo_api_v1_demo_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo/samples": {
+      "get": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "List Samples",
+        "operationId": "list_samples_api_v1_demo_samples_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vendors": {
+      "get": {
+        "tags": [
+          "vendors"
+        ],
+        "summary": "Get Vendors",
+        "description": "List vendors with aggregate stats and transaction summaries.",
+        "operationId": "get_vendors_api_v1_vendors_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vendors/{vendor_id}": {
+      "get": {
+        "tags": [
+          "vendors"
+        ],
+        "summary": "Get Vendor Profile",
+        "description": "Fetch complete vendor profile with known bank accounts, invoice history, and stats.",
+        "operationId": "get_vendor_profile_api_v1_vendors__vendor_id__get",
+        "parameters": [
+          {
+            "name": "vendor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Vendor Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/stats": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Get Dashboard Stats",
+        "description": "Fetch high-level KPIs, risk distribution, category anomalies, and recent invoices.",
+        "operationId": "get_dashboard_stats_api_v1_dashboard_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/settings": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Get Settings",
+        "description": "Fetch current system thresholds, tolerances, engine toggles, and fusion weights.",
+        "operationId": "get_settings_api_v1_settings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Update Settings",
+        "description": "Update settings in database and invalidate memory cache.",
+        "operationId": "update_settings_api_v1_settings_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Updates"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models": {
+      "get": {
+        "tags": [
+          "models"
+        ],
+        "summary": "Get Models",
+        "description": "List available detection and fusion models and their readiness status.",
+        "operationId": "get_models_api_v1_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models/metrics": {
+      "get": {
+        "tags": [
+          "models"
+        ],
+        "summary": "Get Metrics",
+        "description": "Fetch current evaluation benchmark metrics and curve data from reports/metrics.json.",
+        "operationId": "get_metrics_api_v1_models_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_upload_invoice_api_v1_invoices_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_invoice_api_v1_invoices_upload_post"
+      },
+      "BuyerParty": {
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "gstin": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Field_str_"
+          }
+        },
+        "type": "object",
+        "title": "BuyerParty",
+        "description": "Buyer/Customer identity and contact entities."
+      },
+      "ExtractionResponse": {
+        "properties": {
+          "invoice_id": {
+            "type": "string",
+            "title": "Invoice Id"
+          },
+          "data": {
+            "$ref": "#/components/schemas/InvoiceData"
+          },
+          "confidences": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Confidences"
+          },
+          "missing_critical_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Critical Fields"
+          },
+          "needs_manual_verification": {
+            "type": "boolean",
+            "title": "Needs Manual Verification"
+          },
+          "read_quality": {
+            "type": "number",
+            "title": "Read Quality"
+          }
+        },
+        "type": "object",
+        "required": [
+          "invoice_id",
+          "data",
+          "confidences",
+          "missing_critical_fields",
+          "needs_manual_verification",
+          "read_quality"
+        ],
+        "title": "ExtractionResponse"
+      },
+      "Field_float_": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value",
+            "description": "Typed parsed value"
+          },
+          "raw": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw",
+            "description": "Original unparsed string extracted"
+          },
+          "conf": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Conf",
+            "description": "Extraction confidence score",
+            "default": 1.0
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Extraction source (heuristic, layoutlmv3, llm, user_edit)",
+            "default": "heuristic"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox",
+            "description": "Normalized bounding box [x0, y0, x1, y1] (0 to 1)"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page",
+            "description": "0-indexed page number",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "Field[float]"
+      },
+      "Field_str_": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value",
+            "description": "Typed parsed value"
+          },
+          "raw": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw",
+            "description": "Original unparsed string extracted"
+          },
+          "conf": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Conf",
+            "description": "Extraction confidence score",
+            "default": 1.0
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Extraction source (heuristic, layoutlmv3, llm, user_edit)",
+            "default": "heuristic"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox",
+            "description": "Normalized bounding box [x0, y0, x1, y1] (0 to 1)"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page",
+            "description": "0-indexed page number",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "Field[str]"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "ok"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "default": "0.1.0"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment",
+            "default": "development"
+          },
+          "optional_models": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "type": "object",
+            "title": "Optional Models"
+          }
+        },
+        "type": "object",
+        "title": "HealthResponse"
+      },
+      "InvoiceData": {
+        "properties": {
+          "vendor": {
+            "$ref": "#/components/schemas/VendorParty"
+          },
+          "buyer": {
+            "$ref": "#/components/schemas/BuyerParty"
+          },
+          "invoice_number": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "invoice_date": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "po_number": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LineItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "subtotal": {
+            "$ref": "#/components/schemas/Field_float_"
+          },
+          "discount_total": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_float_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "shipping": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_float_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tax": {
+            "$ref": "#/components/schemas/TaxDetail"
+          },
+          "grand_total": {
+            "$ref": "#/components/schemas/Field_float_"
+          },
+          "amount_in_words": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "payment": {
+            "$ref": "#/components/schemas/PaymentDetail"
+          }
+        },
+        "type": "object",
+        "title": "InvoiceData",
+        "description": "Fully structured invoice contract per Blueprint section 6."
+      },
+      "LineItem": {
+        "properties": {
+          "description": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "hsn_sac": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quantity": {
+            "$ref": "#/components/schemas/Field_float_"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit_price": {
+            "$ref": "#/components/schemas/Field_float_"
+          },
+          "discount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_float_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tax_rate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_float_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tax_amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_float_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "line_total": {
+            "$ref": "#/components/schemas/Field_float_"
+          }
+        },
+        "type": "object",
+        "title": "LineItem",
+        "description": "Individual invoice item line."
+      },
+      "PaymentDetail": {
+        "properties": {
+          "bank_name": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "account_number": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ifsc": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "upi": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "payment_terms": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "PaymentDetail",
+        "description": "Banking and remittance details."
+      },
+      "TaxDetail": {
+        "properties": {
+          "cgst": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_float_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sgst": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_float_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "igst": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_float_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "other": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_float_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "total": {
+            "$ref": "#/components/schemas/Field_float_"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_float_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "TaxDetail",
+        "description": "Tax breakdown components (GST)."
+      },
+      "UploadResponse": {
+        "properties": {
+          "invoice_id": {
+            "type": "string",
+            "title": "Invoice Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "page_count": {
+            "type": "integer",
+            "title": "Page Count"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "invoice_id",
+          "status",
+          "filename",
+          "page_count",
+          "content_hash"
+        ],
+        "title": "UploadResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VendorParty": {
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "gstin": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "pan": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "phone": {
+            "$ref": "#/components/schemas/Field_str_"
+          }
+        },
+        "type": "object",
+        "title": "VendorParty",
+        "description": "Vendor identity and contact entities."
+      }
+    }
+  }
+}

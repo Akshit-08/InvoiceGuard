@@ -1,0 +1,39 @@
+{
+  "thresholds": {
+    "low": 30.0,
+    "medium": 60.0,
+    "high": 80.0
+  },
+  "tolerances": {
+    "line_total_abs": 1.0,
+    "line_total_pct": 0.5,
+    "subtotal_abs": 1.0,
+    "grand_total_abs": 1.0,
+    "tax_amount_abs": 1.0,
+    "rounding_max_abs": 1.0
+  },
+  "engine_toggles": {
+    "financial": true,
+    "tax_identity": true,
+    "identifiers": true,
+    "duplicate": true,
+    "vendor": true,
+    "bank_change": true,
+    "visual": true
+  },
+  "fusion": {
+    "weights": {
+      "financial": 0.85,
+      "tax_identity": 0.6,
+      "duplicate": 0.8,
+      "vendor": 0.6,
+      "bank_change": 0.8,
+      "identifiers": 0.4,
+      "visual": 0.5
+    },
+    "combination_ratio": {
+      "baseline": 0.5,
+      "ml": 0.5
+    }
+  }
+}

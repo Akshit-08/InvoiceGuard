@@ -1,0 +1,199 @@
+{
+  "kpis": {
+    "total_invoices": 128,
+    "analyzed_count": 124,
+    "needs_review_count": 14,
+    "high_critical_count": 18,
+    "duplicate_alerts": 7,
+    "value_at_risk": 2840500,
+    "sparklines": {
+      "analyzed":      [88, 95, 102, 108, 112, 118, 124],
+      "needs_review":  [8, 10, 12, 11, 13, 12, 14],
+      "high_critical": [22, 20, 19, 21, 18, 17, 18],
+      "value_at_risk": [1800000, 2100000, 1950000, 2400000, 2200000, 2600000, 2840500]
+    },
+    "deltas": {
+      "analyzed":      5.1,
+      "needs_review":  16.7,
+      "high_critical": -5.6,
+      "value_at_risk": 9.2
+    }
+  },
+  "risk_distribution": {
+    "low": 82,
+    "medium": 24,
+    "high": 12,
+    "critical": 6
+  },
+  "trend": [
+    { "date": "Mar 01", "low": 4, "medium": 1, "high": 1, "critical": 0 },
+    { "date": "Mar 02", "low": 5, "medium": 2, "high": 0, "critical": 0 },
+    { "date": "Mar 03", "low": 3, "medium": 1, "high": 1, "critical": 1 },
+    { "date": "Mar 04", "low": 6, "medium": 2, "high": 1, "critical": 0 },
+    { "date": "Mar 05", "low": 4, "medium": 3, "high": 2, "critical": 0 },
+    { "date": "Mar 06", "low": 5, "medium": 1, "high": 1, "critical": 1 },
+    { "date": "Mar 07", "low": 7, "medium": 2, "high": 0, "critical": 0 },
+    { "date": "Mar 08", "low": 3, "medium": 2, "high": 2, "critical": 0 },
+    { "date": "Mar 09", "low": 5, "medium": 1, "high": 1, "critical": 0 },
+    { "date": "Mar 10", "low": 4, "medium": 3, "high": 1, "critical": 1 },
+    { "date": "Mar 11", "low": 6, "medium": 2, "high": 0, "critical": 0 },
+    { "date": "Mar 12", "low": 5, "medium": 1, "high": 2, "critical": 0 },
+    { "date": "Mar 13", "low": 4, "medium": 2, "high": 1, "critical": 1 },
+    { "date": "Mar 14", "low": 6, "medium": 1, "high": 1, "critical": 0 },
+    { "date": "Mar 15", "low": 5, "medium": 3, "high": 2, "critical": 1 },
+    { "date": "Mar 16", "low": 4, "medium": 2, "high": 1, "critical": 0 },
+    { "date": "Mar 17", "low": 3, "medium": 1, "high": 2, "critical": 0 },
+    { "date": "Mar 18", "low": 5, "medium": 2, "high": 1, "critical": 1 },
+    { "date": "Mar 19", "low": 6, "medium": 1, "high": 0, "critical": 0 },
+    { "date": "Mar 20", "low": 4, "medium": 3, "high": 2, "critical": 0 },
+    { "date": "Mar 21", "low": 5, "medium": 2, "high": 1, "critical": 1 },
+    { "date": "Mar 22", "low": 3, "medium": 1, "high": 2, "critical": 0 },
+    { "date": "Mar 23", "low": 6, "medium": 2, "high": 1, "critical": 0 },
+    { "date": "Mar 24", "low": 5, "medium": 3, "high": 0, "critical": 1 },
+    { "date": "Mar 25", "low": 4, "medium": 1, "high": 2, "critical": 0 },
+    { "date": "Mar 26", "low": 6, "medium": 2, "high": 1, "critical": 0 },
+    { "date": "Mar 27", "low": 3, "medium": 2, "high": 2, "critical": 1 },
+    { "date": "Mar 28", "low": 5, "medium": 1, "high": 1, "critical": 0 },
+    { "date": "Mar 29", "low": 4, "medium": 3, "high": 0, "critical": 0 },
+    { "date": "Mar 30", "low": 6, "medium": 2, "high": 1, "critical": 1 }
+  ],
+  "anomaly_categories": {
+    "financial":    24,
+    "vendor":       15,
+    "visual":       12,
+    "tax_identity": 11,
+    "duplicate":     9,
+    "identifiers":   8,
+    "bank_change":   7
+  },
+  "recent_analyses": [
+    {
+      "id":             "inv-hero-03-critical",
+      "invoice_number": "INV-2026-0042",
+      "vendor_name":    "Apex Cloud Technologies Pvt Ltd",
+      "grand_total":    153900.0,
+      "status":         "analyzed",
+      "risk_level":     "CRITICAL",
+      "overall_score":  88.5,
+      "review_status":  "needs_review",
+      "created_at":     "2026-03-15T10:30:00Z"
+    },
+    {
+      "id":             "inv-hero-04-dup",
+      "invoice_number": "INV-2026-0043",
+      "vendor_name":    "Bharat Infra Services Ltd",
+      "grand_total":    89500.0,
+      "status":         "analyzed",
+      "risk_level":     "HIGH",
+      "overall_score":  72.1,
+      "review_status":  "needs_review",
+      "created_at":     "2026-03-15T09:45:00Z"
+    },
+    {
+      "id":             "inv-hero-01-clean",
+      "invoice_number": "INV-2026-0112",
+      "vendor_name":    "Kiran Office Supplies",
+      "grand_total":    14500.0,
+      "status":         "analyzed",
+      "risk_level":     "LOW",
+      "overall_score":  12.0,
+      "review_status":  "approved",
+      "created_at":     "2026-03-15T09:15:00Z"
+    },
+    {
+      "id":             "inv-hero-05-bank",
+      "invoice_number": "INV-2026-0018",
+      "vendor_name":    "Delta Logistics Co",
+      "grand_total":    67800.0,
+      "status":         "analyzed",
+      "risk_level":     "HIGH",
+      "overall_score":  62.4,
+      "review_status":  "needs_review",
+      "created_at":     "2026-03-14T16:22:00Z"
+    },
+    {
+      "id":             "inv-hero-07-newvendor",
+      "invoice_number": "INV-2026-0059",
+      "vendor_name":    "Sigma Print House",
+      "grand_total":    22000.0,
+      "status":         "analyzed",
+      "risk_level":     "MEDIUM",
+      "overall_score":  35.0,
+      "review_status":  "needs_review",
+      "created_at":     "2026-03-14T14:10:00Z"
+    }
+  ],
+  "top_vendors": [
+    {
+      "id":            "v-apex",
+      "name":          "Apex Cloud Technologies",
+      "invoice_count": 8,
+      "avg_risk_score": 72.4,
+      "flagged_count": 3,
+      "avg_score":     72.4
+    },
+    {
+      "id":            "v-bharat",
+      "name":          "Bharat Infra Services",
+      "invoice_count": 5,
+      "avg_risk_score": 65.1,
+      "flagged_count": 2,
+      "avg_score":     65.1
+    },
+    {
+      "id":            "v-delta",
+      "name":          "Delta Logistics Co",
+      "invoice_count": 6,
+      "avg_risk_score": 58.7,
+      "flagged_count": 2,
+      "avg_score":     58.7
+    },
+    {
+      "id":            "v-sigma",
+      "name":          "Sigma Print House",
+      "invoice_count": 3,
+      "avg_risk_score": 41.2,
+      "flagged_count": 1,
+      "avg_score":     41.2
+    }
+  ],
+  "needs_review_queue": [
+    {
+      "id":             "inv-hero-03-critical",
+      "invoice_number": "INV-2026-0042",
+      "vendor_name":    "Apex Cloud Technologies",
+      "grand_total":    153900.0,
+      "overall_score":  88.5,
+      "risk_level":     "CRITICAL",
+      "created_at":     "2026-03-15T10:30:00Z"
+    },
+    {
+      "id":             "inv-hero-04-dup",
+      "invoice_number": "INV-2026-0043",
+      "vendor_name":    "Bharat Infra Services",
+      "grand_total":    89500.0,
+      "overall_score":  72.1,
+      "risk_level":     "HIGH",
+      "created_at":     "2026-03-15T09:45:00Z"
+    },
+    {
+      "id":             "inv-hero-05-bank",
+      "invoice_number": "INV-2026-0018",
+      "vendor_name":    "Delta Logistics Co",
+      "grand_total":    67800.0,
+      "overall_score":  62.4,
+      "risk_level":     "HIGH",
+      "created_at":     "2026-03-14T16:22:00Z"
+    }
+  ],
+  "system_status": {
+    "model_loaded":      true,
+    "fusion_mode":       "xgboost",
+    "roc_auc":           0.8772,
+    "pr_auc":            0.8924,
+    "engines_enabled":   ["financial", "tax_identity", "identifiers", "duplicate", "vendor", "bank_change", "visual"],
+    "last_evaluated_at": "2026-10-04T00:00:00Z"
+  },
+  "last_updated_at": "2026-03-30T14:05:33Z",
+  "date_range": "30d"
+}

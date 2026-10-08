@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+/lib/
+/lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Environments
+.env
+.env.local
+.env.*.local
+.venv/
+env/
+venv/
+ENV/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+
+# Database
+data/invoiceguard.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# Data directories (only samples and fixtures are tracked)
+data/uploads/*
+!data/uploads/.gitkeep
+data/raw/*
+!data/raw/.gitkeep
+data/synthetic/*
+!data/synthetic/.gitkeep
+
+# Large models / artifacts
+*.safetensors
+*.bin
+*.pt
+*.pth
+ml/artifacts/*.onnx
+!ml/artifacts/model_manifest.json
+
+# Reports and cache
+reports/*.png
+reports/*.html
+
+# OS and IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.gemini/
+*.log
+my-test-invoices/
+frontend/test-results/

@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════
+   InvoiceGuard Design System — v2
+   Theme: "Premium security-ops / fintech"
+   Calm, professional, polished. Charcoal base — not pure black,
+   not blue-tinted. High-contrast text. Restrained accent.
+   Depth from lightness steps + 1px inner highlight, not shadows.
+   ═══════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* — Fonts — */
+  --font-sans: "InterVariable", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains MonoVariable", "JetBrains Mono", "Fira Code", monospace;
+
+  /* — Radius — */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   18px;
+  --radius-2xl:  24px;
+  --radius-full: 9999px;
+
+  /* — Motion durations — */
+  --duration-instant: 80ms;
+  --duration-fast:   150ms;
+  --duration-normal: 250ms;
+  --duration-slow:   400ms;
+  --duration-hero:   700ms;
+
+  /* — Easing — */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   DARK THEME (default)
+   Charcoal base. No hue shift toward blue in any neutral.
+   ─────────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  /* — Base surfaces (lightness steps, pure neutrals) — */
+  --bg-base:     #F3EFE9;   /* app canvas */
+  --bg-surface:  #222222;   /* sidebar, top bar */
+  --bg-elevated: #ffffff;   /* cards */
+  --bg-overlay:  #f8f7f4;   /* popovers, inputs, hover */
+  --bg-subtle:   #efeee9;   /* pressed / selected */
+
+  /* — Sidebar specific — */
+  --sidebar-bg: #222222;
+  --sidebar-text: #ffffff;
+  --sidebar-text-muted: #9a9a9a;
+  --sidebar-hover: #333333;
+
+  /* — Borders — */
+  --border-hairline: #e7e4db;
+  --border-default:  #dcd8cd;
+  --border-strong:   #c8c4b7;
+
+  /* — Text — */
+  --text-primary:   #252525;
+  --text-secondary: #6e6e6e;
+  --text-tertiary:  #a1a1a1;
+  --text-disabled:  #c0c0c0;
+  --text-inverse:   #ffffff;
+
+  /* — Accent (from reference Upgrade card) — */
+  --accent:        #222222;
+  --accent-hover:  #333333;
+  --accent-muted:  rgba(34, 34, 34, 0.08);
+  --accent-border: rgba(34, 34, 34, 0.2);
+
+  /* — Risk palette (using reference colors for Sales, Balance) — */
+  --risk-low:             #C5D9B9;
+  --risk-low-bg:          rgba(197, 217, 185, 0.3);
+  --risk-low-border:      rgba(197, 217, 185, 0.5);
+  --risk-low-text:        #3B502C;
+
+  --risk-medium:          #F3D896;
+  --risk-medium-bg:       rgba(243, 216, 150, 0.3);
+  --risk-medium-border:   rgba(243, 216, 150, 0.5);
+  --risk-medium-text:     #705419;
+
+  --risk-high:            #F4A381;
+  --risk-high-bg:         rgba(244, 163, 129, 0.2);
+  --risk-high-border:     rgba(244, 163, 129, 0.4);
+  --risk-high-text:       #8A3A19;
+
+  --risk-critical:        #e58b8b;
+  --risk-critical-bg:     rgba(229, 139, 139, 0.15);
+  --risk-critical-border: rgba(229, 139, 139, 0.3);
+  --risk-critical-text:   #8a2121;
+
+  --risk-info:            #9a9a9a;
+  --risk-info-bg:         rgba(154, 154, 154, 0.12);
+  --risk-info-border:     rgba(154, 154, 154, 0.22);
+  --risk-info-text:       #5f5f5f;
+
+  /* — Semantic — */
+  --success: #C5D9B9;
+  --warning: #F3D896;
+  --error:   #e58b8b;
+
+  /* — Glass effect — */
+  --glass-bg:     rgba(243, 239, 233, 0.82);
+  --glass-border: #e7e4db;
+
+  /* — Shadows: depth from lightness steps, not heavy drops — */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  --shadow-md:  0 6px 16px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02);
+  --shadow-lg:  0 10px 30px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.03);
+  --shadow-xl:  0 20px 50px rgba(0,0,0,0.08), 0 8px 16px rgba(0,0,0,0.04);
+
+  --inner-highlight: none;
+  --card-gradient-end: #ffffff;
+  
+  --shadow-glow-accent:    0 0 20px rgba(168, 163, 244, 0.32);
+  --shadow-glow-critical:  0 0 20px rgba(229, 139, 139, 0.32);
+
+  --chart-grid: rgba(0, 0, 0, 0.04);
+  --chart-axis: rgba(0, 0, 0, 0.08);
+}
+
+

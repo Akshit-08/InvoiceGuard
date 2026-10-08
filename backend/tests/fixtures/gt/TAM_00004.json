@@ -1,0 +1,317 @@
+{
+  "id": "TAM_00004",
+  "label": "tampered",
+  "fraud_types": [
+    "TAX_RATE_INVALID_SLAB",
+    "TAX_AMOUNT_MISMATCH"
+  ],
+  "mode": "re-render",
+  "affected_fields": [
+    "tax.total",
+    "tax.rate"
+  ],
+  "is_scanned": false,
+  "spec": {
+    "invoice_number": "KI/25-26/503",
+    "invoice_date": "2025-10-27",
+    "due_date": "2025-11-03",
+    "vendor_id": "VND-004",
+    "vendor_name": "Kavach Infra & Security Ltd",
+    "vendor_gstin": "22XWKCJ9010M1ZK",
+    "vendor_pan": "XWKCJ9010M",
+    "vendor_address": "Plot 405, Sector 26, Industrial Area, Chhattisgarh",
+    "vendor_email": "billing@kavach.co.in",
+    "vendor_phone": "+91 8927510975",
+    "vendor_state_code": "22",
+    "buyer_name": "Sterling Health & Pharma Labs",
+    "buyer_gstin": "19AABCS6789M1ZF",
+    "buyer_address": "Sector V, Salt Lake, Kolkata, WB",
+    "buyer_state_code": "19",
+    "currency": "INR",
+    "items": [
+      {
+        "description": "Executive Solid Oak Conference Desk",
+        "hsn_sac": "940330",
+        "quantity": 3.0,
+        "unit": "Unit",
+        "unit_price": 34280.44,
+        "line_total": 102841.32
+      },
+      {
+        "description": "Enterprise SaaS Software License (per seat)",
+        "hsn_sac": "997331",
+        "quantity": 10.0,
+        "unit": "Seat",
+        "unit_price": 4081.69,
+        "line_total": 40816.9
+      },
+      {
+        "description": "High-Speed Dedicated Fiber Internet (1 Gbps)",
+        "hsn_sac": "998422",
+        "quantity": 10.0,
+        "unit": "Month",
+        "unit_price": 20102.08,
+        "line_total": 201020.8
+      },
+      {
+        "description": "Cloud Infrastructure Compute (AWS/Azure)",
+        "hsn_sac": "998313",
+        "quantity": 1.0,
+        "unit": "Month",
+        "unit_price": 27155.45,
+        "line_total": 27155.45
+      },
+      {
+        "description": "Express Inter-City Air Freight Logistics",
+        "hsn_sac": "996511",
+        "quantity": 2.0,
+        "unit": "Shipment",
+        "unit_price": 5112.1,
+        "line_total": 10224.2
+      }
+    ],
+    "subtotal": 382058.67,
+    "tax_rate": 0.17,
+    "discount": 0.0,
+    "shipping": 0.0,
+    "grand_total": 450829.23,
+    "amount_in_words": "Four Lakh Fifty Thousand Eight Hundred And Twenty-Nine Rupees and Twenty-Three Paise Only",
+    "bank_name": "Kotak Mahindra Bank",
+    "account_number": "351444628979",
+    "ifsc": "KKBK0007932",
+    "template_id": "two_column"
+  },
+  "ground_truth": {
+    "fields": {
+      "vendor.name": {
+        "value": "Kavach Infra & Security Ltd",
+        "raw": "Kavach Infra & Security Ltd",
+        "bbox": [
+          0.0252,
+          0.0356,
+          0.3104,
+          0.0558
+        ],
+        "page": 0
+      },
+      "vendor.gstin": {
+        "value": "22XWKCJ9010M1ZK",
+        "raw": "GST: 22XWKCJ9010M1ZK",
+        "bbox": [
+          0.0252,
+          0.0653,
+          0.188,
+          0.0796
+        ],
+        "page": 0
+      },
+      "vendor.pan": {
+        "value": "XWKCJ9010M",
+        "raw": "PAN: XWKCJ9010M",
+        "bbox": [
+          0.0252,
+          0.0808,
+          0.1484,
+          0.095
+        ],
+        "page": 0
+      },
+      "vendor.email": {
+        "value": "billing@kavach.co.in",
+        "raw": "billing@kavach.co.in",
+        "bbox": [
+          0.0252,
+          0.0962,
+          0.1479,
+          0.1105
+        ],
+        "page": 0
+      },
+      "payment.bank_name": {
+        "value": "Kotak Mahindra Bank",
+        "raw": "Kotak Mahindra Bank",
+        "bbox": [
+          0.0252,
+          0.1734,
+          0.1537,
+          0.1877
+        ],
+        "page": 0
+      },
+      "payment.account_number": {
+        "value": "351444628979",
+        "raw": "A/C: 351444628979",
+        "bbox": [
+          0.0252,
+          0.19,
+          0.1462,
+          0.2043
+        ],
+        "page": 0
+      },
+      "payment.ifsc": {
+        "value": "KKBK0007932",
+        "raw": "IFSC: KKBK0007932",
+        "bbox": [
+          0.0252,
+          0.2067,
+          0.1514,
+          0.2209
+        ],
+        "page": 0
+      },
+      "invoice_number": {
+        "value": "KI/25-26/503",
+        "raw": "#KI/25-26/503",
+        "bbox": [
+          0.8051,
+          0.0368,
+          0.9328,
+          0.0558
+        ],
+        "page": 0
+      },
+      "invoice_date": {
+        "value": "2025-10-27",
+        "raw": "Date: 2025-10-27",
+        "bbox": [
+          0.336,
+          0.076,
+          0.4536,
+          0.0915
+        ],
+        "page": 0
+      },
+      "due_date": {
+        "value": "2025-11-03",
+        "raw": "Due: 2025-11-03",
+        "bbox": [
+          0.5376,
+          0.076,
+          0.651,
+          0.0915
+        ],
+        "page": 0
+      },
+      "buyer.name": {
+        "value": "Sterling Health & Pharma Labs",
+        "raw": "Sterling Health & Pharma Labs",
+        "bbox": [
+          0.336,
+          0.1259,
+          0.5815,
+          0.1425
+        ],
+        "page": 0
+      },
+      "buyer.gstin": {
+        "value": "19AABCS6789M1ZF",
+        "raw": "GSTIN: 19AABCS6789M1ZF",
+        "bbox": [
+          0.336,
+          0.1425,
+          0.51,
+          0.1568
+        ],
+        "page": 0
+      },
+      "subtotal": {
+        "value": 382058.67,
+        "raw": "Subtotal: Rs. 3,82,058.67",
+        "bbox": [
+          0.7487,
+          0.3326,
+          0.9194,
+          0.348
+        ],
+        "page": 0
+      },
+      "tax.total": {
+        "value": 64949.97,
+        "raw": "Tax (17%): Rs. 64,949.97",
+        "bbox": [
+          0.7471,
+          0.3492,
+          0.9194,
+          0.3647
+        ],
+        "page": 0
+      },
+      "grand_total": {
+        "value": 450829.23,
+        "raw": "Grand Total: Rs. 4,50,829.23",
+        "bbox": [
+          0.6505,
+          0.367,
+          0.9194,
+          0.386
+        ],
+        "page": 0
+      }
+    },
+    "items": [
+      {
+        "description": "Executive Solid Oak Conference Desk",
+        "quantity": 3.0,
+        "unit_price": 34280.44,
+        "line_total": 102841.32,
+        "bbox": [
+          0.336,
+          0.215,
+          0.9328,
+          0.2316
+        ]
+      },
+      {
+        "description": "Enterprise SaaS Software License (per seat)",
+        "quantity": 10.0,
+        "unit_price": 4081.69,
+        "line_total": 40816.9,
+        "bbox": [
+          0.336,
+          0.234,
+          0.9328,
+          0.2506
+        ]
+      },
+      {
+        "description": "High-Speed Dedicated Fiber Internet (1 Gbps)",
+        "quantity": 10.0,
+        "unit_price": 20102.08,
+        "line_total": 201020.8,
+        "bbox": [
+          0.336,
+          0.253,
+          0.9328,
+          0.2696
+        ]
+      },
+      {
+        "description": "Cloud Infrastructure Compute (AWS/Azure)",
+        "quantity": 1.0,
+        "unit_price": 27155.45,
+        "line_total": 27155.45,
+        "bbox": [
+          0.336,
+          0.272,
+          0.9328,
+          0.2886
+        ]
+      },
+      {
+        "description": "Express Inter-City Air Freight Logistics",
+        "quantity": 2.0,
+        "unit_price": 5112.1,
+        "line_total": 10224.2,
+        "bbox": [
+          0.336,
+          0.291,
+          0.9328,
+          0.3076
+        ]
+      }
+    ],
+    "page_width": 595.2755905511812,
+    "page_height": 841.8897637795277
+  }
+}

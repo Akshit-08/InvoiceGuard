@@ -1,0 +1,26 @@
+{
+  "fusion_xgb": {
+    "path": "ml\\artifacts\\fusion_xgb.joblib",
+    "size_mb": 0.137,
+    "feature_count": 31,
+    "monotone_constraints": "increasing_all",
+    "calibration": "isotonic_5fold",
+    "trained_on": "2026-10-04T22:33:55.526164",
+    "metrics": {
+      "roc_auc": 0.8532,
+      "pr_auc": 0.8864,
+      "brier_score": 0.1367,
+      "calibration": "isotonic_5fold",
+      "best_hyperparams": {
+        "max_depth": 3,
+        "min_child_weight": 3,
+        "gamma": 0.5,
+        "n_estimators": 300
+      },
+      "n_train": 3435,
+      "n_test": 480,
+      "n_pos_train": 1875,
+      "n_pos_test": 260
+    }
+  }
+}
