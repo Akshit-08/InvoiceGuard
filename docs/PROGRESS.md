@@ -467,4 +467,10 @@ Initial evaluation showed end-to-end ROC-AUC of 0.54, PR-AUC of 0.66, precision 
 - **Chart Readability**: Darkened background tracks on RiskGauge and ConfidenceMeter; added a subtle nav-colored web grid to the Anomaly Radar.
 - **Code Health**: Fixed lingering TypeScript unused imports and component props.
 
+### Landing Page UI Refinements (v0.5.2)
+- **Buttons**: Upgraded CTA buttons on the landing page to use rounded-full pill shapes, bold typography, hover scale animations, and solid base surface colors.
+- **Trust Signals**: Added background fills and borders to trust micro-signals on the landing page for better contrast.
+- **Accent Tokens**: Changed the `--accent` token set in `globals.css` from violet to charcoal (`#222222`) to better match the professional tone.
+- **Navbar**: Increased Logo size and switched background to `var(--bg-base)`.
+
 

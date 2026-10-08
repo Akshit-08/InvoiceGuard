@@ -140,7 +140,7 @@ export function Logo({ variant = 'full', size = 28, animated = false, className,
   }
 
   // Full variant: mark + wordmark
-  const wordmarkSize = Math.round(size * 0.5) // em-equivalent
+  const wordmarkSize = Math.round(size * 0.65) // em-equivalent
   return (
     <span className={cn('inline-flex items-center gap-2.5', className)}>
       <MarkSvg size={size} />

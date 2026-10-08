@@ -67,10 +67,10 @@
   --text-inverse:   #ffffff;
 
   /* — Accent (from reference Upgrade card) — */
-  --accent:        #A8A3F4;
-  --accent-hover:  #958ef0;
-  --accent-muted:  rgba(168, 163, 244, 0.15);
-  --accent-border: rgba(168, 163, 244, 0.3);
+  --accent:        #222222;
+  --accent-hover:  #333333;
+  --accent-muted:  rgba(34, 34, 34, 0.08);
+  --accent-border: rgba(34, 34, 34, 0.2);
 
   /* — Risk palette (using reference colors for Sales, Balance) — */
   --risk-low:             #C5D9B9;

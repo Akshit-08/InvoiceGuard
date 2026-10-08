@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-10-09
+
+### Changed
+- **UI Refinements**:
+  - `LandingPage`: Upgraded CTA buttons with rounded-full pill shapes, hover animations, and solid background colors.
+  - `LandingPage`: Added solid backgrounds and borders to trust micro-signals.
+  - `LandingPage`: Increased Logo size in the Navbar and updated background to base color.
+  - `globals.css`: Adjusted accent variables (`--accent`) to use charcoal tones (`#222222`) instead of violet, enhancing the professional look.
+
 ## [0.5.1] - 2026-10-06
 
 ### Changed

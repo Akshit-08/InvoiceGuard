@@ -21,7 +21,7 @@ import ScrollTrigger from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 import {
-  Upload, ChevronRight, ArrowRight,
+  Upload, ChevronRight,
   Calculator, Fingerprint, Copy, Building2, CreditCard, Eye, CheckCircle2,
   AlertTriangle, AlertCircle, Zap,
   FileText, Layers, ScanLine, FileSearch, ShieldCheck, Cpu,
@@ -35,156 +35,167 @@ import { Logo } from '@/components/brand/Logo'
 function InvoiceMockScan() {
   const reduced = useReducedMotion()
 
-  const ANOMALY_BOXES = [
-    { x: '62%', y: '30%', w: '28%', h: '5%', label: 'LINE TOTAL MISMATCH',  severity: 'high'     as const, delay: 1.2 },
-    { x: '62%', y: '50%', w: '28%', h: '5%', label: 'GRAND TOTAL MISMATCH', severity: 'critical' as const, delay: 1.6 },
-    { x: '8%',  y: '63%', w: '32%', h: '4%', label: 'BANK ACCOUNT CHANGED', severity: 'high'     as const, delay: 2.0 },
-    { x: '8%',  y: '22%', w: '38%', h: '5%', label: 'VENDOR OUTLIER',       severity: 'medium'   as const, delay: 2.4 },
-  ]
-
-  const severityColors = {
-    critical: { border: 'var(--risk-critical-text)', bg: 'var(--risk-critical-bg)', text: 'var(--risk-critical-text)' },
-    high:     { border: 'var(--risk-high-text)',     bg: 'var(--risk-high-bg)',      text: 'var(--risk-high-text)' },
-    medium:   { border: 'var(--risk-medium-text)',   bg: 'var(--risk-medium-bg)',    text: 'var(--risk-medium-text)' },
-    low:      { border: 'var(--risk-low-text)',      bg: 'var(--risk-low-bg)',       text: 'var(--risk-low-text)' },
+  const renderBox = (label: string, severity: 'critical'|'high'|'medium'|'low', delay: number, side: 'left'|'right') => {
+    const colors = {
+      critical: { border: 'var(--risk-critical-text)', bg: 'var(--risk-critical-bg)', text: 'var(--risk-critical-text)' },
+      high:     { border: 'var(--risk-high-text)',     bg: 'var(--risk-high-bg)',      text: 'var(--risk-high-text)' },
+      medium:   { border: 'var(--risk-medium-text)',   bg: 'var(--risk-medium-bg)',    text: 'var(--risk-medium-text)' },
+      low:      { border: 'var(--risk-low-text)',      bg: 'var(--risk-low-bg)',       text: 'var(--risk-low-text)' },
+    }[severity]
+    return (
+      <motion.div
+        className="absolute -inset-1.5 pointer-events-none z-10"
+        style={{
+          border: `1.5px solid ${colors.border}`,
+          background: colors.bg,
+          borderRadius: 4,
+        }}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={reduced ? { opacity: 1, scale: 1 } : undefined}
+        variants={reduced ? undefined : {
+          hidden: { opacity: 0, scale: 0.9 },
+          visible: { opacity: 1, scale: 1 },
+        }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        aria-hidden="true"
+      >
+        <span
+          className={`absolute px-2 py-1 rounded font-bold whitespace-nowrap ${
+            side === 'left'
+              ? 'right-full mr-3 top-1/2 -translate-y-1/2'
+              : 'left-full ml-3 top-1/2 -translate-y-1/2'
+          }`}
+          style={{ background: colors.bg, border: `1px solid ${colors.border}`, color: colors.text, fontSize: 10 }}
+        >
+          {label}
+        </span>
+      </motion.div>
+    )
   }
+
+
 
   return (
     <div
-      className="relative mx-auto"
-      style={{ maxWidth: 480, perspective: 1000 }}
+      className="relative mx-auto w-full"
+      style={{ maxWidth: 580, perspective: 1200 }}
       role="img"
       aria-label="Animated invoice document being scanned for anomalies"
     >
       <motion.div
-        className="relative rounded-2xl overflow-hidden"
+        className="relative rounded-2xl"
         style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-xl)' }}
         initial={{ opacity: 0, rotateY: -8, y: 20 }}
         animate={{ opacity: 1, rotateY: 0, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
         {/* Invoice content skeleton */}
-        <div className="p-6 text-xs" style={{ fontFamily: 'var(--font-mono)', minHeight: 380 }}>
+        <div className="p-8 text-sm" style={{ fontFamily: 'var(--font-mono)', minHeight: 460 }}>
           {/* Header */}
-          <div className="flex justify-between items-start mb-6">
+          <div className="flex justify-between items-start mb-8">
             <div>
-              <div className="font-bold text-sm mb-1" style={{ color: 'var(--text-primary)' }}>
-                Apex Cloud Technologies Pvt Ltd
+              <div className="mb-1">
+                <span className="relative inline-block font-bold text-base" style={{ color: 'var(--text-primary)' }}>
+                  Apex Cloud Technologies Pvt Ltd
+                  {renderBox('VENDOR OUTLIER', 'medium', 2.4, 'left')}
+                </span>
               </div>
               <div style={{ color: 'var(--text-tertiary)' }}>GSTIN: 27AABCA1234F1Z9</div>
               <div style={{ color: 'var(--text-tertiary)' }}>Unit 402, Trade Tower, Mumbai</div>
             </div>
             <div className="text-right">
-              <div className="text-lg font-bold mb-1" style={{ color: 'var(--text-primary)' }}>INVOICE</div>
+              <div className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>INVOICE</div>
               <div style={{ color: 'var(--text-secondary)' }}>No: INV-2026-0042</div>
               <div style={{ color: 'var(--text-secondary)' }}>Date: 15 Mar 2026</div>
             </div>
           </div>
 
           {/* Line items table */}
-          <div className="border rounded-lg overflow-hidden mb-4" style={{ borderColor: 'var(--border-hairline)' }}>
-            <div className="flex px-3 py-2 text-xs font-semibold border-b" style={{ background: 'var(--bg-subtle)', borderColor: 'var(--border-hairline)', color: 'var(--text-secondary)' }}>
+          <div className="border rounded-xl overflow-hidden mb-6" style={{ borderColor: 'var(--border-hairline)' }}>
+            <div className="flex px-4 py-3 text-sm font-semibold border-b" style={{ background: 'var(--bg-subtle)', borderColor: 'var(--border-hairline)', color: 'var(--text-secondary)' }}>
               <span className="flex-1">Description</span>
-              <span className="w-12 text-right">Qty</span>
-              <span className="w-20 text-right">Rate</span>
-              <span className="w-20 text-right">Total</span>
+              <span className="w-16 text-right">Qty</span>
+              <span className="w-28 text-right">Rate</span>
+              <span className="w-28 text-right">Total</span>
             </div>
-            <div className="flex px-3 py-2.5 border-b" style={{ borderColor: 'var(--border-hairline)' }}>
+            <div className="flex px-4 py-3.5 border-b" style={{ borderColor: 'var(--border-hairline)' }}>
               <span className="flex-1" style={{ color: 'var(--text-primary)' }}>Cloud Migration Consulting</span>
-              <span className="w-12 text-right tabular-nums" style={{ color: 'var(--text-secondary)' }}>2</span>
-              <span className="w-20 text-right tabular-nums" style={{ color: 'var(--text-secondary)' }}>₹15,000</span>
-              <span className="w-20 text-right tabular-nums font-semibold" style={{ color: 'var(--risk-high-text)' }}>₹40,000</span>
+              <span className="w-16 text-right tabular-nums" style={{ color: 'var(--text-secondary)' }}>2</span>
+              <span className="w-28 text-right tabular-nums" style={{ color: 'var(--text-secondary)' }}>₹15,000</span>
+              <span className="w-28 text-right tabular-nums font-semibold" style={{ color: 'var(--risk-high-text)' }}>
+                <span className="relative inline-block">
+                  ₹40,000
+                  {renderBox('LINE TOTAL MISMATCH', 'high', 1.2, 'right')}
+                </span>
+              </span>
             </div>
-            <div className="flex px-3 py-2.5">
+            <div className="flex px-4 py-3.5">
               <span className="flex-1" style={{ color: 'var(--text-primary)' }}>Kubernetes Infrastructure</span>
-              <span className="w-12 text-right tabular-nums" style={{ color: 'var(--text-secondary)' }}>1</span>
-              <span className="w-20 text-right tabular-nums" style={{ color: 'var(--text-secondary)' }}>₹65,000</span>
-              <span className="w-20 text-right tabular-nums font-semibold" style={{ color: 'var(--text-primary)' }}>₹65,000</span>
+              <span className="w-16 text-right tabular-nums" style={{ color: 'var(--text-secondary)' }}>1</span>
+              <span className="w-28 text-right tabular-nums" style={{ color: 'var(--text-secondary)' }}>₹65,000</span>
+              <span className="w-28 text-right tabular-nums font-semibold" style={{ color: 'var(--text-primary)' }}>₹65,000</span>
             </div>
           </div>
 
           {/* Totals */}
-          <div className="ml-auto w-56 space-y-1.5">
-            <div className="flex justify-between text-xs" style={{ color: 'var(--text-secondary)' }}>
+          <div className="ml-auto w-72 space-y-2">
+            <div className="flex justify-between text-sm" style={{ color: 'var(--text-secondary)' }}>
               <span>Subtotal</span><span className="tabular-nums">₹1,05,000</span>
             </div>
-            <div className="flex justify-between text-xs" style={{ color: 'var(--text-secondary)' }}>
+            <div className="flex justify-between text-sm" style={{ color: 'var(--text-secondary)' }}>
               <span>IGST @ 18%</span><span className="tabular-nums">₹18,900</span>
             </div>
-            <div className="flex justify-between text-sm font-bold pt-1 border-t" style={{ borderColor: 'var(--border-default)', color: 'var(--risk-critical-text)' }}>
-              <span>Grand Total</span><span className="tabular-nums">₹1,53,900</span>
+            <div className="flex justify-between text-base font-bold pt-2 border-t" style={{ borderColor: 'var(--border-default)', color: 'var(--risk-critical-text)' }}>
+              <span>Grand Total</span>
+              <span className="relative inline-block tabular-nums">
+                ₹1,53,900
+                {renderBox('GRAND TOTAL MISMATCH', 'critical', 1.6, 'right')}
+              </span>
             </div>
           </div>
 
           {/* Bank */}
-          <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border-hairline)', color: 'var(--text-tertiary)' }}>
-            <div>Bank: HDFC Bank | A/c: XXXXXX8891 | IFSC: HDFC0001234</div>
+          <div className="mt-8 pt-6 border-t" style={{ borderColor: 'var(--border-hairline)', color: 'var(--text-tertiary)' }}>
+            <div className="relative inline-block">
+              Bank: HDFC Bank | A/c: XXXXXX8891 | IFSC: HDFC0001234
+              {renderBox('BANK ACCOUNT CHANGED', 'high', 2.0, 'left')}
+            </div>
           </div>
         </div>
 
         {/* Scan beam */}
         {!reduced && (
-          <motion.div
-            className="absolute inset-x-0 h-0.5 pointer-events-none"
-            style={{
-              background: 'linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%)',
-              boxShadow: '0 0 12px var(--accent)',
-              top: 0,
-            }}
-            animate={{ top: ['0%', '100%', '0%'] }}
-            transition={{ duration: 2.5, ease: 'easeInOut', repeat: Infinity, repeatDelay: 0.5 }}
-            aria-hidden="true"
-          />
+          <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none" aria-hidden="true">
+            <motion.div
+              className="absolute inset-x-0 h-0.5"
+              style={{
+                background: 'linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%)',
+                boxShadow: '0 0 12px var(--accent)',
+                top: 0,
+              }}
+              animate={{ top: ['0%', '100%', '0%'] }}
+              transition={{ duration: 2.5, ease: 'easeInOut', repeat: Infinity, repeatDelay: 0.5 }}
+            />
+          </div>
         )}
 
-        {/* Anomaly bounding boxes */}
-        {ANOMALY_BOXES.map((box, i) => {
-          const colors = severityColors[box.severity]
-          return (
-            <motion.div
-              key={i}
-              className="absolute pointer-events-none"
-              style={{
-                left: box.x, top: box.y,
-                width: box.w, height: box.h,
-                border: `1.5px solid ${colors.border}`,
-                background: colors.bg,
-                borderRadius: 4,
-              }}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={reduced ? { opacity: 1, scale: 1 } : undefined}
-              variants={reduced ? undefined : {
-                hidden: { opacity: 0, scale: 0.9 },
-                visible: { opacity: 1, scale: 1 },
-              }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: box.delay, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              aria-hidden="true"
-            >
-              <span
-                className="absolute -top-5 left-0 px-1.5 py-0.5 rounded font-semibold whitespace-nowrap"
-                style={{ background: colors.border, color: 'white', fontSize: 9 }}
-              >
-                {box.label}
-              </span>
-            </motion.div>
-          )
-        })}
+
 
         {/* Risk score overlay */}
         <motion.div
-          className="absolute bottom-4 right-4 flex items-center gap-2 px-3 py-2 rounded-xl"
+          className="absolute -top-4 -right-6 flex items-center gap-2 px-3 py-1.5 rounded-lg shadow-md z-10"
           style={{ background: 'var(--risk-critical-bg)', border: '1px solid var(--risk-critical-border)' }}
-          initial={{ opacity: 0, scale: 0.8, y: 8 }}
+          initial={{ opacity: 0, scale: 0.8, y: -10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: 2.8, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
           <Zap size={14} style={{ color: 'var(--risk-critical-text)' }} />
-          <span className="text-sm font-bold tabular-nums" style={{ color: 'var(--risk-critical-text)', fontFamily: 'var(--font-mono)' }}>
+          <span className="text-base font-bold tabular-nums" style={{ color: 'var(--risk-critical-text)', fontFamily: 'var(--font-mono)' }}>
             88.5
           </span>
-          <span className="text-xs font-semibold" style={{ color: 'var(--risk-critical-text)' }}>CRITICAL</span>
+          <span className="text-xs font-bold" style={{ color: 'var(--risk-critical-text)' }}>CRITICAL RISK</span>
         </motion.div>
       </motion.div>
 
@@ -192,29 +203,15 @@ function InvoiceMockScan() {
       {!reduced && (
         <>
           <motion.div
-            className="absolute -left-12 top-16 surface-elevated px-3 py-2 flex items-center gap-2"
-            style={{ borderRadius: 10, minWidth: 160 }}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.8, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <CreditCard size={14} style={{ color: 'var(--risk-high-text)' }} />
-            <div>
-              <p className="text-xs font-semibold" style={{ color: 'var(--risk-high-text)' }}>Bank Changed</p>
-              <p className="text-xs tabular-nums" style={{ color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>Score: 85</p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="absolute -right-12 top-1/3 surface-elevated px-3 py-2 flex items-center gap-2"
-            style={{ borderRadius: 10, minWidth: 160 }}
+            className="absolute -right-24 top-[32%] surface-elevated px-4 py-3 flex items-center gap-3"
+            style={{ borderRadius: 12, minWidth: 180, zIndex: 10 }}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 2.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Calculator size={14} style={{ color: 'var(--risk-critical-text)' }} />
+            <Calculator size={16} style={{ color: 'var(--risk-critical-text)' }} />
             <div>
-              <p className="text-xs font-semibold" style={{ color: 'var(--risk-critical-text)' }}>Arithmetic Error</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--risk-critical-text)' }}>Arithmetic Error</p>
               <p className="text-xs tabular-nums" style={{ color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>+₹30,000</p>
             </div>
           </motion.div>
@@ -698,7 +695,7 @@ function HowItWorksSection({ reduced }: { reduced: boolean }) {
 
     tl.to('.gsap-progress-line', { height: '100%', ease: 'none', duration: 4 }, 0)
 
-    HOW_IT_WORKS.forEach((step, i) => {
+    HOW_IT_WORKS.forEach((_, i) => {
       const stepStart = i
       
       tl.to(`.gsap-step-${i}`, { opacity: 1, duration: 0.5 }, stepStart)
@@ -729,7 +726,7 @@ function HowItWorksSection({ reduced }: { reduced: boolean }) {
     tl.fromTo('.gsap-s1-chip', { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.3, stagger: 0.1 }, 1.4)
 
     tl.fromTo('.gsap-s2-eng', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.3, stagger: 0.05 }, 2)
-    tl.fromTo('.gsap-s2-bar', { width: 0 }, { width: (i, el) => el.dataset.w + '%', duration: 0.4, stagger: 0.05 }, 2.1)
+    tl.fromTo('.gsap-s2-bar', { width: 0 }, { width: (_i, el) => el.dataset.w + '%', duration: 0.4, stagger: 0.05 }, 2.1)
     tl.fromTo('.gsap-s2-arrow', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 2.5)
     tl.fromTo('.gsap-s2-fusion', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 2.6)
 
@@ -958,8 +955,12 @@ function SignalsSection({ reduced }: { reduced: boolean }) {
             return (
               <motion.div
                 key={sig.name}
-                className="surface p-5 group cursor-default"
-                style={{ borderRadius: 'var(--radius-xl)' }}
+                className="p-5 group cursor-default shadow-sm"
+                style={{ 
+                  borderRadius: 'var(--radius-xl)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-hairline)'
+                }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={inView || reduced ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: i * 0.07, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
@@ -977,8 +978,8 @@ function SignalsSection({ reduced }: { reduced: boolean }) {
                 >
                   <SigIcon size={17} style={{ color: 'var(--accent)' }} aria-hidden="true" />
                 </motion.div>
-                <h3 className="text-sm font-semibold mb-1.5">{sig.name}</h3>
-                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>{sig.desc}</p>
+                <h3 className="text-base font-semibold mb-1.5">{sig.name}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>{sig.desc}</p>
               </motion.div>
             )
           })}
@@ -999,14 +1000,14 @@ function SignalsSection({ reduced }: { reduced: boolean }) {
               >
                 <Cpu size={17} color="white" aria-hidden="true" />
               </div>
-              <h3 className="text-sm font-semibold mb-1.5" style={{ color: 'var(--accent)' }}>Risk Fusion</h3>
-              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <h3 className="text-base font-semibold mb-1.5" style={{ color: 'var(--accent)' }}>Risk Fusion</h3>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 Noisy-OR baseline + XGBoost ML model fused into a calibrated 0–100 score with SHAP explanations.
               </p>
             </div>
             <Link
               to="/insights"
-              className="btn-ghost mt-4 text-xs"
+              className="btn-ghost mt-4 text-sm"
               style={{ color: 'var(--accent)', paddingLeft: 0 }}
             >
               View model insights <ChevronRight size={13} aria-hidden="true" />
@@ -1029,25 +1030,34 @@ function StatCard({
 }) {
   const displayed = useCountUp(active ? stat : 0, 1400)
   return (
-    <div className="surface p-7 flex flex-col gap-4">
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center"
-        style={{ background: 'var(--accent-muted)' }}
-      >
-        <Icon size={20} style={{ color: 'var(--accent)' }} aria-hidden="true" />
-      </div>
-      <div>
-        <p className="leading-none mb-1" style={{ fontFamily: 'var(--font-mono)' }}>
+    <div
+      className="p-7 flex flex-col gap-4 shadow-sm h-full"
+      style={{
+        background: 'var(--bg-elevated)',
+        border: '1px solid var(--border-hairline)',
+        borderRadius: 'var(--radius-xl)',
+      }}
+    >
+      <div className="flex items-center gap-4">
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+          style={{ background: 'var(--accent-muted)' }}
+        >
+          <Icon size={24} style={{ color: 'var(--accent)' }} aria-hidden="true" />
+        </div>
+        <p className="leading-none" style={{ fontFamily: 'var(--font-mono)' }}>
           <span className="text-5xl font-black tabular-nums" style={{ color: 'var(--accent)' }}>
             {displayed}
           </span>
-          <span className="text-lg font-semibold ml-1" style={{ color: 'var(--text-secondary)' }}>
+          <span className="text-lg font-semibold ml-2" style={{ color: 'var(--text-secondary)' }}>
             {suffix}
           </span>
         </p>
-        <p className="text-base font-semibold mt-3" style={{ color: 'var(--text-primary)' }}>{label}</p>
       </div>
-      <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{desc}</p>
+      <div className="mt-1">
+        <p className="text-base font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{label}</p>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{desc}</p>
+      </div>
     </div>
   )
 }
@@ -1082,6 +1092,7 @@ function WhyDifferentSection({ reduced }: { reduced: boolean }) {
           {WHY_DIFFERENT.map((item, i) => (
             <motion.div
               key={item.label}
+              className="h-full"
               initial={{ opacity: 0, y: 24 }}
               animate={inView || reduced ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: i * 0.14, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -1150,30 +1161,29 @@ function CtaSection({ reduced }: { reduced: boolean }) {
           Full evidence, no black box.
         </p>
 
-        <div className="flex flex-wrap justify-center gap-3">
-          <Link to="/analyze" className="btn-primary">
-            <Upload size={16} aria-hidden="true" />
+        <div className="flex flex-wrap justify-center gap-4">
+          <Link to="/analyze" className="flex items-center gap-2 rounded-full px-8 py-3.5 font-medium text-white transition-transform hover:scale-105 active:scale-95 shadow-sm" style={{ background: 'var(--bg-surface)', fontSize: '1.1rem' }}>
+            <Upload size={20} aria-hidden="true" strokeWidth={2.5} />
             Upload an invoice
-            <ArrowRight size={14} aria-hidden="true" />
           </Link>
-          <Link to="/dashboard" className="btn-ghost">
+          <Link to="/dashboard" className="flex items-center gap-2 rounded-full px-8 py-3.5 font-medium transition-transform hover:scale-105 active:scale-95 shadow-sm" style={{ background: 'var(--bg-surface)', color: 'white', fontSize: '1.1rem' }}>
             Explore the dashboard
           </Link>
         </div>
 
         {/* Trust micro-signals */}
         <div
-          className="flex flex-wrap justify-center gap-6 mt-10 pt-8 border-t"
+          className="flex flex-wrap justify-center gap-4 mt-10 pt-8 border-t"
           style={{ borderColor: 'var(--border-hairline)' }}
         >
           {[
-            { icon: CheckCircle2, label: '7 detection engines', color: 'var(--risk-low-text)' },
-            { icon: AlertTriangle, label: '0–100 risk score',   color: 'var(--risk-medium-text)' },
-            { icon: AlertCircle,  label: 'Explainable evidence', color: 'var(--accent)' },
-          ].map(({ icon: Icon, label, color }) => (
-            <div key={label} className="flex items-center gap-2 text-sm">
+            { icon: CheckCircle2, label: '7 detection engines', color: 'var(--risk-low-text)', bg: 'var(--risk-low-bg)', border: 'var(--risk-low-border)' },
+            { icon: AlertTriangle, label: '0–100 risk score',   color: 'var(--risk-medium-text)', bg: 'var(--risk-medium-bg)', border: 'var(--risk-medium-border)' },
+            { icon: AlertCircle,  label: 'Explainable evidence', color: 'var(--text-primary)', bg: 'var(--bg-overlay)', border: 'var(--border-default)' },
+          ].map(({ icon: Icon, label, color, bg, border }) => (
+            <div key={label} className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg" style={{ background: bg, border: `1px solid ${border}` }}>
               <Icon size={14} style={{ color }} aria-hidden="true" />
-              <span style={{ color: 'var(--text-secondary)' }}>{label}</span>
+              <span className="font-medium" style={{ color }}>{label}</span>
             </div>
           ))}
         </div>
@@ -1193,16 +1203,16 @@ export default function LandingPage() {
 
       {/* ── Navbar ─────────────────────────────────────────── */}
       <nav
-        className="glass sticky top-0 z-30 flex items-center justify-between px-6 lg:px-10 border-b"
-        style={{ height: 56, borderColor: 'var(--glass-border)' }}
+        className="sticky top-0 z-30 flex items-center justify-between px-6 lg:px-10"
+        style={{ height: 64, background: 'var(--bg-base)' }}
         role="navigation"
         aria-label="Site navigation"
       >
         <Link to="/" className="flex items-center focus-visible:outline-none" aria-label="InvoiceGuard home">
-          <Logo variant="full" size={22} />
+          <Logo variant="full" size={28} />
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-8">
           {/* Scroll anchors */}
           <a
             href="#how-it-works"
@@ -1219,8 +1229,8 @@ export default function LandingPage() {
             Engines
           </a>
           <Link to="/dashboard" className="btn-ghost text-sm hidden sm:inline-flex">Dashboard</Link>
-          <Link to="/analyze" className="btn-primary text-sm py-1.5 px-4">
-            Try now <ChevronRight size={14} aria-hidden="true" />
+          <Link to="/analyze" className="btn-primary rounded-full text-sm font-medium py-2 px-6 ml-2" style={{ background: '#222222', color: 'white', border: 'none' }}>
+            Try a sample
           </Link>
         </div>
       </nav>
@@ -1271,30 +1281,29 @@ export default function LandingPage() {
               score with evidence highlighted on the document itself.
             </p>
 
-            <div className="flex flex-wrap gap-3">
-              <Link to="/analyze" className="btn-primary">
-                <Upload size={16} aria-hidden="true" />
+            <div className="flex flex-wrap gap-4 mt-4">
+              <Link to="/analyze" className="flex items-center gap-2 rounded-full px-8 py-3.5 font-medium text-white transition-transform hover:scale-105 active:scale-95 shadow-sm" style={{ background: 'var(--bg-surface)', fontSize: '1.1rem' }}>
+                <Upload size={20} aria-hidden="true" strokeWidth={2.5} />
                 Upload an invoice
-                <ArrowRight size={14} aria-hidden="true" />
               </Link>
-              <Link to="/dashboard" className="btn-ghost">
+              <Link to="/dashboard" className="flex items-center gap-2 rounded-full px-8 py-3.5 font-medium transition-transform hover:scale-105 active:scale-95 shadow-sm" style={{ background: 'var(--bg-surface)', color: 'white', fontSize: '1.1rem' }}>
                 Try a sample
               </Link>
             </div>
 
             {/* Trust signals */}
             <div
-              className="flex flex-wrap gap-6 mt-10 pt-8 border-t"
+              className="flex flex-wrap gap-4 mt-10 pt-8 border-t"
               style={{ borderColor: 'var(--border-hairline)' }}
             >
               {[
-                { icon: CheckCircle2, label: '7 detection engines', color: 'var(--risk-low-text)' },
-                { icon: AlertTriangle, label: '0–100 risk score',   color: 'var(--risk-medium-text)' },
-                { icon: AlertCircle,  label: 'Explainable evidence', color: 'var(--accent)' },
-              ].map(({ icon: Icon, label, color }) => (
-                <div key={label} className="flex items-center gap-2 text-sm">
+                { icon: CheckCircle2, label: '7 detection engines', color: 'var(--risk-low-text)', bg: 'var(--risk-low-bg)', border: 'var(--risk-low-border)' },
+                { icon: AlertTriangle, label: '0–100 risk score',   color: 'var(--risk-medium-text)', bg: 'var(--risk-medium-bg)', border: 'var(--risk-medium-border)' },
+                { icon: AlertCircle,  label: 'Explainable evidence', color: 'var(--text-primary)', bg: 'var(--bg-overlay)', border: 'var(--border-default)' },
+              ].map(({ icon: Icon, label, color, bg, border }) => (
+                <div key={label} className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg" style={{ background: bg, border: `1px solid ${border}` }}>
                   <Icon size={15} style={{ color }} aria-hidden="true" />
-                  <span style={{ color: 'var(--text-secondary)' }}>{label}</span>
+                  <span className="font-medium" style={{ color }}>{label}</span>
                 </div>
               ))}
             </div>
